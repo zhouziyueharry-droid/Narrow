@@ -113,6 +113,50 @@ Invoke-AuditStage "simulator_report_tests" (
     "run", "--extra", "dev", "pytest", "tests/test_reporting.py", "-v"
 )
 
+if ($CatalogPath -and $SessionsPath) {
+    $previousLlmSetting = $env:SHOPPING_AGENT_ENABLE_LLM
+    $previousPythonPath = $env:PYTHONPATH
+    $env:SHOPPING_AGENT_ENABLE_LLM = "false"
+    $env:PYTHONPATH = Join-Path $repoRoot "techjam-conversational-search\src"
+    try {
+        $agentProject = Join-Path $repoRoot "techjam-conversational-search"
+        $simulatorProject = Join-Path $repoRoot "user-simulator"
+        $techjamJson = Join-Path $resultRoot "techjam.json"
+        $techjamMarkdown = Join-Path $resultRoot "techjam.md"
+        $realisticJson = Join-Path $resultRoot "realistic.json"
+        $realisticMarkdown = Join-Path $resultRoot "realistic.md"
+
+        Invoke-AuditStage "techjam_traditional_smoke" $repoRoot "uv" @(
+            "run", "--project", $agentProject, "--with-editable", $simulatorProject,
+            "python", "-m", "user_simulator.cli", "run", "--preset", "techjam",
+            "--catalog-path", $CatalogPath, "--sessions-path", $SessionsPath,
+            "--agent-class", "shopping_agent.agent:ShoppingAgent", "--limit", "1",
+            "--output", $techjamJson, "--report-output", $techjamMarkdown
+        )
+        Invoke-AuditStage "realistic_traditional_smoke" $repoRoot "uv" @(
+            "run", "--project", $agentProject, "--with-editable", $simulatorProject,
+            "python", "-m", "user_simulator.cli", "run", "--preset", "realistic",
+            "--catalog-path", $CatalogPath,
+            "--agent-class", "shopping_agent.agent:ShoppingAgent", "--limit", "1",
+            "--output", $realisticJson, "--report-output", $realisticMarkdown
+        )
+        Invoke-AuditStage "smoke_trace_validation" $repoRoot "uv" @(
+            "run", "--project", $simulatorProject, "python",
+            (Join-Path $repoRoot "scripts\validate_smoke_traces.py"),
+            $techjamJson, $realisticJson
+        )
+        Invoke-AuditStage "report_schema_validation" $repoRoot "uv" @(
+            "run", "--project", $simulatorProject, "python",
+            "C:\Users\Jiang\.codex\skills\shopping-simulator-evaluation\scripts\validate_report.py",
+            $techjamJson, $realisticJson
+        )
+    }
+    finally {
+        $env:SHOPPING_AGENT_ENABLE_LLM = $previousLlmSetting
+        $env:PYTHONPATH = $previousPythonPath
+    }
+}
+
 $files = Get-ChildItem -LiteralPath $runRoot -Recurse -File |
     Where-Object { $_.Name -ne "checksums.sha256" }
 $checksumLines = foreach ($file in $files) {
