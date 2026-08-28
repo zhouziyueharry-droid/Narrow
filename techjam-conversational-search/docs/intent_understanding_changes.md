@@ -161,3 +161,49 @@ for c in patch.constraints:
 1. **模糊预算词**（cheap / affordable / 高端）：需要先给 `catalog.py` 加一个按品类取价格分位数的接口，再传给 `semantic_fallback_patch()`，工作量比这次的改动大一些，建议单独排期。
 2. **`StatePatch` 加版本历史**：如果想在 demo 里展示"意图是怎么一步步演变的"（对应赛题里 Runtime Adaptation / Personalized Context Distillation 这条），可以在 `state.py::ShoppingState` 里加一个 `patch_history: list[dict]`，每轮把 patch 追加进去，`graph.py::update_state` 里顺手写入即可，不需要动 `semantic_state.py`。
 3. **隐式切换的误伤监控**：`implicit_override_heuristic` 这个新标签建议在跑评测/demo 的时候统计一下触发频率，如果发现在真实评测集里经常"误判"（比如用户其实是想要"红色或蓝色都行"而不是"改成蓝色"），再考虑收紧 `OVERRIDE_SENSITIVE_FIELDS` 或者加更多上下文判断。
+
+---
+
+## 附：用同一批新测试跑「旧代码 vs 新代码」的直接对比
+
+比起看 `results.json` 里的分数（在公开评测集上因为话术太模板化而看不出差异，见上文），更直观的证明方式是：把这次新增的 9 条测试，分别跑在优化前的 `semantic_state.py`（commit `f257ef8`）和优化后的版本（当前 `yxh` 分支）上，同一套断言、同一批输入，看它们谁能通过。
+
+做法：用 `git worktree add /tmp/old_code f257ef8` 在不动当前分支的情况下拉出一份旧代码，把新测试文件复制过去，用相同的 `pytest -k` 过滤条件各跑一次。结果：
+
+| 测试用例 | 旧代码（f257ef8） | 新代码（当前分支） |
+| --- | --- | --- |
+| `test_semantic_fallback_splits_compound_negation_into_separate_constraints`（"cotton or wool" 拆两条约束） | ❌ FAILED | ✅ PASSED |
+| `test_semantic_fallback_drops_overlong_negation_span`（超长否定片段丢弃） | ✅ PASSED（凑巧过） | ✅ PASSED |
+| `test_semantic_fallback_parses_between_budget_range`（"between $50 and $100"） | ❌ FAILED | ✅ PASSED |
+| `test_semantic_fallback_parses_dash_budget_range`（"$50-$100"） | ❌ FAILED | ✅ PASSED |
+| `test_semantic_fallback_does_not_double_count_range_and_single_budget`（区间/单值不重复计数） | ✅ PASSED（旧代码本来就没有区间逻辑，无从重复） | ✅ PASSED |
+| `test_resolve_semantic_patch_flags_implicit_override_without_marker`（无关键词隐式换主意） | ❌ FAILED | ✅ PASSED |
+| `test_resolve_semantic_patch_retries_transient_provider_failure`（网络抖动重试） | ❌ FAILED | ✅ PASSED |
+| `test_resolve_semantic_patch_tags_invalid_provider_json`（区分"返回格式错"和"连不上"） | ❌ FAILED | ✅ PASSED |
+| `test_resolve_semantic_patch_tags_persistent_outage`（持续失败打标签） | ✅ PASSED（旧代码本来就有一个笼统的 `deepseek_unavailable`） | ✅ PASSED |
+
+**汇总：9 条里旧代码 6 条 FAILED、3 条 PASSED；新代码 9 条全 PASSED。** 3 条旧代码也能过的用例，都是"旧代码里本来就没有这块逻辑、所以谈不上冲突"（比如区间预算旧代码根本不解析，自然也不会跟单值预算重复计数）或者"旧代码本来就有一个粗粒度的兜底"（`deepseek_unavailable`），而不是旧代码已经做对了。
+
+拿其中一个失败断言举例，比预算区间那条更直观——旧代码在 "between $50 and $100 for boots." 这句话上完全提取不到预算约束：
+
+```
+AssertionError: assert 'deepseek_invalid_response' in ['no_structured_signal', 'deepseek_unavailable']
+```
+
+这条是 LLM 返回了不合法 JSON 时的用例：旧代码不区分"模型返回格式错"和"网络连不上"，两种情况全部打成同一个 `deepseek_unavailable` 标签；新代码能正确区分出 `deepseek_invalid_response`。
+
+复现方式（在项目根目录 `techjam-conversational-search` 下）：
+
+```bash
+NEW_TESTS="test_semantic_fallback_splits_compound_negation_into_separate_constraints or test_semantic_fallback_drops_overlong_negation_span or test_semantic_fallback_parses_between_budget_range or test_semantic_fallback_parses_dash_budget_range or test_semantic_fallback_does_not_double_count_range_and_single_budget or test_resolve_semantic_patch_flags_implicit_override_without_marker or test_resolve_semantic_patch_retries_transient_provider_failure or test_resolve_semantic_patch_tags_invalid_provider_json or test_resolve_semantic_patch_tags_persistent_outage"
+
+# 新代码（当前分支）
+uv run pytest tests/test_shopping_agent.py -k "$NEW_TESTS" -v
+
+# 旧代码（对比用，不影响当前分支）
+git worktree add /tmp/old_code f257ef8
+cp tests/test_shopping_agent.py /tmp/old_code/techjam-conversational-search/tests/test_shopping_agent.py
+cd /tmp/old_code/techjam-conversational-search
+PYTHONPATH="$PWD/src:$PWD" python -m pytest tests/test_shopping_agent.py -k "$NEW_TESTS" -v
+cd - && git worktree remove /tmp/old_code --force
+```
