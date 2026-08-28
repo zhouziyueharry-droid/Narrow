@@ -1,0 +1,32 @@
+version: "0.3"
+language: en
+mode: realistic
+seed: 42
+max_turns: 10
+top_k: 10
+
+dataset:
+  name: catalog
+  catalog_path: data/raw/techjam/catalog.jsonl
+  scenario_count: 100
+
+persona:
+  templates:
+    - decisive_buyer
+    - casual_browser
+    - bargain_hunter
+    - brand_loyalist
+    - picky_shopper
+    - novice_shopper
+    - expert_shopper
+    - indecisive_shopper
+
+override:
+  persona_driven_enabled: true
+
+verbalizer:
+  type: template
+
+agent:
+  adapter: python
+  class_path: shopping_agent.agent:ShoppingAgent
