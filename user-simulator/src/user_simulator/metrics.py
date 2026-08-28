@@ -162,7 +162,7 @@ def _model_usage(
         1
         for item in sessions
         for turn in item.get("conversation", [])
-        if isinstance(turn.get("reported_token_usage"), dict)
+        if turn.get("agent_usage_reported") is True
     )
     llm_enabled = metadata.get("llm_enabled")
     agent_api_calls = 0 if llm_enabled is False else None

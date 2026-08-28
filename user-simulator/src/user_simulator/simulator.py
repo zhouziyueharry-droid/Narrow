@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 import time
 import uuid
+from dataclasses import asdict
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from .acceptance import AcceptanceChecker
@@ -26,6 +30,44 @@ def _goal_constraints(goal: TargetProductGoal | NeedBasedGoal):
     if isinstance(goal, TargetProductGoal):
         return list(goal.constraints)
     return [*goal.hard_constraints, *goal.soft_preferences]
+
+
+def _goal_snapshot(goal: TargetProductGoal | NeedBasedGoal) -> dict[str, Any]:
+    """Serialize evaluation-only truth without exposing it to the Agent."""
+
+    if isinstance(goal, TargetProductGoal):
+        return {
+            "goal_type": goal.goal_type,
+            "goal_id": goal.goal_id,
+            "target_product_id": goal.target_product_id,
+            "category": goal.category,
+            "constraints": [asdict(item) for item in goal.constraints],
+            "source_dataset": goal.source_dataset,
+        }
+    return {
+        "goal_type": goal.goal_type,
+        "goal_id": goal.goal_id,
+        "category": goal.category,
+        "hard_constraints": [asdict(item) for item in goal.hard_constraints],
+        "soft_preferences": [asdict(item) for item in goal.soft_preferences],
+        "alternatives": goal.alternatives,
+        "min_soft_matches": goal.min_soft_matches,
+        "source_dataset": goal.source_dataset,
+    }
+
+
+def _dialogue_act_snapshot(act) -> dict[str, Any] | None:
+    if act is None:
+        return None
+    return {
+        "type": act.type.value,
+        "attribute": act.attribute,
+        "values": list(act.values),
+        "reason_code": act.reason_code,
+        "references": list(act.references),
+        "allowed_facts": [asdict(item) for item in act.allowed_facts],
+        "surface_text": act.surface_text,
+    }
 
 
 def _catalog_recommendations(
@@ -73,6 +115,7 @@ class SimulatorSession:
         top_k: int = 10,
     ):
         self.scenario = scenario
+        self._initial_goal_snapshot = _goal_snapshot(scenario.goal)
         self.catalog = catalog
         self.agent = agent
         self.top_k = top_k
@@ -127,6 +170,7 @@ class SimulatorSession:
         initial_act = self.policy.initial_act(self.state)
         user_message, user_generation_latency_ms = self._say(initial_act)
         self.state.last_dialogue_act = initial_act
+        user_dialogue_act = initial_act
 
         acceptance_result = None
         for turn in range(1, self.scenario.max_turns + 1):
@@ -166,9 +210,11 @@ class SimulatorSession:
                     turn=turn,
                     user_message=user_message,
                     agent_response=response,
+                    user_dialogue_act=user_dialogue_act,
                     dialogue_act=act,
                     user_generation_latency_ms=user_generation_latency_ms,
                     agent_latency_ms=agent_latency_ms,
+                    agent_usage_reported=response.usage is not None,
                     agent_layer_trace=agent_layer_trace,
                     agent_trace_error=agent_trace_error,
                 )
@@ -186,6 +232,7 @@ class SimulatorSession:
                 break
 
             user_message, user_generation_latency_ms = self._say(act)
+            user_dialogue_act = act
 
         self._session_wall_ms = round(
             (time.perf_counter() - session_started) * 1000.0, 3
@@ -237,6 +284,19 @@ class SimulatorSession:
             "protocol": self.scenario.protocol,
             "scenario_type": self.scenario.scenario_type,
             "goal_type": self.state.goal.goal_type,
+            "goal_snapshot": self._initial_goal_snapshot,
+            "effective_goal_snapshot": {
+                "active_constraints": [
+                    asdict(item) for item in self.state.active_constraints if item.active
+                ],
+                "removed_constraints": [
+                    asdict(item) for item in self.state.removed_constraints
+                ],
+                "override_history": [asdict(item) for item in self.state.override_history],
+                "relaxation_history": [
+                    asdict(item) for item in self.state.relaxation_history
+                ],
+            },
             "persona": self.state.persona.name,
             "success": self.state.termination_reason == "accept",
             "hit": self.state.termination_reason == "accept",
@@ -302,11 +362,18 @@ class SimulatorSession:
                             else []
                         )
                     ],
+                    "user_dialogue_act": _dialogue_act_snapshot(
+                        item.user_dialogue_act
+                    ),
                     "next_dialogue_act": item.dialogue_act.type.value
                     if item.dialogue_act
                     else None,
+                    "next_dialogue_act_detail": _dialogue_act_snapshot(
+                        item.dialogue_act
+                    ),
                     "user_generation_latency_ms": item.user_generation_latency_ms,
                     "agent_latency_ms": item.agent_latency_ms,
+                    "agent_usage_reported": item.agent_usage_reported,
                     "agent_layer_trace": item.agent_layer_trace,
                     "agent_trace_error": item.agent_trace_error,
                     "reported_token_usage": {
@@ -345,12 +412,90 @@ class Simulator:
     def run_scenario(
         self, scenario: ScenarioSpec, user_profile: dict | None = None
     ) -> dict[str, Any]:
-        return SimulatorSession(
+        session = SimulatorSession(
             scenario, self.catalog, self.agent, self.verbalizer, self.top_k
-        ).run(user_profile)
+        )
+        result: dict[str, Any] | None = None
+        try:
+            result = session.run(user_profile)
+            return result
+        finally:
+            release_error = self.agent.release_session(session.state.session_id)
+            if result is not None:
+                result["session_release_error"] = release_error
 
-    def run_many(self, scenarios: list[ScenarioSpec]) -> dict[str, Any]:
-        sessions = [self.run_scenario(scenario) for scenario in scenarios]
+    def run_many(
+        self,
+        scenarios: list[ScenarioSpec],
+        *,
+        session_output: str | Path | None = None,
+        event_output: str | Path | None = None,
+    ) -> dict[str, Any]:
+        session_path = Path(session_output) if session_output else None
+        event_path = Path(event_output) if event_output else None
+        if session_path:
+            session_path.parent.mkdir(parents=True, exist_ok=True)
+        if event_path:
+            event_path.parent.mkdir(parents=True, exist_ok=True)
+        session_handle = (
+            session_path.open("w", encoding="utf-8") if session_path else None
+        )
+        event_handle = event_path.open("w", encoding="utf-8") if event_path else None
+        sessions: list[dict[str, Any]] = []
+        try:
+            for index, scenario in enumerate(scenarios, 1):
+                started = time.perf_counter()
+                if event_handle:
+                    event_handle.write(json.dumps({
+                        "timestamp": datetime.now(UTC).isoformat(),
+                        "event": "session_started",
+                        "index": index,
+                        "total": len(scenarios),
+                        "scenario_id": scenario.scenario_id,
+                        "protocol": scenario.protocol,
+                    }) + "\n")
+                    event_handle.flush()
+                try:
+                    session = self.run_scenario(scenario)
+                except Exception as exc:
+                    if event_handle:
+                        event_handle.write(json.dumps({
+                            "timestamp": datetime.now(UTC).isoformat(),
+                            "event": "session_failed",
+                            "index": index,
+                            "total": len(scenarios),
+                            "scenario_id": scenario.scenario_id,
+                            "error_type": type(exc).__name__,
+                            "error": str(exc),
+                            "elapsed_ms": round(
+                                (time.perf_counter() - started) * 1000.0, 3
+                            ),
+                        }) + "\n")
+                        event_handle.flush()
+                    raise
+                sessions.append(session)
+                if session_handle:
+                    session_handle.write(json.dumps(session, ensure_ascii=False) + "\n")
+                    session_handle.flush()
+                if event_handle:
+                    event_handle.write(json.dumps({
+                        "timestamp": datetime.now(UTC).isoformat(),
+                        "event": "session_completed",
+                        "index": index,
+                        "total": len(scenarios),
+                        "scenario_id": scenario.scenario_id,
+                        "success": session["success"],
+                        "turns": session["turns"],
+                        "elapsed_ms": round(
+                            (time.perf_counter() - started) * 1000.0, 3
+                        ),
+                    }) + "\n")
+                    event_handle.flush()
+        finally:
+            if session_handle:
+                session_handle.close()
+            if event_handle:
+                event_handle.close()
         protocols = {scenario.protocol for scenario in scenarios}
         if len(protocols) > 1:
             raise ValueError("run_many requires scenarios from one protocol")

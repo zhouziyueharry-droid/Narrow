@@ -241,7 +241,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         agent_metadata=_agent_runtime_metadata(config),
     )
     selected = scenarios[: args.limit] if args.limit else scenarios
-    result = simulator.run_many(selected)
+    result = simulator.run_many(
+        selected,
+        session_output=args.session_output,
+        event_output=args.event_output,
+    )
     output = Path(args.output or f"runs/{mode}.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
@@ -279,6 +283,8 @@ def main() -> int:
     _add_config_source(run)
     run.add_argument("--output")
     run.add_argument("--report-output")
+    run.add_argument("--session-output")
+    run.add_argument("--event-output")
     run.add_argument("--limit", type=int)
     run.set_defaults(func=cmd_run)
 

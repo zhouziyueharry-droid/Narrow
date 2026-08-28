@@ -43,6 +43,31 @@ def test_need_based_acceptance_with_alternative():
     assert result.accepted is True
 
 
+def test_need_based_rejection_preserves_best_near_miss_evidence():
+    product = Product(
+        "A",
+        "Running Shoe",
+        brand="Adidas",
+        price=120.0,
+        attributes={"color": ["black"]},
+    )
+    goal = NeedBasedGoal(
+        goal_id="g",
+        category="running shoes",
+        hard_constraints=[Constraint("budget_max", ["100"], "hard")],
+        soft_preferences=[Constraint("brand", ["Adidas"], "soft")],
+        min_soft_matches=1,
+    )
+
+    result = AcceptanceChecker({"A": product}).check(goal, [Recommendation("A")])
+
+    assert result.accepted is False
+    assert result.hard_total == 1
+    assert result.hard_matches == 0
+    assert result.soft_matches == 1
+    assert result.evidence["best_candidate_id"] == "A"
+
+
 def test_template_verbalizer_is_deterministic():
     persona = get_persona("casual_browser")
     assert persona.name == "casual_browser"

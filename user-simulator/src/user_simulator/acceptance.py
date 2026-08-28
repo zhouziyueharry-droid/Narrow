@@ -50,6 +50,7 @@ class AcceptanceChecker:
         assert isinstance(goal, NeedBasedGoal)
         active_hard = [c for c in goal.hard_constraints if c.active]
         active_soft = [c for c in goal.soft_preferences if c.active]
+        best_near_miss: tuple[int, int, int, str] | None = None
         for rank, rec in enumerate(recommendations, 1):
             product = self.catalog.get(rec.product_id)
             if product is None:
@@ -63,6 +64,9 @@ class AcceptanceChecker:
                 _matches(product, c.attribute, c.values, goal.alternatives)
                 for c in active_soft
             )
+            candidate = (hard_matches, soft_matches, -rank, rec.product_id)
+            if best_near_miss is None or candidate[:3] > best_near_miss[:3]:
+                best_near_miss = candidate
             if hard_matches == hard_total and soft_matches >= goal.min_soft_matches:
                 return AcceptanceResult(
                     True,
@@ -73,4 +77,24 @@ class AcceptanceChecker:
                     soft_matches=soft_matches,
                     evidence={"mode": "need_based"},
                 )
-        return AcceptanceResult(False)
+        hard_total = len(active_hard)
+        if best_near_miss is None:
+            return AcceptanceResult(
+                False,
+                hard_total=hard_total,
+                evidence={"mode": "need_based", "reason": "no_valid_candidates"},
+            )
+        hard_matches, soft_matches, negative_rank, product_id = best_near_miss
+        return AcceptanceResult(
+            False,
+            hard_matches=hard_matches,
+            hard_total=hard_total,
+            soft_matches=soft_matches,
+            evidence={
+                "mode": "need_based",
+                "reason": "best_candidate_below_acceptance_threshold",
+                "best_candidate_id": product_id,
+                "best_candidate_rank": -negative_rank,
+                "required_soft_matches": goal.min_soft_matches,
+            },
+        )

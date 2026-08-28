@@ -14,6 +14,8 @@ class ShoppingAgentAdapter(Protocol):
         self, session_id: str, turn: int, candidate_limit: int = 20
     ) -> tuple[list[dict[str, Any]], str | None]: ...
 
+    def release_session(self, session_id: str) -> str | None: ...
+
 
 class PythonAgentAdapter:
     """Wraps a Python shopping agent, including the TechJam reset/respond contract."""
@@ -100,3 +102,13 @@ class PythonAgentAdapter:
         if not isinstance(trace, list) or not all(isinstance(item, dict) for item in trace):
             return [], "invalid_agent_trace:not_a_list_of_dicts"
         return trace, None
+
+    def release_session(self, session_id: str) -> str | None:
+        release = getattr(self.agent, "release_session", None)
+        if not callable(release):
+            return None
+        try:
+            release(session_id)
+        except Exception as exc:  # noqa: BLE001 - cleanup failure belongs in audit output
+            return f"agent_release_exception:{type(exc).__name__}:{exc}"
+        return None

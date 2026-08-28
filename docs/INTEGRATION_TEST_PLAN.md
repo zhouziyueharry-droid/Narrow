@@ -24,7 +24,10 @@ must contain:
 - `stages.json`: exact command, working directory, start/end timestamps,
   elapsed time, exit code, and log path for every stage;
 - `logs/*.log`: complete stdout/stderr for each stage;
+- `logs/<mode>.events.jsonl`: append-only session started/completed/failed events;
 - `results/techjam.{json,md}` and `results/realistic.{json,md}`;
+- `results/<mode>.sessions.jsonl`: one flushed record after every completed session;
+- `comparisons/session_findings.jsonl`: deterministic flags across all sessions;
 - `checksums.sha256`: hashes for every final evidence artifact;
 - `final_report.md`: pass/fail gates, metric comparison, failures and fallbacks.
 
@@ -104,7 +107,10 @@ sections, per-turn traces, live latency and zero API use.
   official TechJam score.
 
 Compare TechJam headline metrics and changed sessions against the previous
-baseline. Any unexplained drift blocks completion.
+baseline. The current legacy baselines contain aggregate Markdown only, so
+sample-level regression claims require regenerating the old commit with full
+session JSON; until then comparison is explicitly aggregate-only. Any
+unexplained aggregate drift blocks completion.
 
 ### Gate 6: DeepSeek matrix
 

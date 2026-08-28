@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from user_simulator.adapters import PythonAgentAdapter
 from user_simulator.models import Product, ScenarioSpec, TargetProductGoal
 from user_simulator.reporting import render_markdown
@@ -55,6 +57,11 @@ def test_unified_report_schema_and_markdown_sections():
         result["model_usage"]["combined"]["reported_token_usage"]["total_tokens"] == 6
     )
     assert result["sessions"][0]["conversation"][0]["agent_latency_ms"] >= 0
+    assert result["sessions"][0]["goal_snapshot"]["target_product_id"] == "A"
+    assert result["sessions"][0]["conversation"][0]["user_dialogue_act"]["type"] == (
+        "INITIAL_REQUEST"
+    )
+    assert result["sessions"][0]["conversation"][0]["agent_usage_reported"] is True
 
     report = render_markdown(result)
     for heading in (
@@ -115,3 +122,38 @@ def test_session_records_unavailable_agent_trace():
 
     assert turn["agent_layer_trace"] == []
     assert turn["agent_trace_error"] == "agent_trace_unavailable"
+
+
+def test_session_journals_flush_and_agent_state_is_released(tmp_path):
+    class ReleasingAgent(OneTurnAgent):
+        def __init__(self):
+            self.released = []
+
+        def release_session(self, session_id):
+            self.released.append(session_id)
+
+    agent = ReleasingAgent()
+    catalog = {"A": Product("A", "Shoe")}
+    scenario = ScenarioSpec(
+        scenario_id="journal-sample",
+        goal=TargetProductGoal("goal", "A"),
+        persona_template="decisive_buyer",
+        protocol="techjam",
+        scenario_type="buying",
+    )
+    session_path = tmp_path / "sessions.jsonl"
+    event_path = tmp_path / "events.jsonl"
+
+    result = Simulator(catalog, PythonAgentAdapter(agent)).run_many(
+        [scenario], session_output=session_path, event_output=event_path
+    )
+
+    persisted = [json.loads(line) for line in session_path.read_text().splitlines()]
+    events = [json.loads(line) for line in event_path.read_text().splitlines()]
+    assert persisted[0]["scenario_id"] == "journal-sample"
+    assert [event["event"] for event in events] == [
+        "session_started",
+        "session_completed",
+    ]
+    assert len(agent.released) == 1
+    assert result["sessions"][0]["session_release_error"] is None
