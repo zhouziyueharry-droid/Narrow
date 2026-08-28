@@ -1,0 +1,247 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import yaml
+
+from user_simulator.adapters import PythonAgentAdapter
+from user_simulator.cli import PRESETS
+from user_simulator.datasets import TechJamDatasetAdapter, build_realistic_scenarios
+from user_simulator.models import NeedBasedGoal
+from user_simulator.simulator import Simulator
+
+
+def _write_fixture(tmp_path, scenario_type: str = "buying"):
+    catalog_path = tmp_path / "catalog.jsonl"
+    sessions_path = tmp_path / "public_set.jsonl"
+    product = {
+        "parent_asin": "A",
+        "title": "Black Leather Running Shoe",
+        "features": ["waterproof", "cushioned"],
+        "details": {"Material": "leather", "Color": "black"},
+        "description": ["running shoe"],
+        "categories": ["Clothing, Shoes & Jewelry", "Women", "Shoes"],
+        "store": "Example Brand",
+        "price": 80.0,
+    }
+    profile = {
+        "purchase_frequency": "3-4 prior purchases",
+        "average_prior_rating": 4.5,
+        "rating_style": "usually positive",
+        "preference_tags": ["comfort"],
+        "summary": "Prior purchases emphasize comfort.",
+    }
+    sample = {
+        "sample_id": f"sample_{scenario_type}",
+        "scenario_type": scenario_type,
+        "user_profile": profile,
+        "ground_truth": {"parent_asin": "A"},
+    }
+    catalog_path.write_text(json.dumps(product) + "\n", encoding="utf-8")
+    sessions_path.write_text(json.dumps(sample) + "\n", encoding="utf-8")
+    return catalog_path, sessions_path, profile
+
+
+def test_yaml_configs_match_builtin_presets():
+    root = Path(__file__).resolve().parents[1]
+    config_paths = {
+        "techjam": root / "configs" / "techjam_benchmark.yaml",
+        "realistic": root / "configs" / "realistic.yaml",
+    }
+    for name, path in config_paths.items():
+        assert yaml.safe_load(path.read_text(encoding="utf-8")) == PRESETS[name]
+
+
+class AlwaysTargetAgent:
+    def __init__(self):
+        self.profile = None
+
+    def reset(self, session_id, user_profile):
+        self.profile = dict(user_profile)
+
+    def respond(self, session_id, user_message, turn, top_k):
+        return {
+            "message": "Here are options.",
+            "ask_attribute": "material",
+            "recommendations": [{"parent_asin": "A"}],
+            "usage": {"prompt_tokens": 2, "completion_tokens": 1},
+        }
+
+
+class AskThenTargetAgent(AlwaysTargetAgent):
+    def respond(self, session_id, user_message, turn, top_k):
+        response = super().respond(session_id, user_message, turn, top_k)
+        if turn == 1:
+            response["recommendations"] = []
+        return response
+
+
+def test_techjam_mode_preserves_profile_and_official_initial_message(tmp_path):
+    catalog_path, sessions_path, profile = _write_fixture(tmp_path, "buying")
+    dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+    catalog = {product.product_id: product for product in dataset.load_products()}
+    scenario = dataset.build_target_sessions()[0]
+    agent = AlwaysTargetAgent()
+
+    result = Simulator(catalog, PythonAgentAdapter(agent)).run_many([scenario])
+
+    assert scenario.protocol == "techjam"
+    assert scenario.user_profile == profile
+    assert result["mode"] == "techjam"
+    assert result["schema_version"] == "1.0"
+    assert result["evaluation"]["hit_rate_at_10"] == 1.0
+    assert result["evaluation"]["mttc"] == 1.0
+    assert result["model_usage"]["agent"]["reported_token_usage"]["total_tokens"] == 3
+    assert result["turn_metrics"]["total_executed_turns"] == 1
+    assert result["latency"]["agent"]["call_count"] == 1
+    assert result["latency"]["available"] is True
+    assert agent.profile == profile
+    assert result["sessions"][0]["conversation"][0]["user"] == (
+        "I'm looking for Women Shoes. A key requirement is: leather."
+    )
+
+
+def test_techjam_intent_override_blocks_early_target_hit(tmp_path):
+    catalog_path, sessions_path, _ = _write_fixture(tmp_path, "intent_override")
+    dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+    catalog = {product.product_id: product for product in dataset.load_products()}
+    scenario = dataset.build_target_sessions()[0]
+    override_turn = scenario.metadata["techjam"]["behavior"]["override"]["turn"]
+
+    result = Simulator(catalog, PythonAgentAdapter(AlwaysTargetAgent())).run_many(
+        [scenario]
+    )
+
+    assert result["sessions"][0]["turns"] == override_turn
+    assert result["sessions"][0]["success"] is True
+    assert result["evaluation"]["mttc"] == float(override_turn)
+    assert (
+        "Actually, ignore my earlier preference."
+        in (result["sessions"][0]["conversation"][override_turn - 1]["user"])
+    )
+    assert result["sessions"][0]["override_count"] == 1
+
+
+def test_techjam_browsing_and_boundary_dialogue_paths(tmp_path):
+    for scenario_type in ("browsing", "boundary"):
+        case_dir = tmp_path / scenario_type
+        case_dir.mkdir()
+        catalog_path, sessions_path, _ = _write_fixture(case_dir, scenario_type)
+        dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+        catalog = {product.product_id: product for product in dataset.load_products()}
+        scenario = dataset.build_target_sessions()[0]
+
+        result = Simulator(catalog, PythonAgentAdapter(AskThenTargetAgent())).run_many(
+            [scenario]
+        )
+        conversation = result["sessions"][0]["conversation"]
+
+        assert (
+            conversation[0]["user"]
+            == "I'm looking for Women Shoes, but I'm still exploring."
+        )
+        if scenario_type == "boundary":
+            assert conversation[1]["user"] == (
+                "I don't have a preference for material; please use your judgment."
+            )
+        else:
+            assert conversation[1]["user"] == "For that, what matters is: leather."
+
+
+def test_realistic_mode_builds_satisfiable_need_goal_without_extra_data(tmp_path):
+    catalog_path, _, _ = _write_fixture(tmp_path, "buying")
+    dataset = TechJamDatasetAdapter(catalog_path)
+    products = list(dataset.load_products())
+    catalog = {product.product_id: product for product in products}
+    scenario = build_realistic_scenarios(
+        products,
+        count=1,
+        persona_templates=["decisive_buyer"],
+    )[0]
+
+    result = Simulator(catalog, PythonAgentAdapter(AlwaysTargetAgent())).run_many(
+        [scenario]
+    )
+
+    assert scenario.protocol == "realistic"
+    assert isinstance(scenario.goal, NeedBasedGoal)
+    assert result["mode"] == "realistic"
+    assert result["evaluation"]["success_rate"] == 1.0
+    assert (
+        result["mode_specific_metrics"]["hard_constraint_satisfaction_at_acceptance"]
+        == 1.0
+    )
+
+
+def test_agent_adapter_keeps_first_ten_valid_unique_candidates():
+    class DuplicateHeavyAgent:
+        def reset(self, session_id, user_profile):
+            pass
+
+        def respond(self, session_id, user_message, turn, top_k):
+            recommendations = [{"parent_asin": "A"}] * 12
+            recommendations.extend({"parent_asin": f"P{index}"} for index in range(20))
+            return {
+                "message": "x",
+                "ask_attribute": None,
+                "recommendations": recommendations,
+            }
+
+    adapter = PythonAgentAdapter(DuplicateHeavyAgent())
+    response = adapter.respond("s", "hello", 1, 10)
+
+    assert [item.product_id for item in response.recommendations] == [
+        "A",
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8",
+    ]
+
+
+def test_techjam_normalization_skips_invalid_catalog_ids_before_target(tmp_path):
+    catalog_path, sessions_path, _ = _write_fixture(tmp_path, "buying")
+    dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+    catalog = {product.product_id: product for product in dataset.load_products()}
+    scenario = dataset.build_target_sessions()[0]
+
+    class InvalidFirstAgent(AlwaysTargetAgent):
+        def respond(self, session_id, user_message, turn, top_k):
+            response = super().respond(session_id, user_message, turn, top_k)
+            response["recommendations"] = [
+                {"parent_asin": f"INVALID_{index}"} for index in range(15)
+            ] + [{"parent_asin": "A"}]
+            return response
+
+    result = Simulator(catalog, PythonAgentAdapter(InvalidFirstAgent())).run_many(
+        [scenario]
+    )
+
+    assert result["evaluation"]["hit_rate_at_10"] == 1.0
+    assert result["sessions"][0]["acceptance_rank"] == 1
+
+
+def test_techjam_invalid_message_discards_recommendations(tmp_path):
+    catalog_path, sessions_path, _ = _write_fixture(tmp_path, "buying")
+    dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+    catalog = {product.product_id: product for product in dataset.load_products()}
+    scenario = dataset.build_target_sessions()[0]
+
+    class InvalidMessageAgent(AlwaysTargetAgent):
+        def respond(self, session_id, user_message, turn, top_k):
+            response = super().respond(session_id, user_message, turn, top_k)
+            response["message"] = None
+            return response
+
+    result = Simulator(catalog, PythonAgentAdapter(InvalidMessageAgent())).run_many(
+        [scenario]
+    )
+
+    assert result["evaluation"]["hit_rate_at_10"] == 0.0
+    assert len(result["sessions"][0]["agent_errors"]) == 10

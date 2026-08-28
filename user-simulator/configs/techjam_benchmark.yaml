@@ -1,0 +1,25 @@
+version: "0.3"
+language: en
+mode: techjam
+seed: 42
+max_turns: 10
+top_k: 10
+
+dataset:
+  name: techjam
+  catalog_path: data/raw/techjam/catalog.jsonl
+  sessions_path: data/raw/techjam/public_set.jsonl
+
+persona:
+  default: casual_browser
+
+override:
+  scheduled_enabled: true
+  persona_driven_enabled: false
+
+verbalizer:
+  type: template
+
+agent:
+  adapter: python
+  class_path: shopping_agent.agent:ShoppingAgent
