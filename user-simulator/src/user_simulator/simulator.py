@@ -136,6 +136,9 @@ class SimulatorSession:
                 self.state.session_id, user_message, turn, self.top_k
             )
             agent_latency_ms = round((time.perf_counter() - agent_started) * 1000.0, 3)
+            agent_layer_trace, agent_trace_error = self.agent.get_turn_trace(
+                self.state.session_id, turn, candidate_limit=max(self.top_k, 20)
+            )
             if self.scenario.protocol == "techjam" and response.error:
                 response.ask_attribute = None
                 response.recommendations = []
@@ -166,6 +169,8 @@ class SimulatorSession:
                     dialogue_act=act,
                     user_generation_latency_ms=user_generation_latency_ms,
                     agent_latency_ms=agent_latency_ms,
+                    agent_layer_trace=agent_layer_trace,
+                    agent_trace_error=agent_trace_error,
                 )
             )
 
@@ -302,6 +307,8 @@ class SimulatorSession:
                     else None,
                     "user_generation_latency_ms": item.user_generation_latency_ms,
                     "agent_latency_ms": item.agent_latency_ms,
+                    "agent_layer_trace": item.agent_layer_trace,
+                    "agent_trace_error": item.agent_trace_error,
                     "reported_token_usage": {
                         "prompt_tokens": (
                             item.agent_response.usage.prompt_tokens

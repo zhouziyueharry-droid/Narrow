@@ -51,7 +51,7 @@ def request_state_patch(payload: dict[str, Any]) -> tuple[StatePatch, dict[str, 
             response = client.chat.completions.create(**request)
             last_error = None
             break
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - provider/network failures are retried uniformly
             last_error = exc
     if response is None:
         raise last_error or RuntimeError("DeepSeek request failed")

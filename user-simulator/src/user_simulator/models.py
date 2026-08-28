@@ -162,6 +162,8 @@ class ConversationTurn:
     dialogue_act: DialogueAct | None = None
     user_generation_latency_ms: float = 0.0
     agent_latency_ms: float = 0.0
+    agent_layer_trace: list[dict[str, Any]] = field(default_factory=list)
+    agent_trace_error: str | None = None
 
 
 @dataclass(slots=True)

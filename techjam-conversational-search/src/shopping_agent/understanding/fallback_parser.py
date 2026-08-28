@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import re
 
-from shopping_agent.domain.intent import COLORS, MATERIALS, classify_attribute, parse_message
+from shopping_agent.domain.intent import (
+    COLORS,
+    MATERIALS,
+    classify_attribute,
+    parse_message,
+)
 from shopping_agent.domain.schemas import Attribute, Constraint
 from shopping_agent.understanding.state_patch import StatePatch, validate_state_patch
-
 
 PROTOCOL_MARKERS = (
     "i'm looking for",
@@ -160,10 +164,11 @@ def semantic_fallback_patch(
 
     category = rule_patch.category
     for term, normalized in CATEGORY_TERMS.items():
-        if re.search(rf"\b{re.escape(term)}\b", lowered):
-            if not any(term in value.casefold() for value in negative_values):
-                category = normalized
-                break
+        if re.search(rf"\b{re.escape(term)}\b", lowered) and not any(
+            term in value.casefold() for value in negative_values
+        ):
+            category = normalized
+            break
     category = category or current_category or None
 
     for material in MATERIALS:

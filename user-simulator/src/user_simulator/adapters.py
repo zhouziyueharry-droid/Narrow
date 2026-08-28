@@ -10,6 +10,10 @@ class ShoppingAgentAdapter(Protocol):
 
     def respond(self, session_id: str, user_message: str, turn: int, top_k: int) -> AgentResponse: ...
 
+    def get_turn_trace(
+        self, session_id: str, turn: int, candidate_limit: int = 20
+    ) -> tuple[list[dict[str, Any]], str | None]: ...
+
 
 class PythonAgentAdapter:
     """Wraps a Python shopping agent, including the TechJam reset/respond contract."""
@@ -82,3 +86,17 @@ class PythonAgentAdapter:
             raw=payload,
             error=error,
         )
+
+    def get_turn_trace(
+        self, session_id: str, turn: int, candidate_limit: int = 20
+    ) -> tuple[list[dict[str, Any]], str | None]:
+        getter = getattr(self.agent, "get_turn_trace", None)
+        if not callable(getter):
+            return [], "agent_trace_unavailable"
+        try:
+            trace = getter(session_id, turn, candidate_limit=candidate_limit)
+        except Exception as exc:  # noqa: BLE001 - tracing must not abort evaluation
+            return [], f"agent_trace_exception:{type(exc).__name__}:{exc}"
+        if not isinstance(trace, list) or not all(isinstance(item, dict) for item in trace):
+            return [], "invalid_agent_trace:not_a_list_of_dicts"
+        return trace, None

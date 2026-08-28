@@ -178,7 +178,7 @@ def resolve_semantic_patch(
             failure_reason="deepseek_invalid_response",
             active_constraints=active_constraints,
         )
-    except Exception:
+    except Exception:  # noqa: BLE001 - provider failures must degrade to deterministic parsing
         return _local_result(
             message,
             turn,

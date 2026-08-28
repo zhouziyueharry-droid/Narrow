@@ -65,3 +65,53 @@ def test_unified_report_schema_and_markdown_sections():
         "## Mode-specific metrics",
     ):
         assert heading in report
+
+
+def test_session_persists_agent_layer_trace():
+    class TraceAgent(OneTurnAgent):
+        def get_turn_trace(self, session_id, turn, *, candidate_limit=20):
+            return [
+                {
+                    "step": 1,
+                    "nodes": ["understand_user"],
+                    "updates": {"semantic_patch": {"action": "add"}},
+                },
+                {
+                    "step": 2,
+                    "nodes": ["rank_candidates"],
+                    "updates": {"ranked_candidates": {"count": 1, "top": []}},
+                },
+            ]
+
+    catalog = {"A": Product("A", "Shoe")}
+    scenario = ScenarioSpec(
+        scenario_id="trace-sample",
+        goal=TargetProductGoal("goal", "A"),
+        persona_template="decisive_buyer",
+        protocol="techjam",
+        scenario_type="buying",
+    )
+    result = Simulator(catalog, PythonAgentAdapter(TraceAgent())).run_many([scenario])
+    turn = result["sessions"][0]["conversation"][0]
+
+    assert [item["nodes"] for item in turn["agent_layer_trace"]] == [
+        ["understand_user"],
+        ["rank_candidates"],
+    ]
+    assert turn["agent_trace_error"] is None
+
+
+def test_session_records_unavailable_agent_trace():
+    catalog = {"A": Product("A", "Shoe")}
+    scenario = ScenarioSpec(
+        scenario_id="no-trace-sample",
+        goal=TargetProductGoal("goal", "A"),
+        persona_template="decisive_buyer",
+        protocol="techjam",
+        scenario_type="buying",
+    )
+    result = Simulator(catalog, PythonAgentAdapter(OneTurnAgent())).run_many([scenario])
+    turn = result["sessions"][0]["conversation"][0]
+
+    assert turn["agent_layer_trace"] == []
+    assert turn["agent_trace_error"] == "agent_trace_unavailable"
