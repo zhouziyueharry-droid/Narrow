@@ -133,3 +133,7 @@ Integration is complete only when all applicable gates pass, both result JSON
 files validate against the simulator report schema, trace coverage is reported,
 all artifacts are checksummed, and every regression or metric change has a
 session-level explanation.
+
+## Completed reports
+
+- [Traditional dual-mode full evaluation — 2026-08-29](integration_reports/traditional_full_20260829_0005/README.md)
