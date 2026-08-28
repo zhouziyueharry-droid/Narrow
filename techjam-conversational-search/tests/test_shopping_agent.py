@@ -326,3 +326,150 @@ def test_semantic_provider_is_primary_even_for_high_confidence_rule_input(monkey
     assert patch.parser == "deepseek"
     assert patch.semantic_query == "lightweight city walking shoes"
     assert usage == {"prompt_tokens": 120, "completion_tokens": 40}
+
+
+def test_semantic_fallback_splits_compound_negation_into_separate_constraints() -> None:
+    message = "I don't want cotton or wool."
+    patch = semantic_fallback_patch(message, 1, rule_state_patch(message, 1))
+    negatives = {
+        str(item.value)
+        for item in patch.constraints
+        if item.field == "material" and item.operator == "not_contains"
+    }
+
+    assert negatives == {"cotton", "wool"}
+
+
+def test_semantic_fallback_drops_overlong_negation_span() -> None:
+    message = (
+        "I don't want a huge floral pattern that clashes with everything in "
+        "my closet, but the color is fine."
+    )
+    rules = rule_state_patch(message, 1)
+    patch = semantic_fallback_patch(message, 1, rules)
+
+    assert "unresolved_negation" in rules.fallback_reasons
+    assert not any(item.operator == "not_contains" for item in patch.constraints)
+
+
+def test_semantic_fallback_parses_between_budget_range() -> None:
+    message = "Between $50 and $100 for boots."
+    patch = semantic_fallback_patch(message, 1, rule_state_patch(message, 1))
+    budgets = {(item.operator, item.value) for item in patch.constraints if item.field == "budget"}
+
+    assert ("gte", 50.0) in budgets
+    assert ("lte", 100.0) in budgets
+
+
+def test_semantic_fallback_parses_dash_budget_range() -> None:
+    message = "$50-$100 range works for me."
+    patch = semantic_fallback_patch(message, 1, rule_state_patch(message, 1))
+    budgets = {(item.operator, item.value) for item in patch.constraints if item.field == "budget"}
+
+    assert ("gte", 50.0) in budgets
+    assert ("lte", 100.0) in budgets
+
+
+def test_semantic_fallback_does_not_double_count_range_and_single_budget() -> None:
+    message = "Under $80 if possible, but I could stretch to $100 for waterproof ones."
+    patch = semantic_fallback_patch(message, 2, rule_state_patch(message, 2))
+    budgets = [item for item in patch.constraints if item.field == "budget"]
+
+    assert any(item.value == 80.0 and item.strength == "soft" for item in budgets)
+    assert any(item.value == 100.0 and item.strength == "hard" for item in budgets)
+    assert len(budgets) == 2
+
+
+def test_resolve_semantic_patch_flags_implicit_override_without_marker(monkeypatch) -> None:
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "false")
+    active = [Constraint(field="color", value="red", strength="hard").model_dump()]
+    message = "Make it blue please."
+
+    patch, _ = resolve_semantic_patch(
+        message, 2, rule_state_patch(message, 2), active_constraints=active,
+    )
+
+    assert patch.action == "replace"
+    assert "implicit_override_heuristic" in patch.fallback_reasons
+    assert any(item.field == "color" and item.value == "blue" for item in patch.constraints)
+
+
+def test_resolve_semantic_patch_retries_transient_provider_failure(monkeypatch) -> None:
+    calls: list[int] = []
+
+    class FlakyCompletions:
+        def create(self, **kwargs):
+            calls.append(1)
+            if len(calls) == 1:
+                raise TimeoutError("transient")
+            payload = {
+                "action": "add",
+                "category": "shoes",
+                "constraints": [],
+                "semantic_query": "running shoes",
+                "intent_summary": "running shoes",
+                "language": "en",
+                "confidence": 0.9,
+            }
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+    class FlakyOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(completions=FlakyCompletions())
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=FlakyOpenAI))
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "true")
+    message = "I need running shoes."
+
+    patch, usage = resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
+
+    assert len(calls) == 2
+    assert patch.parser == "deepseek"
+    assert usage == {"prompt_tokens": 10, "completion_tokens": 5}
+
+
+def test_resolve_semantic_patch_tags_invalid_provider_json(monkeypatch) -> None:
+    class BrokenCompletions:
+        def create(self, **kwargs):
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="not json"))],
+                usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1),
+            )
+
+    class BrokenOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(completions=BrokenCompletions())
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=BrokenOpenAI))
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "true")
+    message = "I need running shoes."
+
+    patch, _ = resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
+
+    assert patch.parser == "fallback"
+    assert "deepseek_invalid_response" in patch.fallback_reasons
+
+
+def test_resolve_semantic_patch_tags_persistent_outage(monkeypatch) -> None:
+    class DownCompletions:
+        def create(self, **kwargs):
+            raise ConnectionError("down")
+
+    class DownOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(completions=DownCompletions())
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=DownOpenAI))
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "true")
+    message = "I need running shoes."
+
+    patch, _ = resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
+
+    assert patch.parser == "fallback"
+    assert "deepseek_unavailable" in patch.fallback_reasons

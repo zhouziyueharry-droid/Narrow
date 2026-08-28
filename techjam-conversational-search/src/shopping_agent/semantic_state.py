@@ -10,6 +10,12 @@ from pydantic import BaseModel, Field
 from shopping_agent.intent import COLORS, MATERIALS, classify_attribute, parse_message
 from shopping_agent.schemas import Attribute, Constraint
 
+# Negated phrases longer than this many words are too unstructured for the
+# regex extractor to trust as a single attribute value; they are dropped so
+# the LLM parser (or a low-confidence rule patch) can handle them instead of
+# filing a garbage not_contains constraint. See _negative_phrases().
+MAX_NEGATION_WORDS = 6
+
 
 class StatePatch(BaseModel):
     """A bounded user-intent update; it cannot retrieve or recommend products.
@@ -169,13 +175,41 @@ def rule_state_patch(message: str, turn: int) -> StatePatch:
 
 
 def _negative_phrases(message: str) -> list[str]:
+    """Extract negated attribute values, splitting compound negations.
+
+    Two bugs in the previous implementation are fixed here:
+
+    1. "I don't want cotton or wool" used to stop capturing at the first
+       " or"/" and" boundary and silently dropped "wool". The boundary now
+       only stops at "and"/"but"/punctuation, so an "or"-joined list is
+       captured whole and then split into separate values below.
+    2. An unstructured, multi-clause span ("a huge floral pattern that
+       clashes with everything in my closet") used to be filed verbatim as
+       one not_contains value. It is now capped at MAX_NEGATION_WORDS and
+       dropped, so the caller's ``unresolved_negation`` fallback reason (see
+       rule_state_patch) routes it to the LLM parser instead of polluting
+       the structured constraints with garbage.
+    """
+
     cleaned = re.sub(r"\bdon't mind\b[^,.;]*", "", message, flags=re.IGNORECASE)
     pattern = re.compile(
         r"(?:don't want|do not want|avoid|without|not(?: that)?|no)\s+"
-        r"(?:any\s+)?([a-z][a-z -]{1,35}?)(?=\s+(?:but|and|or)|[,.;!?]|$)",
+        r"(?:any(?:thing)?\s+)?([a-z][a-z ,/-]{1,60}?)(?=\s+(?:and|but)\b|[,.;!?]|$)",
         re.IGNORECASE,
     )
-    return [match.group(1).strip() for match in pattern.finditer(cleaned)]
+    phrases: list[str] = []
+    for match in pattern.finditer(cleaned):
+        raw = match.group(1).strip()
+        if not raw:
+            continue
+        for part in re.split(r"\s*(?:,|/|\bor\b)\s*", raw):
+            part = re.sub(r"^(?:that|this|a|an|the)\s+", "", part.strip()).strip()
+            if not part:
+                continue
+            if len(part.split()) > MAX_NEGATION_WORDS:
+                continue
+            phrases.append(part)
+    return phrases
 
 
 def semantic_fallback_patch(
@@ -196,10 +230,9 @@ def semantic_fallback_patch(
     negative_text = " ".join(negative_values).casefold()
 
     for value in negative_values:
-        normalized = "tall" if value in {"that tall", "tall"} else value
         constraints.append(_constraint(
-            classify_attribute(normalized),
-            normalized,
+            classify_attribute(value),
+            value,
             turn,
             operator="not_contains",
             strength="hard",
@@ -230,10 +263,36 @@ def semantic_fallback_patch(
         if term in lowered and term not in negative_text:
             constraints.append(_constraint("feature", normalized, turn, confidence=0.84))
 
-    budget_matches = list(re.finditer(
-        r"(?:under|below|up to|no more than|stretch to)\s*\$?\s*(\d+(?:\.\d+)?)",
+    # Range budgets ("between $50 and $100", "$50-$100") are parsed first and
+    # their span is excluded from the single-value pass below so a phrase
+    # like "under $80 ... stretch to $100" (two independent single-value
+    # mentions) is never double-counted as a range.
+    range_matches = list(re.finditer(
+        r"between\s*\$?\s*(\d+(?:\.\d+)?)\s*(?:and|to)\s*\$?\s*(\d+(?:\.\d+)?)"
+        r"|\$\s*(\d+(?:\.\d+)?)\s*-\s*\$?\s*(\d+(?:\.\d+)?)",
         lowered,
     ))
+    range_spans: list[tuple[int, int]] = []
+    for match in range_matches:
+        if match.group(1) is not None:
+            low_raw, high_raw = match.group(1), match.group(2)
+        else:
+            low_raw, high_raw = match.group(3), match.group(4)
+        low, high = float(low_raw), float(high_raw)
+        if low > high:
+            low, high = high, low
+        constraints.append(_constraint("budget", low, turn, operator="gte", strength="soft", confidence=0.85))
+        constraints.append(_constraint("budget", high, turn, operator="lte", strength="hard", confidence=0.9))
+        range_spans.append(match.span())
+
+    budget_matches = [
+        match
+        for match in re.finditer(
+            r"(?:under|below|up to|no more than|stretch to)\s*\$?\s*(\d+(?:\.\d+)?)",
+            lowered,
+        )
+        if not any(start <= match.start() < end for start, end in range_spans)
+    ]
     for match in budget_matches:
         prefix = match.group(0)
         soft = "if possible" in lowered and "stretch to" not in prefix
@@ -343,6 +402,88 @@ def _deepseek_enabled() -> bool:
     }
 
 
+class _InvalidDeepSeekResponse(Exception):
+    """Raised when the provider's reply is not a schema-valid StatePatch.
+
+    Kept distinct from network/timeout failures so ``fallback_reasons`` can
+    tell you *why* a turn fell back to the deterministic parser: a bad
+    prompt/schema mismatch ("deepseek_invalid_response") needs a different
+    fix than an outage or missing credentials ("deepseek_unavailable").
+    """
+
+
+# Fields where a new value plausibly *replaces* an existing one rather than
+# adding beside it. Budget, category, and free-form "feature"/"other" values
+# are deliberately excluded: budget updates are usually additive/soft
+# (a preferred vs. a maximum), category is already always overwritten by
+# update_state in graph.py, and "feature"/"other" are too heterogeneous to
+# assume a swap safely.
+OVERRIDE_SENSITIVE_FIELDS = {"color", "material", "size", "style", "brand", "use_case"}
+
+
+def _has_conflicting_value(
+    active_constraints: list[dict[str, Any]],
+    incoming: list[Constraint],
+) -> bool:
+    """True when ``incoming`` swaps an already-set attribute to a new value.
+
+    This is the rule-layer's substitute for an explicit override marker
+    ("actually", "instead"): if the user previously locked in ``color=red``
+    and the new turn says ``color=blue`` with no marker at all, the intent
+    has still changed and should replace the old value rather than sit
+    beside it as a second, contradictory ``color`` constraint.
+    """
+
+    active_by_field: dict[str, set[str]] = {}
+    for value in active_constraints:
+        if value.get("operator") == "not_contains":
+            continue
+        active_by_field.setdefault(value.get("field", ""), set()).add(
+            str(value.get("value", "")).casefold()
+        )
+    for item in incoming:
+        if item.operator == "not_contains" or item.field not in OVERRIDE_SENSITIVE_FIELDS:
+            continue
+        existing = active_by_field.get(item.field)
+        if existing and str(item.value).casefold() not in existing:
+            return True
+    return False
+
+
+def _fallback_result(
+    message: str,
+    turn: int,
+    rule_patch: StatePatch,
+    current_category: str,
+    reason: str | None,
+    active_constraints: list[dict[str, Any]] | None,
+) -> tuple[StatePatch, dict[str, int]]:
+    """Build the deterministic fallback patch shared by every non-model path."""
+
+    fallback = semantic_fallback_patch(
+        message,
+        turn,
+        rule_patch,
+        current_category=current_category,
+    )
+    if reason:
+        fallback.fallback_reasons = list(dict.fromkeys([*fallback.fallback_reasons, reason]))
+    if fallback.action != "replace" and _has_conflicting_value(active_constraints or [], fallback.constraints):
+        fallback.action = "replace"
+        fallback.fallback_reasons = list(dict.fromkeys([
+            *fallback.fallback_reasons,
+            "implicit_override_heuristic",
+        ]))
+    fallback.semantic_query = _fallback_semantic_query(
+        message,
+        fallback.category,
+        fallback.constraints,
+    )
+    fallback.intent_summary = fallback.semantic_query
+    fallback.language = _detect_language(message)
+    return fallback, {"prompt_tokens": 0, "completion_tokens": 0}
+
+
 def resolve_semantic_patch(
     message: str,
     turn: int,
@@ -358,20 +499,7 @@ def resolve_semantic_patch(
 
     api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not _deepseek_enabled() or not api_key:
-        fallback = semantic_fallback_patch(
-            message,
-            turn,
-            rule_patch,
-            current_category=current_category,
-        )
-        fallback.semantic_query = _fallback_semantic_query(
-            message,
-            fallback.category,
-            fallback.constraints,
-        )
-        fallback.intent_summary = fallback.semantic_query
-        fallback.language = _detect_language(message)
-        return fallback, {"prompt_tokens": 0, "completion_tokens": 0}
+        return _fallback_result(message, turn, rule_patch, current_category, None, active_constraints)
 
     try:
         from openai import OpenAI
@@ -390,20 +518,41 @@ def resolve_semantic_patch(
             "user_message": message,
             "rule_patch": rule_patch.model_dump(mode="json"),
         }
-        response = client.chat.completions.create(
-            model=os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash"),
-            messages=[
-                {"role": "system", "content": DEEPSEEK_SYSTEM_PROMPT},
-                {"role": "user", "content": "Return the JSON state patch for:\n" + json.dumps(payload, ensure_ascii=False)},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0,
-            max_tokens=800,
-            stream=False,
-            extra_body={"thinking": {"type": "disabled"}},
-        )
+
+        def _call_once():
+            return client.chat.completions.create(
+                model=os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash"),
+                messages=[
+                    {"role": "system", "content": DEEPSEEK_SYSTEM_PROMPT},
+                    {"role": "user", "content": "Return the JSON state patch for:\n" + json.dumps(payload, ensure_ascii=False)},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0,
+                max_tokens=800,
+                stream=False,
+                extra_body={"thinking": {"type": "disabled"}},
+            )
+
+        response = None
+        call_error: Exception | None = None
+        # One retry absorbs a transient network blip or rate limit without
+        # falling all the way back to the deterministic parser on every hiccup.
+        for _attempt in range(2):
+            try:
+                response = _call_once()
+                call_error = None
+                break
+            except Exception as exc:  # noqa: BLE001 - broad: any provider/network failure
+                call_error = exc
+        if response is None:
+            raise call_error or RuntimeError("deepseek call failed")
+
         content = response.choices[0].message.content or ""
-        model_patch = StatePatch.model_validate_json(content)
+        try:
+            model_patch = StatePatch.model_validate_json(content)
+        except Exception as exc:
+            raise _InvalidDeepSeekResponse(content) from exc
+
         local_patch = semantic_fallback_patch(
             message,
             turn,
@@ -436,25 +585,14 @@ def resolve_semantic_patch(
             "prompt_tokens": int(getattr(usage, "prompt_tokens", 0) or 0),
             "completion_tokens": int(getattr(usage, "completion_tokens", 0) or 0),
         }
+    except _InvalidDeepSeekResponse:
+        return _fallback_result(
+            message, turn, rule_patch, current_category, "deepseek_invalid_response", active_constraints,
+        )
     except Exception:
-        fallback = semantic_fallback_patch(
-            message,
-            turn,
-            rule_patch,
-            current_category=current_category,
+        return _fallback_result(
+            message, turn, rule_patch, current_category, "deepseek_unavailable", active_constraints,
         )
-        fallback.fallback_reasons = list(dict.fromkeys([
-            *fallback.fallback_reasons,
-            "deepseek_unavailable",
-        ]))
-        fallback.semantic_query = _fallback_semantic_query(
-            message,
-            fallback.category,
-            fallback.constraints,
-        )
-        fallback.intent_summary = fallback.semantic_query
-        fallback.language = _detect_language(message)
-        return fallback, {"prompt_tokens": 0, "completion_tokens": 0}
 
 
 def validate_state_patch(patch: StatePatch) -> StatePatch:
