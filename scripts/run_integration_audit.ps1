@@ -74,7 +74,12 @@ $manifest = [ordered]@{
     runtime = [ordered]@{
         powershell = $PSVersionTable.PSVersion.ToString()
         uv = (& uv --version)
-        python = (& python --version 2>&1)
+        agent_python = (& uv run --project (
+            Join-Path $repoRoot "techjam-conversational-search"
+        ) python --version 2>&1 | Out-String).Trim()
+        simulator_python = (& uv run --project (
+            Join-Path $repoRoot "user-simulator"
+        ) python --version 2>&1 | Out-String).Trim()
     }
     model_configuration = [ordered]@{
         shopping_agent_llm_enabled = $env:SHOPPING_AGENT_ENABLE_LLM -in @(
