@@ -10,3 +10,7 @@ catalog.jsonl/
 **/.pytest_tmp/
 **/.langgraph_api/
 **/.env
+
+# Timestamped local integration evidence; checksummed summaries can be selected
+# for commit explicitly after review.
+integration_runs/
