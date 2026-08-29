@@ -1,0 +1,16 @@
+[
+  {
+    "path": "D:\\projects\\tiktok26\\tiktok_project_4\\integration_runs\\traditional_full_20260829_0005\\results\\techjam.json",
+    "valid": true,
+    "mode": "techjam",
+    "sample_count": 200,
+    "errors": []
+  },
+  {
+    "path": "D:\\projects\\tiktok26\\tiktok_project_4\\integration_runs\\traditional_full_20260829_0005\\results\\realistic.json",
+    "valid": true,
+    "mode": "realistic",
+    "sample_count": 100,
+    "errors": []
+  }
+]

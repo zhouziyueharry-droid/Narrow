@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "mode": "realistic",
+  "evaluation": {
+    "benchmark": "catalog_generated_realistic",
+    "official_metric_contract": false,
+    "sample_count": 100,
+    "successful_sessions": 97,
+    "success_rate": 0.97,
+    "mrr": 0.709524
+  },
+  "turn_metrics": {
+    "max_turns": 10,
+    "session_count": 100,
+    "total_executed_turns": 141,
+    "mean_executed_turns": 1.41,
+    "median_executed_turns": 1.0,
+    "successful_session_mean_turns": 1.14433,
+    "unsuccessful_session_mean_turns": 10.0,
+    "executed_turn_distribution": {
+      "1": 91,
+      "2": 3,
+      "3": 1,
+      "4": 1,
+      "5": 0,
+      "6": 0,
+      "7": 1,
+      "8": 0,
+      "9": 0,
+      "10": 3
+    },
+    "first_hit_turn_distribution": {
+      "1": 91,
+      "2": 3,
+      "3": 1,
+      "4": 1,
+      "5": 0,
+      "6": 0,
+      "7": 1,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    }
+  },
+  "latency": {
+    "available": true,
+    "unit": "milliseconds",
+    "clock": "time.perf_counter",
+    "agent": {
+      "available": true,
+      "call_count": 141,
+      "total_ms": 14246.025,
+      "mean_ms": 101.036,
+      "p50_ms": 92.784,
+      "p95_ms": 129.932,
+      "p99_ms": 365.025,
+      "max_ms": 473.079
+    },
+    "user_generation": {
+      "available": true,
+      "call_count": 141,
+      "total_ms": 1.312,
+      "mean_ms": 0.009,
+      "p50_ms": 0.008,
+      "p95_ms": 0.011,
+      "p99_ms": 0.063,
+      "max_ms": 0.124
+    },
+    "session_wall": {
+      "available": true,
+      "session_count": 100,
+      "total_ms": 61735.903,
+      "mean_ms": 617.359,
+      "p50_ms": 159.353,
+      "p95_ms": 1160.031,
+      "p99_ms": 11129.176,
+      "max_ms": 12153.314
+    }
+  },
+  "model_usage": {
+    "agent": {
+      "class_path": "shopping_agent.agent:ShoppingAgent",
+      "provider": "local",
+      "model": null,
+      "llm_enabled": false,
+      "respond_calls": 141,
+      "api_calls": 0,
+      "api_call_count_status": "known_disabled",
+      "usage_reported_calls": 141,
+      "error_count": 0,
+      "reported_token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    },
+    "user_verbalizer": {
+      "providers": [
+        "template"
+      ],
+      "models": [],
+      "calls": 141,
+      "api_calls": 0,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    },
+    "combined": {
+      "api_calls": 0,
+      "reported_token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    }
+  },
+  "mode_specific_metrics": {
+    "acceptance": "need_based",
+    "hard_constraint_satisfaction_at_acceptance": 1.0,
+    "mean_soft_matches_at_acceptance": 1.525773,
+    "persona_distribution": {
+      "bargain_hunter": 13,
+      "brand_loyalist": 13,
+      "casual_browser": 13,
+      "decisive_buyer": 13,
+      "expert_shopper": 12,
+      "indecisive_shopper": 12,
+      "novice_shopper": 12,
+      "picky_shopper": 12
+    },
+    "override_events": 1,
+    "relaxation_events": 0
+  }
+}

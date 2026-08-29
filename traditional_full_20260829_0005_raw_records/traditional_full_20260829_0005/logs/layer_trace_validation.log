@@ -1,0 +1,47 @@
+{
+  "valid": true,
+  "reports": [
+    {
+      "mode": "techjam",
+      "sessions": 200,
+      "turns": 765,
+      "node_counts": {
+        "dense_retrieve_fallback": 765,
+        "rrf_fusion": 765,
+        "information_gain_question": 765,
+        "validate_response": 765,
+        "lexical_retrieve": 765,
+        "build_response": 765,
+        "constraint_filter": 765,
+        "update_state": 765,
+        "understand_user": 765,
+        "rerank_fallback": 765,
+        "validate_patch": 765,
+        "build_query": 765,
+        "attribute_retrieve": 765
+      },
+      "trace_coverage": 1.0
+    },
+    {
+      "mode": "realistic",
+      "sessions": 100,
+      "turns": 141,
+      "node_counts": {
+        "dense_retrieve_fallback": 141,
+        "rrf_fusion": 141,
+        "information_gain_question": 141,
+        "validate_response": 141,
+        "lexical_retrieve": 141,
+        "build_response": 141,
+        "constraint_filter": 141,
+        "update_state": 141,
+        "understand_user": 141,
+        "rerank_fallback": 141,
+        "validate_patch": 141,
+        "build_query": 141,
+        "attribute_retrieve": 141
+      },
+      "trace_coverage": 1.0
+    }
+  ]
+}

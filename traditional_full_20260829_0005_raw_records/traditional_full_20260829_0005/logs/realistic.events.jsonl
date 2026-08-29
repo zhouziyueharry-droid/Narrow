@@ -1,0 +1,200 @@
+{"timestamp": "2026-08-28T16:13:22.421417+00:00", "event": "session_started", "index": 1, "total": 100, "scenario_id": "realistic_0001_B09XM9B167", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:23.120328+00:00", "event": "session_completed", "index": 1, "total": 100, "scenario_id": "realistic_0001_B09XM9B167", "success": true, "turns": 2, "elapsed_ms": 699.304}
+{"timestamp": "2026-08-28T16:13:23.120328+00:00", "event": "session_started", "index": 2, "total": 100, "scenario_id": "realistic_0002_B004Q7AGHK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:23.261781+00:00", "event": "session_completed", "index": 2, "total": 100, "scenario_id": "realistic_0002_B004Q7AGHK", "success": true, "turns": 1, "elapsed_ms": 141.857}
+{"timestamp": "2026-08-28T16:13:23.263711+00:00", "event": "session_started", "index": 3, "total": 100, "scenario_id": "realistic_0003_B01D42W54Y", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:23.393767+00:00", "event": "session_completed", "index": 3, "total": 100, "scenario_id": "realistic_0003_B01D42W54Y", "success": true, "turns": 1, "elapsed_ms": 130.211}
+{"timestamp": "2026-08-28T16:13:23.393767+00:00", "event": "session_started", "index": 4, "total": 100, "scenario_id": "realistic_0004_B0837FL4G5", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:23.529200+00:00", "event": "session_completed", "index": 4, "total": 100, "scenario_id": "realistic_0004_B0837FL4G5", "success": true, "turns": 1, "elapsed_ms": 135.875}
+{"timestamp": "2026-08-28T16:13:23.529200+00:00", "event": "session_started", "index": 5, "total": 100, "scenario_id": "realistic_0005_B07NZ4YQ3F", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:24.024956+00:00", "event": "session_completed", "index": 5, "total": 100, "scenario_id": "realistic_0005_B07NZ4YQ3F", "success": true, "turns": 1, "elapsed_ms": 495.8}
+{"timestamp": "2026-08-28T16:13:24.024956+00:00", "event": "session_started", "index": 6, "total": 100, "scenario_id": "realistic_0006_B01LG9U9UY", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:34.612508+00:00", "event": "session_completed", "index": 6, "total": 100, "scenario_id": "realistic_0006_B01LG9U9UY", "success": false, "turns": 10, "elapsed_ms": 10587.231}
+{"timestamp": "2026-08-28T16:13:34.612508+00:00", "event": "session_started", "index": 7, "total": 100, "scenario_id": "realistic_0007_B00E87F2CW", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:34.776230+00:00", "event": "session_completed", "index": 7, "total": 100, "scenario_id": "realistic_0007_B00E87F2CW", "success": true, "turns": 1, "elapsed_ms": 163.867}
+{"timestamp": "2026-08-28T16:13:34.776230+00:00", "event": "session_started", "index": 8, "total": 100, "scenario_id": "realistic_0008_B07SFG8CJK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:34.904949+00:00", "event": "session_completed", "index": 8, "total": 100, "scenario_id": "realistic_0008_B07SFG8CJK", "success": true, "turns": 1, "elapsed_ms": 128.681}
+{"timestamp": "2026-08-28T16:13:34.904949+00:00", "event": "session_started", "index": 9, "total": 100, "scenario_id": "realistic_0009_B01E0ET2GO", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:35.046175+00:00", "event": "session_completed", "index": 9, "total": 100, "scenario_id": "realistic_0009_B01E0ET2GO", "success": true, "turns": 1, "elapsed_ms": 141.174}
+{"timestamp": "2026-08-28T16:13:35.046175+00:00", "event": "session_started", "index": 10, "total": 100, "scenario_id": "realistic_0010_B079CDFY4W", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:35.210205+00:00", "event": "session_completed", "index": 10, "total": 100, "scenario_id": "realistic_0010_B079CDFY4W", "success": true, "turns": 1, "elapsed_ms": 164.254}
+{"timestamp": "2026-08-28T16:13:35.211206+00:00", "event": "session_started", "index": 11, "total": 100, "scenario_id": "realistic_0011_B010Q60Y58", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:35.340768+00:00", "event": "session_completed", "index": 11, "total": 100, "scenario_id": "realistic_0011_B010Q60Y58", "success": true, "turns": 1, "elapsed_ms": 129.596}
+{"timestamp": "2026-08-28T16:13:35.340768+00:00", "event": "session_started", "index": 12, "total": 100, "scenario_id": "realistic_0012_B0722DV55T", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:35.863070+00:00", "event": "session_completed", "index": 12, "total": 100, "scenario_id": "realistic_0012_B0722DV55T", "success": true, "turns": 1, "elapsed_ms": 522.656}
+{"timestamp": "2026-08-28T16:13:35.863070+00:00", "event": "session_started", "index": 13, "total": 100, "scenario_id": "realistic_0013_B0B7KGGL99", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:36.085902+00:00", "event": "session_completed", "index": 13, "total": 100, "scenario_id": "realistic_0013_B0B7KGGL99", "success": true, "turns": 1, "elapsed_ms": 222.365}
+{"timestamp": "2026-08-28T16:13:36.085902+00:00", "event": "session_started", "index": 14, "total": 100, "scenario_id": "realistic_0014_B07CRBH9SV", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:36.216081+00:00", "event": "session_completed", "index": 14, "total": 100, "scenario_id": "realistic_0014_B07CRBH9SV", "success": true, "turns": 1, "elapsed_ms": 130.337}
+{"timestamp": "2026-08-28T16:13:36.216081+00:00", "event": "session_started", "index": 15, "total": 100, "scenario_id": "realistic_0015_B07SBTFCSV", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:36.385809+00:00", "event": "session_completed", "index": 15, "total": 100, "scenario_id": "realistic_0015_B07SBTFCSV", "success": true, "turns": 1, "elapsed_ms": 169.998}
+{"timestamp": "2026-08-28T16:13:36.385809+00:00", "event": "session_started", "index": 16, "total": 100, "scenario_id": "realistic_0016_B004OD9TUQ", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:36.561355+00:00", "event": "session_completed", "index": 16, "total": 100, "scenario_id": "realistic_0016_B004OD9TUQ", "success": true, "turns": 1, "elapsed_ms": 175.887}
+{"timestamp": "2026-08-28T16:13:36.562359+00:00", "event": "session_started", "index": 17, "total": 100, "scenario_id": "realistic_0017_B0BSS6CBXB", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:37.691762+00:00", "event": "session_completed", "index": 17, "total": 100, "scenario_id": "realistic_0017_B0BSS6CBXB", "success": true, "turns": 3, "elapsed_ms": 1129.916}
+{"timestamp": "2026-08-28T16:13:37.691762+00:00", "event": "session_started", "index": 18, "total": 100, "scenario_id": "realistic_0018_B07NDXVVC5", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:37.846732+00:00", "event": "session_completed", "index": 18, "total": 100, "scenario_id": "realistic_0018_B07NDXVVC5", "success": true, "turns": 1, "elapsed_ms": 154.429}
+{"timestamp": "2026-08-28T16:13:37.846732+00:00", "event": "session_started", "index": 19, "total": 100, "scenario_id": "realistic_0019_B003TO5LU8", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:38.373926+00:00", "event": "session_completed", "index": 19, "total": 100, "scenario_id": "realistic_0019_B003TO5LU8", "success": true, "turns": 1, "elapsed_ms": 527.219}
+{"timestamp": "2026-08-28T16:13:38.373926+00:00", "event": "session_started", "index": 20, "total": 100, "scenario_id": "realistic_0020_B07TF93D2X", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:38.529362+00:00", "event": "session_completed", "index": 20, "total": 100, "scenario_id": "realistic_0020_B07TF93D2X", "success": true, "turns": 1, "elapsed_ms": 155.7}
+{"timestamp": "2026-08-28T16:13:38.529362+00:00", "event": "session_started", "index": 21, "total": 100, "scenario_id": "realistic_0021_B07GCL51KJ", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:38.660905+00:00", "event": "session_completed", "index": 21, "total": 100, "scenario_id": "realistic_0021_B07GCL51KJ", "success": true, "turns": 1, "elapsed_ms": 131.077}
+{"timestamp": "2026-08-28T16:13:38.660905+00:00", "event": "session_started", "index": 22, "total": 100, "scenario_id": "realistic_0022_B08H5QZKNT", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:38.804405+00:00", "event": "session_completed", "index": 22, "total": 100, "scenario_id": "realistic_0022_B08H5QZKNT", "success": true, "turns": 1, "elapsed_ms": 143.599}
+{"timestamp": "2026-08-28T16:13:38.804405+00:00", "event": "session_started", "index": 23, "total": 100, "scenario_id": "realistic_0023_B075BBL9SR", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:38.936192+00:00", "event": "session_completed", "index": 23, "total": 100, "scenario_id": "realistic_0023_B075BBL9SR", "success": true, "turns": 1, "elapsed_ms": 131.564}
+{"timestamp": "2026-08-28T16:13:38.936192+00:00", "event": "session_started", "index": 24, "total": 100, "scenario_id": "realistic_0024_B08V1MTC47", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:39.671569+00:00", "event": "session_completed", "index": 24, "total": 100, "scenario_id": "realistic_0024_B08V1MTC47", "success": true, "turns": 2, "elapsed_ms": 735.849}
+{"timestamp": "2026-08-28T16:13:39.671569+00:00", "event": "session_started", "index": 25, "total": 100, "scenario_id": "realistic_0025_B00M0Z10BG", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:39.810960+00:00", "event": "session_completed", "index": 25, "total": 100, "scenario_id": "realistic_0025_B00M0Z10BG", "success": true, "turns": 1, "elapsed_ms": 139.631}
+{"timestamp": "2026-08-28T16:13:39.810960+00:00", "event": "session_started", "index": 26, "total": 100, "scenario_id": "realistic_0026_B09GZP3DSN", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:39.927929+00:00", "event": "session_completed", "index": 26, "total": 100, "scenario_id": "realistic_0026_B09GZP3DSN", "success": true, "turns": 1, "elapsed_ms": 116.927}
+{"timestamp": "2026-08-28T16:13:39.927929+00:00", "event": "session_started", "index": 27, "total": 100, "scenario_id": "realistic_0027_B0BZJG18G6", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:40.045693+00:00", "event": "session_completed", "index": 27, "total": 100, "scenario_id": "realistic_0027_B0BZJG18G6", "success": true, "turns": 1, "elapsed_ms": 117.605}
+{"timestamp": "2026-08-28T16:13:40.045693+00:00", "event": "session_started", "index": 28, "total": 100, "scenario_id": "realistic_0028_B097P7LV6M", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:40.178136+00:00", "event": "session_completed", "index": 28, "total": 100, "scenario_id": "realistic_0028_B097P7LV6M", "success": true, "turns": 1, "elapsed_ms": 132.469}
+{"timestamp": "2026-08-28T16:13:40.178136+00:00", "event": "session_started", "index": 29, "total": 100, "scenario_id": "realistic_0029_B001LPEENW", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:40.315676+00:00", "event": "session_completed", "index": 29, "total": 100, "scenario_id": "realistic_0029_B001LPEENW", "success": true, "turns": 1, "elapsed_ms": 137.537}
+{"timestamp": "2026-08-28T16:13:40.315676+00:00", "event": "session_started", "index": 30, "total": 100, "scenario_id": "realistic_0030_B00WXTYOIK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:40.829221+00:00", "event": "session_completed", "index": 30, "total": 100, "scenario_id": "realistic_0030_B00WXTYOIK", "success": true, "turns": 1, "elapsed_ms": 512.739}
+{"timestamp": "2026-08-28T16:13:40.829221+00:00", "event": "session_started", "index": 31, "total": 100, "scenario_id": "realistic_0031_B07253QWNZ", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:40.983810+00:00", "event": "session_completed", "index": 31, "total": 100, "scenario_id": "realistic_0031_B07253QWNZ", "success": true, "turns": 1, "elapsed_ms": 155.471}
+{"timestamp": "2026-08-28T16:13:40.983810+00:00", "event": "session_started", "index": 32, "total": 100, "scenario_id": "realistic_0032_B08N6HPJ6J", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.120650+00:00", "event": "session_completed", "index": 32, "total": 100, "scenario_id": "realistic_0032_B08N6HPJ6J", "success": true, "turns": 1, "elapsed_ms": 136.128}
+{"timestamp": "2026-08-28T16:13:41.120650+00:00", "event": "session_started", "index": 33, "total": 100, "scenario_id": "realistic_0033_B019Z2F1WK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.266229+00:00", "event": "session_completed", "index": 33, "total": 100, "scenario_id": "realistic_0033_B019Z2F1WK", "success": true, "turns": 1, "elapsed_ms": 146.055}
+{"timestamp": "2026-08-28T16:13:41.266229+00:00", "event": "session_started", "index": 34, "total": 100, "scenario_id": "realistic_0034_B0732KSH2G", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.398791+00:00", "event": "session_completed", "index": 34, "total": 100, "scenario_id": "realistic_0034_B0732KSH2G", "success": true, "turns": 1, "elapsed_ms": 131.923}
+{"timestamp": "2026-08-28T16:13:41.398791+00:00", "event": "session_started", "index": 35, "total": 100, "scenario_id": "realistic_0035_B0899FVXB1", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.590844+00:00", "event": "session_completed", "index": 35, "total": 100, "scenario_id": "realistic_0035_B0899FVXB1", "success": true, "turns": 1, "elapsed_ms": 191.958}
+{"timestamp": "2026-08-28T16:13:41.590844+00:00", "event": "session_started", "index": 36, "total": 100, "scenario_id": "realistic_0036_B08MTH4R41", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.758454+00:00", "event": "session_completed", "index": 36, "total": 100, "scenario_id": "realistic_0036_B08MTH4R41", "success": true, "turns": 1, "elapsed_ms": 168.245}
+{"timestamp": "2026-08-28T16:13:41.758454+00:00", "event": "session_started", "index": 37, "total": 100, "scenario_id": "realistic_0037_B0090B6644", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:41.978230+00:00", "event": "session_completed", "index": 37, "total": 100, "scenario_id": "realistic_0037_B0090B6644", "success": true, "turns": 1, "elapsed_ms": 219.367}
+{"timestamp": "2026-08-28T16:13:41.978230+00:00", "event": "session_started", "index": 38, "total": 100, "scenario_id": "realistic_0038_B07PJSW18Q", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:42.635582+00:00", "event": "session_completed", "index": 38, "total": 100, "scenario_id": "realistic_0038_B07PJSW18Q", "success": true, "turns": 1, "elapsed_ms": 657.803}
+{"timestamp": "2026-08-28T16:13:42.635582+00:00", "event": "session_started", "index": 39, "total": 100, "scenario_id": "realistic_0039_B014VGI9L0", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:42.774183+00:00", "event": "session_completed", "index": 39, "total": 100, "scenario_id": "realistic_0039_B014VGI9L0", "success": true, "turns": 1, "elapsed_ms": 137.778}
+{"timestamp": "2026-08-28T16:13:42.774183+00:00", "event": "session_started", "index": 40, "total": 100, "scenario_id": "realistic_0040_B01FT0YP9C", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:42.941844+00:00", "event": "session_completed", "index": 40, "total": 100, "scenario_id": "realistic_0040_B01FT0YP9C", "success": true, "turns": 1, "elapsed_ms": 168.25}
+{"timestamp": "2026-08-28T16:13:42.941844+00:00", "event": "session_started", "index": 41, "total": 100, "scenario_id": "realistic_0041_B07WRX54Y2", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:43.090945+00:00", "event": "session_completed", "index": 41, "total": 100, "scenario_id": "realistic_0041_B07WRX54Y2", "success": true, "turns": 1, "elapsed_ms": 148.456}
+{"timestamp": "2026-08-28T16:13:43.090945+00:00", "event": "session_started", "index": 42, "total": 100, "scenario_id": "realistic_0042_B076DY218M", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:43.255863+00:00", "event": "session_completed", "index": 42, "total": 100, "scenario_id": "realistic_0042_B076DY218M", "success": true, "turns": 1, "elapsed_ms": 165.743}
+{"timestamp": "2026-08-28T16:13:43.256864+00:00", "event": "session_started", "index": 43, "total": 100, "scenario_id": "realistic_0043_B01FMN7HZU", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:43.404106+00:00", "event": "session_completed", "index": 43, "total": 100, "scenario_id": "realistic_0043_B01FMN7HZU", "success": true, "turns": 1, "elapsed_ms": 148.006}
+{"timestamp": "2026-08-28T16:13:43.404106+00:00", "event": "session_started", "index": 44, "total": 100, "scenario_id": "realistic_0044_B075D91TMN", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:43.568041+00:00", "event": "session_completed", "index": 44, "total": 100, "scenario_id": "realistic_0044_B075D91TMN", "success": true, "turns": 1, "elapsed_ms": 163.554}
+{"timestamp": "2026-08-28T16:13:43.568041+00:00", "event": "session_started", "index": 45, "total": 100, "scenario_id": "realistic_0045_B09BVPW6H2", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:43.757367+00:00", "event": "session_completed", "index": 45, "total": 100, "scenario_id": "realistic_0045_B09BVPW6H2", "success": true, "turns": 1, "elapsed_ms": 189.673}
+{"timestamp": "2026-08-28T16:13:43.757367+00:00", "event": "session_started", "index": 46, "total": 100, "scenario_id": "realistic_0046_B07176BVLK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:44.316983+00:00", "event": "session_completed", "index": 46, "total": 100, "scenario_id": "realistic_0046_B07176BVLK", "success": true, "turns": 1, "elapsed_ms": 559.398}
+{"timestamp": "2026-08-28T16:13:44.316983+00:00", "event": "session_started", "index": 47, "total": 100, "scenario_id": "realistic_0047_B0919CWQPK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:44.502835+00:00", "event": "session_completed", "index": 47, "total": 100, "scenario_id": "realistic_0047_B0919CWQPK", "success": true, "turns": 1, "elapsed_ms": 186.055}
+{"timestamp": "2026-08-28T16:13:44.502835+00:00", "event": "session_started", "index": 48, "total": 100, "scenario_id": "realistic_0048_B0721X787V", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:44.693521+00:00", "event": "session_completed", "index": 48, "total": 100, "scenario_id": "realistic_0048_B0721X787V", "success": true, "turns": 1, "elapsed_ms": 189.829}
+{"timestamp": "2026-08-28T16:13:44.693521+00:00", "event": "session_started", "index": 49, "total": 100, "scenario_id": "realistic_0049_B01MAWDNNR", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:44.862106+00:00", "event": "session_completed", "index": 49, "total": 100, "scenario_id": "realistic_0049_B01MAWDNNR", "success": true, "turns": 1, "elapsed_ms": 168.728}
+{"timestamp": "2026-08-28T16:13:44.862106+00:00", "event": "session_started", "index": 50, "total": 100, "scenario_id": "realistic_0050_B006P67BH8", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.022491+00:00", "event": "session_completed", "index": 50, "total": 100, "scenario_id": "realistic_0050_B006P67BH8", "success": false, "turns": 10, "elapsed_ms": 12160.406}
+{"timestamp": "2026-08-28T16:13:57.022491+00:00", "event": "session_started", "index": 51, "total": 100, "scenario_id": "realistic_0051_B0B6DYJKN5", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.170294+00:00", "event": "session_completed", "index": 51, "total": 100, "scenario_id": "realistic_0051_B0B6DYJKN5", "success": true, "turns": 1, "elapsed_ms": 147.517}
+{"timestamp": "2026-08-28T16:13:57.170294+00:00", "event": "session_started", "index": 52, "total": 100, "scenario_id": "realistic_0052_B00KHARGTQ", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.325052+00:00", "event": "session_completed", "index": 52, "total": 100, "scenario_id": "realistic_0052_B00KHARGTQ", "success": true, "turns": 1, "elapsed_ms": 155.441}
+{"timestamp": "2026-08-28T16:13:57.325052+00:00", "event": "session_started", "index": 53, "total": 100, "scenario_id": "realistic_0053_B07PR1VC1F", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.474819+00:00", "event": "session_completed", "index": 53, "total": 100, "scenario_id": "realistic_0053_B07PR1VC1F", "success": true, "turns": 1, "elapsed_ms": 149.993}
+{"timestamp": "2026-08-28T16:13:57.475825+00:00", "event": "session_started", "index": 54, "total": 100, "scenario_id": "realistic_0054_B079C4GWTM", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.642012+00:00", "event": "session_completed", "index": 54, "total": 100, "scenario_id": "realistic_0054_B079C4GWTM", "success": true, "turns": 1, "elapsed_ms": 166.46}
+{"timestamp": "2026-08-28T16:13:57.642012+00:00", "event": "session_started", "index": 55, "total": 100, "scenario_id": "realistic_0055_B0BM7477G1", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.805517+00:00", "event": "session_completed", "index": 55, "total": 100, "scenario_id": "realistic_0055_B0BM7477G1", "success": true, "turns": 1, "elapsed_ms": 163.544}
+{"timestamp": "2026-08-28T16:13:57.805517+00:00", "event": "session_started", "index": 56, "total": 100, "scenario_id": "realistic_0056_B008K9MNTE", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:57.966268+00:00", "event": "session_completed", "index": 56, "total": 100, "scenario_id": "realistic_0056_B008K9MNTE", "success": true, "turns": 1, "elapsed_ms": 161.204}
+{"timestamp": "2026-08-28T16:13:57.966268+00:00", "event": "session_started", "index": 57, "total": 100, "scenario_id": "realistic_0057_B004UY99FY", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:58.359454+00:00", "event": "session_completed", "index": 57, "total": 100, "scenario_id": "realistic_0057_B004UY99FY", "success": true, "turns": 2, "elapsed_ms": 393.179}
+{"timestamp": "2026-08-28T16:13:58.359454+00:00", "event": "session_started", "index": 58, "total": 100, "scenario_id": "realistic_0058_B00SZSVTN6", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:58.898531+00:00", "event": "session_completed", "index": 58, "total": 100, "scenario_id": "realistic_0058_B00SZSVTN6", "success": true, "turns": 1, "elapsed_ms": 538.924}
+{"timestamp": "2026-08-28T16:13:58.898531+00:00", "event": "session_started", "index": 59, "total": 100, "scenario_id": "realistic_0059_B0185KFIZ8", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.054571+00:00", "event": "session_completed", "index": 59, "total": 100, "scenario_id": "realistic_0059_B0185KFIZ8", "success": true, "turns": 1, "elapsed_ms": 156.187}
+{"timestamp": "2026-08-28T16:13:59.054571+00:00", "event": "session_started", "index": 60, "total": 100, "scenario_id": "realistic_0060_B00E6GB77O", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.207264+00:00", "event": "session_completed", "index": 60, "total": 100, "scenario_id": "realistic_0060_B00E6GB77O", "success": true, "turns": 1, "elapsed_ms": 152.436}
+{"timestamp": "2026-08-28T16:13:59.207264+00:00", "event": "session_started", "index": 61, "total": 100, "scenario_id": "realistic_0061_B07X7ND7T7", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.365074+00:00", "event": "session_completed", "index": 61, "total": 100, "scenario_id": "realistic_0061_B07X7ND7T7", "success": true, "turns": 1, "elapsed_ms": 157.754}
+{"timestamp": "2026-08-28T16:13:59.365074+00:00", "event": "session_started", "index": 62, "total": 100, "scenario_id": "realistic_0062_B07L79KK7V", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.492941+00:00", "event": "session_completed", "index": 62, "total": 100, "scenario_id": "realistic_0062_B07L79KK7V", "success": true, "turns": 1, "elapsed_ms": 127.526}
+{"timestamp": "2026-08-28T16:13:59.492941+00:00", "event": "session_started", "index": 63, "total": 100, "scenario_id": "realistic_0063_B0777WC2MF", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.638191+00:00", "event": "session_completed", "index": 63, "total": 100, "scenario_id": "realistic_0063_B0777WC2MF", "success": true, "turns": 1, "elapsed_ms": 144.868}
+{"timestamp": "2026-08-28T16:13:59.638191+00:00", "event": "session_started", "index": 64, "total": 100, "scenario_id": "realistic_0064_B0883F6S5X", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.782207+00:00", "event": "session_completed", "index": 64, "total": 100, "scenario_id": "realistic_0064_B0883F6S5X", "success": true, "turns": 1, "elapsed_ms": 144.602}
+{"timestamp": "2026-08-28T16:13:59.782207+00:00", "event": "session_started", "index": 65, "total": 100, "scenario_id": "realistic_0065_B00IK41V4C", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:13:59.940391+00:00", "event": "session_completed", "index": 65, "total": 100, "scenario_id": "realistic_0065_B00IK41V4C", "success": true, "turns": 1, "elapsed_ms": 157.696}
+{"timestamp": "2026-08-28T16:13:59.940391+00:00", "event": "session_started", "index": 66, "total": 100, "scenario_id": "realistic_0066_B0073Z7B5W", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:00.507278+00:00", "event": "session_completed", "index": 66, "total": 100, "scenario_id": "realistic_0066_B0073Z7B5W", "success": true, "turns": 1, "elapsed_ms": 567.173}
+{"timestamp": "2026-08-28T16:14:00.507278+00:00", "event": "session_started", "index": 67, "total": 100, "scenario_id": "realistic_0067_B07BWD14JD", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:00.685151+00:00", "event": "session_completed", "index": 67, "total": 100, "scenario_id": "realistic_0067_B07BWD14JD", "success": true, "turns": 1, "elapsed_ms": 178.174}
+{"timestamp": "2026-08-28T16:14:00.685151+00:00", "event": "session_started", "index": 68, "total": 100, "scenario_id": "realistic_0068_B07CQZY7MT", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:05.533615+00:00", "event": "session_completed", "index": 68, "total": 100, "scenario_id": "realistic_0068_B07CQZY7MT", "success": true, "turns": 7, "elapsed_ms": 4847.932}
+{"timestamp": "2026-08-28T16:14:05.533615+00:00", "event": "session_started", "index": 69, "total": 100, "scenario_id": "realistic_0069_B08BRG2TDX", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:05.656407+00:00", "event": "session_completed", "index": 69, "total": 100, "scenario_id": "realistic_0069_B08BRG2TDX", "success": true, "turns": 1, "elapsed_ms": 122.819}
+{"timestamp": "2026-08-28T16:14:05.656407+00:00", "event": "session_started", "index": 70, "total": 100, "scenario_id": "realistic_0070_B07C5GPDBX", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:05.817503+00:00", "event": "session_completed", "index": 70, "total": 100, "scenario_id": "realistic_0070_B07C5GPDBX", "success": true, "turns": 1, "elapsed_ms": 161.48}
+{"timestamp": "2026-08-28T16:14:05.817503+00:00", "event": "session_started", "index": 71, "total": 100, "scenario_id": "realistic_0071_B07CPPNRBP", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:06.321415+00:00", "event": "session_completed", "index": 71, "total": 100, "scenario_id": "realistic_0071_B07CPPNRBP", "success": true, "turns": 1, "elapsed_ms": 503.964}
+{"timestamp": "2026-08-28T16:14:06.321415+00:00", "event": "session_started", "index": 72, "total": 100, "scenario_id": "realistic_0072_B099WR4VNY", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:06.466896+00:00", "event": "session_completed", "index": 72, "total": 100, "scenario_id": "realistic_0072_B099WR4VNY", "success": true, "turns": 1, "elapsed_ms": 145.352}
+{"timestamp": "2026-08-28T16:14:06.466896+00:00", "event": "session_started", "index": 73, "total": 100, "scenario_id": "realistic_0073_B07CHZBLQS", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:06.632032+00:00", "event": "session_completed", "index": 73, "total": 100, "scenario_id": "realistic_0073_B07CHZBLQS", "success": true, "turns": 1, "elapsed_ms": 164.35}
+{"timestamp": "2026-08-28T16:14:06.632032+00:00", "event": "session_started", "index": 74, "total": 100, "scenario_id": "realistic_0074_B00VHRBMCA", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:06.775560+00:00", "event": "session_completed", "index": 74, "total": 100, "scenario_id": "realistic_0074_B00VHRBMCA", "success": true, "turns": 1, "elapsed_ms": 143.481}
+{"timestamp": "2026-08-28T16:14:06.775560+00:00", "event": "session_started", "index": 75, "total": 100, "scenario_id": "realistic_0075_B00598HN3U", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:06.924546+00:00", "event": "session_completed", "index": 75, "total": 100, "scenario_id": "realistic_0075_B00598HN3U", "success": true, "turns": 1, "elapsed_ms": 149.823}
+{"timestamp": "2026-08-28T16:14:06.924546+00:00", "event": "session_started", "index": 76, "total": 100, "scenario_id": "realistic_0076_B08Q74SGN6", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:07.066452+00:00", "event": "session_completed", "index": 76, "total": 100, "scenario_id": "realistic_0076_B08Q74SGN6", "success": true, "turns": 1, "elapsed_ms": 140.928}
+{"timestamp": "2026-08-28T16:14:07.066452+00:00", "event": "session_started", "index": 77, "total": 100, "scenario_id": "realistic_0077_B07B9N1ZKD", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:07.207147+00:00", "event": "session_completed", "index": 77, "total": 100, "scenario_id": "realistic_0077_B07B9N1ZKD", "success": true, "turns": 1, "elapsed_ms": 141.23}
+{"timestamp": "2026-08-28T16:14:07.207147+00:00", "event": "session_started", "index": 78, "total": 100, "scenario_id": "realistic_0078_B00SJP2GVO", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:18.334368+00:00", "event": "session_completed", "index": 78, "total": 100, "scenario_id": "realistic_0078_B00SJP2GVO", "success": false, "turns": 10, "elapsed_ms": 11127.109}
+{"timestamp": "2026-08-28T16:14:18.334368+00:00", "event": "session_started", "index": 79, "total": 100, "scenario_id": "realistic_0079_B076DJMFRB", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:18.500063+00:00", "event": "session_completed", "index": 79, "total": 100, "scenario_id": "realistic_0079_B076DJMFRB", "success": true, "turns": 1, "elapsed_ms": 165.77}
+{"timestamp": "2026-08-28T16:14:18.500063+00:00", "event": "session_started", "index": 80, "total": 100, "scenario_id": "realistic_0080_B008L1NJO4", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:18.666964+00:00", "event": "session_completed", "index": 80, "total": 100, "scenario_id": "realistic_0080_B008L1NJO4", "success": true, "turns": 1, "elapsed_ms": 166.925}
+{"timestamp": "2026-08-28T16:14:18.666964+00:00", "event": "session_started", "index": 81, "total": 100, "scenario_id": "realistic_0081_B002K6067E", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:18.826143+00:00", "event": "session_completed", "index": 81, "total": 100, "scenario_id": "realistic_0081_B002K6067E", "success": true, "turns": 1, "elapsed_ms": 158.591}
+{"timestamp": "2026-08-28T16:14:18.826143+00:00", "event": "session_started", "index": 82, "total": 100, "scenario_id": "realistic_0082_B07KP4XXHX", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:18.989170+00:00", "event": "session_completed", "index": 82, "total": 100, "scenario_id": "realistic_0082_B07KP4XXHX", "success": true, "turns": 1, "elapsed_ms": 163.817}
+{"timestamp": "2026-08-28T16:14:18.989170+00:00", "event": "session_started", "index": 83, "total": 100, "scenario_id": "realistic_0083_B07HGXVW44", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.140877+00:00", "event": "session_completed", "index": 83, "total": 100, "scenario_id": "realistic_0083_B07HGXVW44", "success": true, "turns": 1, "elapsed_ms": 151.206}
+{"timestamp": "2026-08-28T16:14:19.140877+00:00", "event": "session_started", "index": 84, "total": 100, "scenario_id": "realistic_0084_B01B9R9LVG", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.316682+00:00", "event": "session_completed", "index": 84, "total": 100, "scenario_id": "realistic_0084_B01B9R9LVG", "success": true, "turns": 1, "elapsed_ms": 175.595}
+{"timestamp": "2026-08-28T16:14:19.316682+00:00", "event": "session_started", "index": 85, "total": 100, "scenario_id": "realistic_0085_B0B7SCRTCS", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.496662+00:00", "event": "session_completed", "index": 85, "total": 100, "scenario_id": "realistic_0085_B0B7SCRTCS", "success": true, "turns": 1, "elapsed_ms": 180.452}
+{"timestamp": "2026-08-28T16:14:19.496662+00:00", "event": "session_started", "index": 86, "total": 100, "scenario_id": "realistic_0086_B09BJ76D6K", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.655901+00:00", "event": "session_completed", "index": 86, "total": 100, "scenario_id": "realistic_0086_B09BJ76D6K", "success": true, "turns": 1, "elapsed_ms": 159.207}
+{"timestamp": "2026-08-28T16:14:19.655901+00:00", "event": "session_started", "index": 87, "total": 100, "scenario_id": "realistic_0087_B076RJ5KXC", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.813433+00:00", "event": "session_completed", "index": 87, "total": 100, "scenario_id": "realistic_0087_B076RJ5KXC", "success": true, "turns": 1, "elapsed_ms": 157.388}
+{"timestamp": "2026-08-28T16:14:19.813433+00:00", "event": "session_started", "index": 88, "total": 100, "scenario_id": "realistic_0088_B00TUXNFGE", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:19.983289+00:00", "event": "session_completed", "index": 88, "total": 100, "scenario_id": "realistic_0088_B00TUXNFGE", "success": true, "turns": 1, "elapsed_ms": 169.729}
+{"timestamp": "2026-08-28T16:14:19.983289+00:00", "event": "session_started", "index": 89, "total": 100, "scenario_id": "realistic_0089_B083SSQ2P6", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:20.543121+00:00", "event": "session_completed", "index": 89, "total": 100, "scenario_id": "realistic_0089_B083SSQ2P6", "success": true, "turns": 1, "elapsed_ms": 559.339}
+{"timestamp": "2026-08-28T16:14:20.543121+00:00", "event": "session_started", "index": 90, "total": 100, "scenario_id": "realistic_0090_B00FWH1PUK", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:20.734074+00:00", "event": "session_completed", "index": 90, "total": 100, "scenario_id": "realistic_0090_B00FWH1PUK", "success": true, "turns": 1, "elapsed_ms": 191.648}
+{"timestamp": "2026-08-28T16:14:20.735074+00:00", "event": "session_started", "index": 91, "total": 100, "scenario_id": "realistic_0091_B0755BFC3H", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:20.890583+00:00", "event": "session_completed", "index": 91, "total": 100, "scenario_id": "realistic_0091_B0755BFC3H", "success": true, "turns": 1, "elapsed_ms": 156.122}
+{"timestamp": "2026-08-28T16:14:20.890583+00:00", "event": "session_started", "index": 92, "total": 100, "scenario_id": "realistic_0092_B085R9SPXG", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:21.025282+00:00", "event": "session_completed", "index": 92, "total": 100, "scenario_id": "realistic_0092_B085R9SPXG", "success": true, "turns": 1, "elapsed_ms": 134.519}
+{"timestamp": "2026-08-28T16:14:21.025282+00:00", "event": "session_started", "index": 93, "total": 100, "scenario_id": "realistic_0093_B0065KQ5US", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:21.185952+00:00", "event": "session_completed", "index": 93, "total": 100, "scenario_id": "realistic_0093_B0065KQ5US", "success": true, "turns": 1, "elapsed_ms": 160.477}
+{"timestamp": "2026-08-28T16:14:21.185952+00:00", "event": "session_started", "index": 94, "total": 100, "scenario_id": "realistic_0094_B018S73LBQ", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:21.333094+00:00", "event": "session_completed", "index": 94, "total": 100, "scenario_id": "realistic_0094_B018S73LBQ", "success": true, "turns": 1, "elapsed_ms": 147.21}
+{"timestamp": "2026-08-28T16:14:21.333094+00:00", "event": "session_started", "index": 95, "total": 100, "scenario_id": "realistic_0095_B071NLVR4R", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:21.489677+00:00", "event": "session_completed", "index": 95, "total": 100, "scenario_id": "realistic_0095_B071NLVR4R", "success": true, "turns": 1, "elapsed_ms": 156.86}
+{"timestamp": "2026-08-28T16:14:21.489677+00:00", "event": "session_started", "index": 96, "total": 100, "scenario_id": "realistic_0096_B006ZUZFRW", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:22.076244+00:00", "event": "session_completed", "index": 96, "total": 100, "scenario_id": "realistic_0096_B006ZUZFRW", "success": true, "turns": 1, "elapsed_ms": 586.272}
+{"timestamp": "2026-08-28T16:14:22.076244+00:00", "event": "session_started", "index": 97, "total": 100, "scenario_id": "realistic_0097_B07DYGRSK7", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:22.225462+00:00", "event": "session_completed", "index": 97, "total": 100, "scenario_id": "realistic_0097_B07DYGRSK7", "success": true, "turns": 1, "elapsed_ms": 149.186}
+{"timestamp": "2026-08-28T16:14:22.225462+00:00", "event": "session_started", "index": 98, "total": 100, "scenario_id": "realistic_0098_B07PXTY439", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:22.388760+00:00", "event": "session_completed", "index": 98, "total": 100, "scenario_id": "realistic_0098_B07PXTY439", "success": true, "turns": 1, "elapsed_ms": 163.599}
+{"timestamp": "2026-08-28T16:14:22.388760+00:00", "event": "session_started", "index": 99, "total": 100, "scenario_id": "realistic_0099_B08HCZ35TD", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:22.554303+00:00", "event": "session_completed", "index": 99, "total": 100, "scenario_id": "realistic_0099_B08HCZ35TD", "success": true, "turns": 1, "elapsed_ms": 165.517}
+{"timestamp": "2026-08-28T16:14:22.554303+00:00", "event": "session_started", "index": 100, "total": 100, "scenario_id": "realistic_0100_B0BNQZS6YG", "protocol": "realistic"}
+{"timestamp": "2026-08-28T16:14:24.325565+00:00", "event": "session_completed", "index": 100, "total": 100, "scenario_id": "realistic_0100_B0BNQZS6YG", "success": true, "turns": 4, "elapsed_ms": 1771.086}

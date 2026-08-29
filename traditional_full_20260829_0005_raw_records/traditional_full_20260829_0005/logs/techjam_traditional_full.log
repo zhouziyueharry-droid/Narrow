@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0",
+  "mode": "techjam",
+  "evaluation": {
+    "benchmark": "techjam",
+    "official_metric_contract": true,
+    "sample_count": 200,
+    "hit_rate_at_10": 0.82,
+    "mrr": 0.329188,
+    "mttc": 4.005,
+    "efficiency": 0.6995,
+    "recommended_technical_score": 0.648656
+  },
+  "turn_metrics": {
+    "max_turns": 10,
+    "session_count": 200,
+    "total_executed_turns": 765,
+    "mean_executed_turns": 3.825,
+    "median_executed_turns": 3.0,
+    "successful_session_mean_turns": 2.469512,
+    "unsuccessful_session_mean_turns": 10.0,
+    "executed_turn_distribution": {
+      "1": 75,
+      "2": 19,
+      "3": 28,
+      "4": 22,
+      "5": 10,
+      "6": 5,
+      "7": 1,
+      "8": 3,
+      "9": 1,
+      "10": 36
+    },
+    "first_hit_turn_distribution": {
+      "1": 75,
+      "2": 19,
+      "3": 28,
+      "4": 22,
+      "5": 10,
+      "6": 5,
+      "7": 1,
+      "8": 3,
+      "9": 1,
+      "10": 0
+    }
+  },
+  "latency": {
+    "available": true,
+    "unit": "milliseconds",
+    "clock": "time.perf_counter",
+    "agent": {
+      "available": true,
+      "call_count": 765,
+      "total_ms": 81773.031,
+      "mean_ms": 106.893,
+      "p50_ms": 94.387,
+      "p95_ms": 189.318,
+      "p99_ms": 484.493,
+      "max_ms": 545.12
+    },
+    "user_generation": {
+      "available": true,
+      "call_count": 765,
+      "total_ms": 0.037,
+      "mean_ms": 0.0,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.001,
+      "max_ms": 0.001
+    },
+    "session_wall": {
+      "available": true,
+      "session_count": 200,
+      "total_ms": 580651.299,
+      "mean_ms": 2903.256,
+      "p50_ms": 975.553,
+      "p95_ms": 11309.06,
+      "p99_ms": 11963.815,
+      "max_ms": 12111.652
+    }
+  },
+  "model_usage": {
+    "agent": {
+      "class_path": "shopping_agent.agent:ShoppingAgent",
+      "provider": "local",
+      "model": null,
+      "llm_enabled": false,
+      "respond_calls": 765,
+      "api_calls": 0,
+      "api_call_count_status": "known_disabled",
+      "usage_reported_calls": 765,
+      "error_count": 0,
+      "reported_token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    },
+    "user_verbalizer": {
+      "providers": [
+        "template"
+      ],
+      "models": [],
+      "calls": 0,
+      "api_calls": 0,
+      "fallbacks": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    },
+    "combined": {
+      "api_calls": 0,
+      "reported_token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "estimated_cost_usd": 0.0,
+      "cost_status": "not_applicable_no_api_usage"
+    }
+  },
+  "mode_specific_metrics": {
+    "target_match": "exact_parent_asin",
+    "miss_turn_value": 11,
+    "scenario_metrics": {
+      "boundary": {
+        "sample_count": 10,
+        "hit_rate_at_10": 0.7,
+        "mrr": 0.297778,
+        "mttc": 4.7
+      },
+      "browsing": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.8,
+        "mrr": 0.338046,
+        "mttc": 4.1125
+      },
+      "buying": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.85,
+        "mrr": 0.313874,
+        "mttc": 3.2625
+      },
+      "intent_override": {
+        "sample_count": 30,
+        "hit_rate_at_10": 0.833333,
+        "mrr": 0.356878,
+        "mttc": 5.466667
+      }
+    }
+  }
+}

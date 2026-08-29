@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0 -- D:\projects\tiktok26\tiktok_project_4\user-simulator\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\projects\tiktok26\tiktok_project_4\user-simulator
+configfile: pyproject.toml
+collecting ... collected 19 items
+
+tests/test_core.py::test_target_product_acceptance PASSED                [  5%]
+tests/test_core.py::test_need_based_acceptance_with_alternative PASSED   [ 10%]
+tests/test_core.py::test_need_based_rejection_preserves_best_near_miss_evidence PASSED [ 15%]
+tests/test_core.py::test_template_verbalizer_is_deterministic PASSED     [ 21%]
+tests/test_core.py::test_full_session_accepts_target PASSED              [ 26%]
+tests/test_deepseek.py::test_deepseek_verbalizer_uses_current_chat_contract PASSED [ 31%]
+tests/test_deepseek.py::test_deepseek_failure_is_visible_and_falls_back PASSED [ 36%]
+tests/test_modes.py::test_yaml_configs_match_builtin_presets PASSED      [ 42%]
+tests/test_modes.py::test_techjam_mode_preserves_profile_and_official_initial_message PASSED [ 47%]
+tests/test_modes.py::test_techjam_intent_override_blocks_early_target_hit PASSED [ 52%]
+tests/test_modes.py::test_techjam_browsing_and_boundary_dialogue_paths PASSED [ 57%]
+tests/test_modes.py::test_realistic_mode_builds_satisfiable_need_goal_without_extra_data PASSED [ 63%]
+tests/test_modes.py::test_agent_adapter_keeps_first_ten_valid_unique_candidates PASSED [ 68%]
+tests/test_modes.py::test_techjam_normalization_skips_invalid_catalog_ids_before_target PASSED [ 73%]
+tests/test_modes.py::test_techjam_invalid_message_discards_recommendations PASSED [ 78%]
+tests/test_reporting.py::test_unified_report_schema_and_markdown_sections PASSED [ 84%]
+tests/test_reporting.py::test_session_persists_agent_layer_trace PASSED  [ 89%]
+tests/test_reporting.py::test_session_records_unavailable_agent_trace PASSED [ 94%]
+tests/test_reporting.py::test_session_journals_flush_and_agent_state_is_released PASSED [100%]
+
+============================= 19 passed in 0.23s ==============================

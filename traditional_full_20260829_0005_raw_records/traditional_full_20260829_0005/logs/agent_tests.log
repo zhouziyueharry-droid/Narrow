@@ -1,0 +1,41 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-8.4.2, pluggy-1.6.0 -- D:\projects\tiktok26\tiktok_project_4\techjam-conversational-search\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\projects\tiktok26\tiktok_project_4\techjam-conversational-search
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.14.2, langsmith-0.11.1
+collecting ... collected 30 items
+
+tests/integration/test_evaluator.py::EvaluatorTest::test_evaluate_derives_hidden_fields_when_public_set_omits_them PASSED [  3%]
+tests/integration/test_evaluator.py::EvaluatorTest::test_metric_summary_assigns_turn_11_to_miss PASSED [  6%]
+tests/integration/test_evaluator.py::EvaluatorTest::test_normalization_preserves_first_valid_unique_order PASSED [ 10%]
+tests/regression/test_agent_behavior.py::test_catalog_index_retrieves_matching_product PASSED [ 13%]
+tests/regression/test_agent_behavior.py::test_deep_agent_graph_constructs_with_catalog_tools PASSED [ 16%]
+tests/regression/test_agent_behavior.py::test_official_adapter_uses_session_as_langgraph_thread_and_deduplicates PASSED [ 20%]
+tests/regression/test_agent_behavior.py::test_intent_override_retires_soft_preference_but_keeps_hard_constraint PASSED [ 23%]
+tests/regression/test_agent_behavior.py::test_mvp_graph_accumulates_turn_constraints_and_returns_catalog_ids PASSED [ 26%]
+tests/regression/test_agent_behavior.py::test_agent_exposes_compact_node_trace PASSED [ 30%]
+tests/regression/test_agent_behavior.py::test_rrf_rewards_candidates_returned_by_multiple_routes PASSED [ 33%]
+tests/regression/test_agent_behavior.py::test_question_policy_uses_candidate_entropy_after_discovery_turns PASSED [ 36%]
+tests/regression/test_agent_behavior.py::test_question_policy_uses_current_candidates_and_exposes_options PASSED [ 40%]
+tests/regression/test_agent_behavior.py::test_replacement_retires_conflicting_hard_state PASSED [ 43%]
+tests/regression/test_agent_behavior.py::test_reranker_ignores_non_numeric_catalog_price PASSED [ 46%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_resolves_negation_without_negating_neutral_color PASSED [ 50%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_splits_preferred_and_maximum_budget PASSED [ 53%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_uses_history_for_comparative_reference PASSED [ 56%]
+tests/regression/test_agent_behavior.py::test_semantic_provider_stays_off_without_explicit_enable PASSED [ 60%]
+tests/regression/test_agent_behavior.py::test_semantic_provider_is_primary_even_for_high_confidence_rule_input PASSED [ 63%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_splits_compound_negation_into_separate_constraints PASSED [ 66%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_drops_overlong_negation_span PASSED [ 70%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_parses_between_budget_range PASSED [ 73%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_parses_dash_budget_range PASSED [ 76%]
+tests/regression/test_agent_behavior.py::test_semantic_fallback_does_not_double_count_range_and_single_budget PASSED [ 80%]
+tests/regression/test_agent_behavior.py::test_resolve_semantic_patch_flags_implicit_override_without_marker PASSED [ 83%]
+tests/regression/test_agent_behavior.py::test_resolve_semantic_patch_retries_transient_provider_failure PASSED [ 86%]
+tests/regression/test_agent_behavior.py::test_resolve_semantic_patch_tags_invalid_provider_json PASSED [ 90%]
+tests/regression/test_agent_behavior.py::test_resolve_semantic_patch_tags_persistent_outage PASSED [ 93%]
+tests/unit/test_package_boundaries.py::test_public_component_boundaries_are_importable PASSED [ 96%]
+tests/unit/test_package_boundaries.py::test_legacy_imports_still_resolve_to_new_components PASSED [100%]
+
+============================= 30 passed in 0.66s ==============================

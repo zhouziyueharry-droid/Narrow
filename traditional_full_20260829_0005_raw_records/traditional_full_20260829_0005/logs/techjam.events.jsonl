@@ -1,0 +1,400 @@
+{"timestamp": "2026-08-28T16:03:06.553138+00:00", "event": "session_started", "index": 1, "total": 200, "scenario_id": "public_0001", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:06.779953+00:00", "event": "session_completed", "index": 1, "total": 200, "scenario_id": "public_0001", "success": true, "turns": 1, "elapsed_ms": 226.624}
+{"timestamp": "2026-08-28T16:03:06.779953+00:00", "event": "session_started", "index": 2, "total": 200, "scenario_id": "public_0002", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:07.773657+00:00", "event": "session_completed", "index": 2, "total": 200, "scenario_id": "public_0002", "success": true, "turns": 3, "elapsed_ms": 993.337}
+{"timestamp": "2026-08-28T16:03:07.773657+00:00", "event": "session_started", "index": 3, "total": 200, "scenario_id": "public_0003", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:12.217335+00:00", "event": "session_completed", "index": 3, "total": 200, "scenario_id": "public_0003", "success": true, "turns": 6, "elapsed_ms": 4443.399}
+{"timestamp": "2026-08-28T16:03:12.217335+00:00", "event": "session_started", "index": 4, "total": 200, "scenario_id": "public_0004", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:13.538999+00:00", "event": "session_completed", "index": 4, "total": 200, "scenario_id": "public_0004", "success": true, "turns": 3, "elapsed_ms": 1322.311}
+{"timestamp": "2026-08-28T16:03:13.538999+00:00", "event": "session_started", "index": 5, "total": 200, "scenario_id": "public_0005", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:13.729422+00:00", "event": "session_completed", "index": 5, "total": 200, "scenario_id": "public_0005", "success": true, "turns": 1, "elapsed_ms": 190.164}
+{"timestamp": "2026-08-28T16:03:13.729422+00:00", "event": "session_started", "index": 6, "total": 200, "scenario_id": "public_0006", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:13.856417+00:00", "event": "session_completed", "index": 6, "total": 200, "scenario_id": "public_0006", "success": true, "turns": 1, "elapsed_ms": 127.236}
+{"timestamp": "2026-08-28T16:03:13.857417+00:00", "event": "session_started", "index": 7, "total": 200, "scenario_id": "public_0007", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:15.267498+00:00", "event": "session_completed", "index": 7, "total": 200, "scenario_id": "public_0007", "success": true, "turns": 3, "elapsed_ms": 1410.362}
+{"timestamp": "2026-08-28T16:03:15.267498+00:00", "event": "session_started", "index": 8, "total": 200, "scenario_id": "public_0008", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:15.562086+00:00", "event": "session_completed", "index": 8, "total": 200, "scenario_id": "public_0008", "success": true, "turns": 2, "elapsed_ms": 294.46}
+{"timestamp": "2026-08-28T16:03:15.562086+00:00", "event": "session_started", "index": 9, "total": 200, "scenario_id": "public_0009", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:16.314696+00:00", "event": "session_completed", "index": 9, "total": 200, "scenario_id": "public_0009", "success": true, "turns": 2, "elapsed_ms": 752.772}
+{"timestamp": "2026-08-28T16:03:16.314696+00:00", "event": "session_started", "index": 10, "total": 200, "scenario_id": "public_0010", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:16.465190+00:00", "event": "session_completed", "index": 10, "total": 200, "scenario_id": "public_0010", "success": true, "turns": 1, "elapsed_ms": 150.572}
+{"timestamp": "2026-08-28T16:03:16.465190+00:00", "event": "session_started", "index": 11, "total": 200, "scenario_id": "public_0011", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:16.553317+00:00", "event": "session_completed", "index": 11, "total": 200, "scenario_id": "public_0011", "success": true, "turns": 1, "elapsed_ms": 87.458}
+{"timestamp": "2026-08-28T16:03:16.553317+00:00", "event": "session_started", "index": 12, "total": 200, "scenario_id": "public_0012", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:19.661533+00:00", "event": "session_completed", "index": 12, "total": 200, "scenario_id": "public_0012", "success": true, "turns": 5, "elapsed_ms": 3108.538}
+{"timestamp": "2026-08-28T16:03:19.661533+00:00", "event": "session_started", "index": 13, "total": 200, "scenario_id": "public_0013", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:22.761975+00:00", "event": "session_completed", "index": 13, "total": 200, "scenario_id": "public_0013", "success": true, "turns": 5, "elapsed_ms": 3100.938}
+{"timestamp": "2026-08-28T16:03:22.761975+00:00", "event": "session_started", "index": 14, "total": 200, "scenario_id": "public_0014", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:22.844296+00:00", "event": "session_completed", "index": 14, "total": 200, "scenario_id": "public_0014", "success": true, "turns": 1, "elapsed_ms": 81.685}
+{"timestamp": "2026-08-28T16:03:22.844296+00:00", "event": "session_started", "index": 15, "total": 200, "scenario_id": "public_0015", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:33.196657+00:00", "event": "session_completed", "index": 15, "total": 200, "scenario_id": "public_0015", "success": false, "turns": 10, "elapsed_ms": 10352.128}
+{"timestamp": "2026-08-28T16:03:33.196657+00:00", "event": "session_started", "index": 16, "total": 200, "scenario_id": "public_0016", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:43.303486+00:00", "event": "session_completed", "index": 16, "total": 200, "scenario_id": "public_0016", "success": false, "turns": 10, "elapsed_ms": 10107.357}
+{"timestamp": "2026-08-28T16:03:43.303486+00:00", "event": "session_started", "index": 17, "total": 200, "scenario_id": "public_0017", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:43.816416+00:00", "event": "session_completed", "index": 17, "total": 200, "scenario_id": "public_0017", "success": true, "turns": 1, "elapsed_ms": 512.6}
+{"timestamp": "2026-08-28T16:03:43.816416+00:00", "event": "session_started", "index": 18, "total": 200, "scenario_id": "public_0018", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:43.956982+00:00", "event": "session_completed", "index": 18, "total": 200, "scenario_id": "public_0018", "success": true, "turns": 1, "elapsed_ms": 141.051}
+{"timestamp": "2026-08-28T16:03:43.956982+00:00", "event": "session_started", "index": 19, "total": 200, "scenario_id": "public_0019", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:44.102489+00:00", "event": "session_completed", "index": 19, "total": 200, "scenario_id": "public_0019", "success": true, "turns": 1, "elapsed_ms": 145.386}
+{"timestamp": "2026-08-28T16:03:44.102489+00:00", "event": "session_started", "index": 20, "total": 200, "scenario_id": "public_0020", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:45.188443+00:00", "event": "session_completed", "index": 20, "total": 200, "scenario_id": "public_0020", "success": true, "turns": 3, "elapsed_ms": 1085.914}
+{"timestamp": "2026-08-28T16:03:45.188443+00:00", "event": "session_started", "index": 21, "total": 200, "scenario_id": "public_0021", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:46.161881+00:00", "event": "session_completed", "index": 21, "total": 200, "scenario_id": "public_0021", "success": true, "turns": 3, "elapsed_ms": 973.292}
+{"timestamp": "2026-08-28T16:03:46.161881+00:00", "event": "session_started", "index": 22, "total": 200, "scenario_id": "public_0022", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:46.679016+00:00", "event": "session_completed", "index": 22, "total": 200, "scenario_id": "public_0022", "success": true, "turns": 1, "elapsed_ms": 516.94}
+{"timestamp": "2026-08-28T16:03:46.679016+00:00", "event": "session_started", "index": 23, "total": 200, "scenario_id": "public_0023", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:48.607092+00:00", "event": "session_completed", "index": 23, "total": 200, "scenario_id": "public_0023", "success": true, "turns": 4, "elapsed_ms": 1927.877}
+{"timestamp": "2026-08-28T16:03:48.607092+00:00", "event": "session_started", "index": 24, "total": 200, "scenario_id": "public_0024", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:48.728332+00:00", "event": "session_completed", "index": 24, "total": 200, "scenario_id": "public_0024", "success": true, "turns": 1, "elapsed_ms": 121.066}
+{"timestamp": "2026-08-28T16:03:48.728332+00:00", "event": "session_started", "index": 25, "total": 200, "scenario_id": "public_0025", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:48.826219+00:00", "event": "session_completed", "index": 25, "total": 200, "scenario_id": "public_0025", "success": true, "turns": 1, "elapsed_ms": 97.979}
+{"timestamp": "2026-08-28T16:03:48.826219+00:00", "event": "session_started", "index": 26, "total": 200, "scenario_id": "public_0026", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:49.172630+00:00", "event": "session_completed", "index": 26, "total": 200, "scenario_id": "public_0026", "success": true, "turns": 2, "elapsed_ms": 346.202}
+{"timestamp": "2026-08-28T16:03:49.172630+00:00", "event": "session_started", "index": 27, "total": 200, "scenario_id": "public_0027", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:53.219497+00:00", "event": "session_completed", "index": 27, "total": 200, "scenario_id": "public_0027", "success": true, "turns": 6, "elapsed_ms": 4047.748}
+{"timestamp": "2026-08-28T16:03:53.219497+00:00", "event": "session_started", "index": 28, "total": 200, "scenario_id": "public_0028", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:03:53.367441+00:00", "event": "session_completed", "index": 28, "total": 200, "scenario_id": "public_0028", "success": true, "turns": 1, "elapsed_ms": 147.262}
+{"timestamp": "2026-08-28T16:03:53.367441+00:00", "event": "session_started", "index": 29, "total": 200, "scenario_id": "public_0029", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:04.456929+00:00", "event": "session_completed", "index": 29, "total": 200, "scenario_id": "public_0029", "success": false, "turns": 10, "elapsed_ms": 11089.536}
+{"timestamp": "2026-08-28T16:04:04.456929+00:00", "event": "session_started", "index": 30, "total": 200, "scenario_id": "public_0030", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:04.601195+00:00", "event": "session_completed", "index": 30, "total": 200, "scenario_id": "public_0030", "success": true, "turns": 1, "elapsed_ms": 144.289}
+{"timestamp": "2026-08-28T16:04:04.601195+00:00", "event": "session_started", "index": 31, "total": 200, "scenario_id": "public_0031", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:05.985310+00:00", "event": "session_completed", "index": 31, "total": 200, "scenario_id": "public_0031", "success": true, "turns": 3, "elapsed_ms": 1384.381}
+{"timestamp": "2026-08-28T16:04:05.986311+00:00", "event": "session_started", "index": 32, "total": 200, "scenario_id": "public_0032", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:06.123505+00:00", "event": "session_completed", "index": 32, "total": 200, "scenario_id": "public_0032", "success": true, "turns": 1, "elapsed_ms": 137.808}
+{"timestamp": "2026-08-28T16:04:06.123505+00:00", "event": "session_started", "index": 33, "total": 200, "scenario_id": "public_0033", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:16.796775+00:00", "event": "session_completed", "index": 33, "total": 200, "scenario_id": "public_0033", "success": false, "turns": 10, "elapsed_ms": 10672.72}
+{"timestamp": "2026-08-28T16:04:16.796775+00:00", "event": "session_started", "index": 34, "total": 200, "scenario_id": "public_0034", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:27.117819+00:00", "event": "session_completed", "index": 34, "total": 200, "scenario_id": "public_0034", "success": false, "turns": 10, "elapsed_ms": 10321.514}
+{"timestamp": "2026-08-28T16:04:27.117819+00:00", "event": "session_started", "index": 35, "total": 200, "scenario_id": "public_0035", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:38.722385+00:00", "event": "session_completed", "index": 35, "total": 200, "scenario_id": "public_0035", "success": false, "turns": 10, "elapsed_ms": 11603.857}
+{"timestamp": "2026-08-28T16:04:38.722385+00:00", "event": "session_started", "index": 36, "total": 200, "scenario_id": "public_0036", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:38.844054+00:00", "event": "session_completed", "index": 36, "total": 200, "scenario_id": "public_0036", "success": true, "turns": 1, "elapsed_ms": 122.493}
+{"timestamp": "2026-08-28T16:04:38.844054+00:00", "event": "session_started", "index": 37, "total": 200, "scenario_id": "public_0037", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:41.029657+00:00", "event": "session_completed", "index": 37, "total": 200, "scenario_id": "public_0037", "success": true, "turns": 5, "elapsed_ms": 2185.125}
+{"timestamp": "2026-08-28T16:04:41.029657+00:00", "event": "session_started", "index": 38, "total": 200, "scenario_id": "public_0038", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:46.760001+00:00", "event": "session_completed", "index": 38, "total": 200, "scenario_id": "public_0038", "success": true, "turns": 7, "elapsed_ms": 5729.822}
+{"timestamp": "2026-08-28T16:04:46.760001+00:00", "event": "session_started", "index": 39, "total": 200, "scenario_id": "public_0039", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:46.903750+00:00", "event": "session_completed", "index": 39, "total": 200, "scenario_id": "public_0039", "success": true, "turns": 1, "elapsed_ms": 144.569}
+{"timestamp": "2026-08-28T16:04:46.903750+00:00", "event": "session_started", "index": 40, "total": 200, "scenario_id": "public_0040", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:57.979853+00:00", "event": "session_completed", "index": 40, "total": 200, "scenario_id": "public_0040", "success": false, "turns": 10, "elapsed_ms": 11075.91}
+{"timestamp": "2026-08-28T16:04:57.979853+00:00", "event": "session_started", "index": 41, "total": 200, "scenario_id": "public_0041", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:58.086571+00:00", "event": "session_completed", "index": 41, "total": 200, "scenario_id": "public_0041", "success": true, "turns": 1, "elapsed_ms": 106.318}
+{"timestamp": "2026-08-28T16:04:58.086571+00:00", "event": "session_started", "index": 42, "total": 200, "scenario_id": "public_0042", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:58.216293+00:00", "event": "session_completed", "index": 42, "total": 200, "scenario_id": "public_0042", "success": true, "turns": 1, "elapsed_ms": 129.795}
+{"timestamp": "2026-08-28T16:04:58.216293+00:00", "event": "session_started", "index": 43, "total": 200, "scenario_id": "public_0043", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:58.781890+00:00", "event": "session_completed", "index": 43, "total": 200, "scenario_id": "public_0043", "success": true, "turns": 3, "elapsed_ms": 565.938}
+{"timestamp": "2026-08-28T16:04:58.781890+00:00", "event": "session_started", "index": 44, "total": 200, "scenario_id": "public_0044", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:59.312442+00:00", "event": "session_completed", "index": 44, "total": 200, "scenario_id": "public_0044", "success": true, "turns": 1, "elapsed_ms": 529.792}
+{"timestamp": "2026-08-28T16:04:59.312442+00:00", "event": "session_started", "index": 45, "total": 200, "scenario_id": "public_0045", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:04:59.438639+00:00", "event": "session_completed", "index": 45, "total": 200, "scenario_id": "public_0045", "success": true, "turns": 1, "elapsed_ms": 126.763}
+{"timestamp": "2026-08-28T16:04:59.438639+00:00", "event": "session_started", "index": 46, "total": 200, "scenario_id": "public_0046", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:10.435887+00:00", "event": "session_completed", "index": 46, "total": 200, "scenario_id": "public_0046", "success": false, "turns": 10, "elapsed_ms": 10997.273}
+{"timestamp": "2026-08-28T16:05:10.435887+00:00", "event": "session_started", "index": 47, "total": 200, "scenario_id": "public_0047", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:11.107316+00:00", "event": "session_completed", "index": 47, "total": 200, "scenario_id": "public_0047", "success": true, "turns": 3, "elapsed_ms": 671.243}
+{"timestamp": "2026-08-28T16:05:11.107316+00:00", "event": "session_started", "index": 48, "total": 200, "scenario_id": "public_0048", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:13.019737+00:00", "event": "session_completed", "index": 48, "total": 200, "scenario_id": "public_0048", "success": true, "turns": 4, "elapsed_ms": 1912.301}
+{"timestamp": "2026-08-28T16:05:13.019737+00:00", "event": "session_started", "index": 49, "total": 200, "scenario_id": "public_0049", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:16.255973+00:00", "event": "session_completed", "index": 49, "total": 200, "scenario_id": "public_0049", "success": true, "turns": 5, "elapsed_ms": 3236.513}
+{"timestamp": "2026-08-28T16:05:16.256973+00:00", "event": "session_started", "index": 50, "total": 200, "scenario_id": "public_0050", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:16.398177+00:00", "event": "session_completed", "index": 50, "total": 200, "scenario_id": "public_0050", "success": true, "turns": 1, "elapsed_ms": 141.672}
+{"timestamp": "2026-08-28T16:05:16.398177+00:00", "event": "session_started", "index": 51, "total": 200, "scenario_id": "public_0051", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:26.919104+00:00", "event": "session_completed", "index": 51, "total": 200, "scenario_id": "public_0051", "success": false, "turns": 10, "elapsed_ms": 10521.265}
+{"timestamp": "2026-08-28T16:05:26.919104+00:00", "event": "session_started", "index": 52, "total": 200, "scenario_id": "public_0052", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:28.918985+00:00", "event": "session_completed", "index": 52, "total": 200, "scenario_id": "public_0052", "success": true, "turns": 4, "elapsed_ms": 1999.746}
+{"timestamp": "2026-08-28T16:05:28.918985+00:00", "event": "session_started", "index": 53, "total": 200, "scenario_id": "public_0053", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:29.124180+00:00", "event": "session_completed", "index": 53, "total": 200, "scenario_id": "public_0053", "success": true, "turns": 1, "elapsed_ms": 204.444}
+{"timestamp": "2026-08-28T16:05:29.124180+00:00", "event": "session_started", "index": 54, "total": 200, "scenario_id": "public_0054", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:30.042278+00:00", "event": "session_completed", "index": 54, "total": 200, "scenario_id": "public_0054", "success": true, "turns": 2, "elapsed_ms": 918.445}
+{"timestamp": "2026-08-28T16:05:30.042278+00:00", "event": "session_started", "index": 55, "total": 200, "scenario_id": "public_0055", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:39.956770+00:00", "event": "session_completed", "index": 55, "total": 200, "scenario_id": "public_0055", "success": false, "turns": 10, "elapsed_ms": 9914.489}
+{"timestamp": "2026-08-28T16:05:39.956770+00:00", "event": "session_started", "index": 56, "total": 200, "scenario_id": "public_0056", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:40.071511+00:00", "event": "session_completed", "index": 56, "total": 200, "scenario_id": "public_0056", "success": true, "turns": 1, "elapsed_ms": 115.084}
+{"timestamp": "2026-08-28T16:05:40.071511+00:00", "event": "session_started", "index": 57, "total": 200, "scenario_id": "public_0057", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:50.598154+00:00", "event": "session_completed", "index": 57, "total": 200, "scenario_id": "public_0057", "success": false, "turns": 10, "elapsed_ms": 10526.363}
+{"timestamp": "2026-08-28T16:05:50.598154+00:00", "event": "session_started", "index": 58, "total": 200, "scenario_id": "public_0058", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:50.743493+00:00", "event": "session_completed", "index": 58, "total": 200, "scenario_id": "public_0058", "success": true, "turns": 1, "elapsed_ms": 145.197}
+{"timestamp": "2026-08-28T16:05:50.743493+00:00", "event": "session_started", "index": 59, "total": 200, "scenario_id": "public_0059", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:50.844386+00:00", "event": "session_completed", "index": 59, "total": 200, "scenario_id": "public_0059", "success": true, "turns": 1, "elapsed_ms": 100.689}
+{"timestamp": "2026-08-28T16:05:50.844386+00:00", "event": "session_started", "index": 60, "total": 200, "scenario_id": "public_0060", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:50.953938+00:00", "event": "session_completed", "index": 60, "total": 200, "scenario_id": "public_0060", "success": true, "turns": 1, "elapsed_ms": 109.192}
+{"timestamp": "2026-08-28T16:05:50.953938+00:00", "event": "session_started", "index": 61, "total": 200, "scenario_id": "public_0061", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:51.141823+00:00", "event": "session_completed", "index": 61, "total": 200, "scenario_id": "public_0061", "success": true, "turns": 1, "elapsed_ms": 188.144}
+{"timestamp": "2026-08-28T16:05:51.141823+00:00", "event": "session_started", "index": 62, "total": 200, "scenario_id": "public_0062", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:51.285835+00:00", "event": "session_completed", "index": 62, "total": 200, "scenario_id": "public_0062", "success": true, "turns": 1, "elapsed_ms": 144.061}
+{"timestamp": "2026-08-28T16:05:51.285835+00:00", "event": "session_started", "index": 63, "total": 200, "scenario_id": "public_0063", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:51.426889+00:00", "event": "session_completed", "index": 63, "total": 200, "scenario_id": "public_0063", "success": true, "turns": 1, "elapsed_ms": 140.882}
+{"timestamp": "2026-08-28T16:05:51.426889+00:00", "event": "session_started", "index": 64, "total": 200, "scenario_id": "public_0064", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:05:53.371358+00:00", "event": "session_completed", "index": 64, "total": 200, "scenario_id": "public_0064", "success": true, "turns": 4, "elapsed_ms": 1944.554}
+{"timestamp": "2026-08-28T16:05:53.371358+00:00", "event": "session_started", "index": 65, "total": 200, "scenario_id": "public_0065", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:04.236912+00:00", "event": "session_completed", "index": 65, "total": 200, "scenario_id": "public_0065", "success": false, "turns": 10, "elapsed_ms": 10865.321}
+{"timestamp": "2026-08-28T16:06:04.236912+00:00", "event": "session_started", "index": 66, "total": 200, "scenario_id": "public_0066", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:04.632004+00:00", "event": "session_completed", "index": 66, "total": 200, "scenario_id": "public_0066", "success": true, "turns": 2, "elapsed_ms": 394.927}
+{"timestamp": "2026-08-28T16:06:04.632004+00:00", "event": "session_started", "index": 67, "total": 200, "scenario_id": "public_0067", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:04.790470+00:00", "event": "session_completed", "index": 67, "total": 200, "scenario_id": "public_0067", "success": true, "turns": 1, "elapsed_ms": 158.784}
+{"timestamp": "2026-08-28T16:06:04.790470+00:00", "event": "session_started", "index": 68, "total": 200, "scenario_id": "public_0068", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:06.399318+00:00", "event": "session_completed", "index": 68, "total": 200, "scenario_id": "public_0068", "success": true, "turns": 3, "elapsed_ms": 1608.684}
+{"timestamp": "2026-08-28T16:06:06.399318+00:00", "event": "session_started", "index": 69, "total": 200, "scenario_id": "public_0069", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:07.647447+00:00", "event": "session_completed", "index": 69, "total": 200, "scenario_id": "public_0069", "success": true, "turns": 3, "elapsed_ms": 1247.881}
+{"timestamp": "2026-08-28T16:06:07.647447+00:00", "event": "session_started", "index": 70, "total": 200, "scenario_id": "public_0070", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:07.793366+00:00", "event": "session_completed", "index": 70, "total": 200, "scenario_id": "public_0070", "success": true, "turns": 1, "elapsed_ms": 146.471}
+{"timestamp": "2026-08-28T16:06:07.793366+00:00", "event": "session_started", "index": 71, "total": 200, "scenario_id": "public_0071", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:16.803846+00:00", "event": "session_completed", "index": 71, "total": 200, "scenario_id": "public_0071", "success": true, "turns": 9, "elapsed_ms": 9010.246}
+{"timestamp": "2026-08-28T16:06:16.803846+00:00", "event": "session_started", "index": 72, "total": 200, "scenario_id": "public_0072", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:17.974847+00:00", "event": "session_completed", "index": 72, "total": 200, "scenario_id": "public_0072", "success": true, "turns": 3, "elapsed_ms": 1170.715}
+{"timestamp": "2026-08-28T16:06:17.974847+00:00", "event": "session_started", "index": 73, "total": 200, "scenario_id": "public_0073", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:18.345984+00:00", "event": "session_completed", "index": 73, "total": 200, "scenario_id": "public_0073", "success": true, "turns": 2, "elapsed_ms": 371.32}
+{"timestamp": "2026-08-28T16:06:18.345984+00:00", "event": "session_started", "index": 74, "total": 200, "scenario_id": "public_0074", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:28.444278+00:00", "event": "session_completed", "index": 74, "total": 200, "scenario_id": "public_0074", "success": false, "turns": 10, "elapsed_ms": 10098.251}
+{"timestamp": "2026-08-28T16:06:28.444278+00:00", "event": "session_started", "index": 75, "total": 200, "scenario_id": "public_0075", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:29.132833+00:00", "event": "session_completed", "index": 75, "total": 200, "scenario_id": "public_0075", "success": true, "turns": 2, "elapsed_ms": 688.479}
+{"timestamp": "2026-08-28T16:06:29.132833+00:00", "event": "session_started", "index": 76, "total": 200, "scenario_id": "public_0076", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:30.311383+00:00", "event": "session_completed", "index": 76, "total": 200, "scenario_id": "public_0076", "success": true, "turns": 3, "elapsed_ms": 1179.081}
+{"timestamp": "2026-08-28T16:06:30.312384+00:00", "event": "session_started", "index": 77, "total": 200, "scenario_id": "public_0077", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:30.431371+00:00", "event": "session_completed", "index": 77, "total": 200, "scenario_id": "public_0077", "success": true, "turns": 1, "elapsed_ms": 119.896}
+{"timestamp": "2026-08-28T16:06:30.431371+00:00", "event": "session_started", "index": 78, "total": 200, "scenario_id": "public_0078", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:33.693812+00:00", "event": "session_completed", "index": 78, "total": 200, "scenario_id": "public_0078", "success": true, "turns": 5, "elapsed_ms": 3261.487}
+{"timestamp": "2026-08-28T16:06:33.693812+00:00", "event": "session_started", "index": 79, "total": 200, "scenario_id": "public_0079", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:33.823567+00:00", "event": "session_completed", "index": 79, "total": 200, "scenario_id": "public_0079", "success": true, "turns": 1, "elapsed_ms": 130.536}
+{"timestamp": "2026-08-28T16:06:33.823567+00:00", "event": "session_started", "index": 80, "total": 200, "scenario_id": "public_0080", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:35.872129+00:00", "event": "session_completed", "index": 80, "total": 200, "scenario_id": "public_0080", "success": true, "turns": 4, "elapsed_ms": 2048.227}
+{"timestamp": "2026-08-28T16:06:35.872129+00:00", "event": "session_started", "index": 81, "total": 200, "scenario_id": "public_0081", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:35.965488+00:00", "event": "session_completed", "index": 81, "total": 200, "scenario_id": "public_0081", "success": true, "turns": 1, "elapsed_ms": 93.742}
+{"timestamp": "2026-08-28T16:06:35.965488+00:00", "event": "session_started", "index": 82, "total": 200, "scenario_id": "public_0082", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:36.229954+00:00", "event": "session_completed", "index": 82, "total": 200, "scenario_id": "public_0082", "success": true, "turns": 1, "elapsed_ms": 264.485}
+{"timestamp": "2026-08-28T16:06:36.230954+00:00", "event": "session_started", "index": 83, "total": 200, "scenario_id": "public_0083", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:42.346560+00:00", "event": "session_completed", "index": 83, "total": 200, "scenario_id": "public_0083", "success": true, "turns": 8, "elapsed_ms": 6116.379}
+{"timestamp": "2026-08-28T16:06:42.346560+00:00", "event": "session_started", "index": 84, "total": 200, "scenario_id": "public_0084", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:44.289516+00:00", "event": "session_completed", "index": 84, "total": 200, "scenario_id": "public_0084", "success": true, "turns": 4, "elapsed_ms": 1942.861}
+{"timestamp": "2026-08-28T16:06:44.289516+00:00", "event": "session_started", "index": 85, "total": 200, "scenario_id": "public_0085", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:44.970418+00:00", "event": "session_completed", "index": 85, "total": 200, "scenario_id": "public_0085", "success": true, "turns": 2, "elapsed_ms": 680.934}
+{"timestamp": "2026-08-28T16:06:44.970418+00:00", "event": "session_started", "index": 86, "total": 200, "scenario_id": "public_0086", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:55.618739+00:00", "event": "session_completed", "index": 86, "total": 200, "scenario_id": "public_0086", "success": false, "turns": 10, "elapsed_ms": 10648.25}
+{"timestamp": "2026-08-28T16:06:55.618739+00:00", "event": "session_started", "index": 87, "total": 200, "scenario_id": "public_0087", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:59.725324+00:00", "event": "session_completed", "index": 87, "total": 200, "scenario_id": "public_0087", "success": true, "turns": 6, "elapsed_ms": 4106.318}
+{"timestamp": "2026-08-28T16:06:59.725324+00:00", "event": "session_started", "index": 88, "total": 200, "scenario_id": "public_0088", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:06:59.876540+00:00", "event": "session_completed", "index": 88, "total": 200, "scenario_id": "public_0088", "success": true, "turns": 1, "elapsed_ms": 150.673}
+{"timestamp": "2026-08-28T16:06:59.876540+00:00", "event": "session_started", "index": 89, "total": 200, "scenario_id": "public_0089", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:00.990565+00:00", "event": "session_completed", "index": 89, "total": 200, "scenario_id": "public_0089", "success": true, "turns": 3, "elapsed_ms": 1114.528}
+{"timestamp": "2026-08-28T16:07:00.990565+00:00", "event": "session_started", "index": 90, "total": 200, "scenario_id": "public_0090", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:01.245522+00:00", "event": "session_completed", "index": 90, "total": 200, "scenario_id": "public_0090", "success": true, "turns": 1, "elapsed_ms": 255.3}
+{"timestamp": "2026-08-28T16:07:01.246524+00:00", "event": "session_started", "index": 91, "total": 200, "scenario_id": "public_0091", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:01.448061+00:00", "event": "session_completed", "index": 91, "total": 200, "scenario_id": "public_0091", "success": true, "turns": 1, "elapsed_ms": 202.435}
+{"timestamp": "2026-08-28T16:07:01.449059+00:00", "event": "session_started", "index": 92, "total": 200, "scenario_id": "public_0092", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:03.450335+00:00", "event": "session_completed", "index": 92, "total": 200, "scenario_id": "public_0092", "success": true, "turns": 4, "elapsed_ms": 2002.089}
+{"timestamp": "2026-08-28T16:07:03.450335+00:00", "event": "session_started", "index": 93, "total": 200, "scenario_id": "public_0093", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:03.976232+00:00", "event": "session_completed", "index": 93, "total": 200, "scenario_id": "public_0093", "success": true, "turns": 1, "elapsed_ms": 525.421}
+{"timestamp": "2026-08-28T16:07:03.976232+00:00", "event": "session_started", "index": 94, "total": 200, "scenario_id": "public_0094", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:14.530350+00:00", "event": "session_completed", "index": 94, "total": 200, "scenario_id": "public_0094", "success": false, "turns": 10, "elapsed_ms": 10554.641}
+{"timestamp": "2026-08-28T16:07:14.531347+00:00", "event": "session_started", "index": 95, "total": 200, "scenario_id": "public_0095", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:15.377715+00:00", "event": "session_completed", "index": 95, "total": 200, "scenario_id": "public_0095", "success": true, "turns": 2, "elapsed_ms": 846.538}
+{"timestamp": "2026-08-28T16:07:15.377715+00:00", "event": "session_started", "index": 96, "total": 200, "scenario_id": "public_0096", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:26.399797+00:00", "event": "session_completed", "index": 96, "total": 200, "scenario_id": "public_0096", "success": false, "turns": 10, "elapsed_ms": 11022.371}
+{"timestamp": "2026-08-28T16:07:26.399797+00:00", "event": "session_started", "index": 97, "total": 200, "scenario_id": "public_0097", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:37.951323+00:00", "event": "session_completed", "index": 97, "total": 200, "scenario_id": "public_0097", "success": false, "turns": 10, "elapsed_ms": 11551.465}
+{"timestamp": "2026-08-28T16:07:37.951323+00:00", "event": "session_started", "index": 98, "total": 200, "scenario_id": "public_0098", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:48.895695+00:00", "event": "session_completed", "index": 98, "total": 200, "scenario_id": "public_0098", "success": false, "turns": 10, "elapsed_ms": 10943.897}
+{"timestamp": "2026-08-28T16:07:48.895695+00:00", "event": "session_started", "index": 99, "total": 200, "scenario_id": "public_0099", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:07:59.271427+00:00", "event": "session_completed", "index": 99, "total": 200, "scenario_id": "public_0099", "success": false, "turns": 10, "elapsed_ms": 10375.673}
+{"timestamp": "2026-08-28T16:07:59.271427+00:00", "event": "session_started", "index": 100, "total": 200, "scenario_id": "public_0100", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:10.582555+00:00", "event": "session_completed", "index": 100, "total": 200, "scenario_id": "public_0100", "success": false, "turns": 10, "elapsed_ms": 11311.086}
+{"timestamp": "2026-08-28T16:08:10.582555+00:00", "event": "session_started", "index": 101, "total": 200, "scenario_id": "public_0101", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:10.734306+00:00", "event": "session_completed", "index": 101, "total": 200, "scenario_id": "public_0101", "success": true, "turns": 1, "elapsed_ms": 152.152}
+{"timestamp": "2026-08-28T16:08:10.734306+00:00", "event": "session_started", "index": 102, "total": 200, "scenario_id": "public_0102", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:10.847163+00:00", "event": "session_completed", "index": 102, "total": 200, "scenario_id": "public_0102", "success": true, "turns": 1, "elapsed_ms": 112.494}
+{"timestamp": "2026-08-28T16:08:10.847163+00:00", "event": "session_started", "index": 103, "total": 200, "scenario_id": "public_0103", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:12.235272+00:00", "event": "session_completed", "index": 103, "total": 200, "scenario_id": "public_0103", "success": true, "turns": 4, "elapsed_ms": 1387.741}
+{"timestamp": "2026-08-28T16:08:12.235272+00:00", "event": "session_started", "index": 104, "total": 200, "scenario_id": "public_0104", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:12.361514+00:00", "event": "session_completed", "index": 104, "total": 200, "scenario_id": "public_0104", "success": true, "turns": 1, "elapsed_ms": 126.8}
+{"timestamp": "2026-08-28T16:08:12.361514+00:00", "event": "session_started", "index": 105, "total": 200, "scenario_id": "public_0105", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:12.885838+00:00", "event": "session_completed", "index": 105, "total": 200, "scenario_id": "public_0105", "success": true, "turns": 1, "elapsed_ms": 523.749}
+{"timestamp": "2026-08-28T16:08:12.885838+00:00", "event": "session_started", "index": 106, "total": 200, "scenario_id": "public_0106", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:13.027156+00:00", "event": "session_completed", "index": 106, "total": 200, "scenario_id": "public_0106", "success": true, "turns": 1, "elapsed_ms": 141.362}
+{"timestamp": "2026-08-28T16:08:13.027156+00:00", "event": "session_started", "index": 107, "total": 200, "scenario_id": "public_0107", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:13.183915+00:00", "event": "session_completed", "index": 107, "total": 200, "scenario_id": "public_0107", "success": true, "turns": 1, "elapsed_ms": 156.752}
+{"timestamp": "2026-08-28T16:08:13.183915+00:00", "event": "session_started", "index": 108, "total": 200, "scenario_id": "public_0108", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:24.496027+00:00", "event": "session_completed", "index": 108, "total": 200, "scenario_id": "public_0108", "success": false, "turns": 10, "elapsed_ms": 11312.435}
+{"timestamp": "2026-08-28T16:08:24.496027+00:00", "event": "session_started", "index": 109, "total": 200, "scenario_id": "public_0109", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:36.480289+00:00", "event": "session_completed", "index": 109, "total": 200, "scenario_id": "public_0109", "success": false, "turns": 10, "elapsed_ms": 11983.904}
+{"timestamp": "2026-08-28T16:08:36.480289+00:00", "event": "session_started", "index": 110, "total": 200, "scenario_id": "public_0110", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:37.199153+00:00", "event": "session_completed", "index": 110, "total": 200, "scenario_id": "public_0110", "success": true, "turns": 3, "elapsed_ms": 719.015}
+{"timestamp": "2026-08-28T16:08:37.199153+00:00", "event": "session_started", "index": 111, "total": 200, "scenario_id": "public_0111", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:38.708110+00:00", "event": "session_completed", "index": 111, "total": 200, "scenario_id": "public_0111", "success": true, "turns": 3, "elapsed_ms": 1509.219}
+{"timestamp": "2026-08-28T16:08:38.708110+00:00", "event": "session_started", "index": 112, "total": 200, "scenario_id": "public_0112", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:39.914449+00:00", "event": "session_completed", "index": 112, "total": 200, "scenario_id": "public_0112", "success": true, "turns": 3, "elapsed_ms": 1205.974}
+{"timestamp": "2026-08-28T16:08:39.914449+00:00", "event": "session_started", "index": 113, "total": 200, "scenario_id": "public_0113", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:43.928569+00:00", "event": "session_completed", "index": 113, "total": 200, "scenario_id": "public_0113", "success": true, "turns": 6, "elapsed_ms": 4014.493}
+{"timestamp": "2026-08-28T16:08:43.929575+00:00", "event": "session_started", "index": 114, "total": 200, "scenario_id": "public_0114", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:46.023706+00:00", "event": "session_completed", "index": 114, "total": 200, "scenario_id": "public_0114", "success": true, "turns": 4, "elapsed_ms": 2094.475}
+{"timestamp": "2026-08-28T16:08:46.023706+00:00", "event": "session_started", "index": 115, "total": 200, "scenario_id": "public_0115", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:47.034832+00:00", "event": "session_completed", "index": 115, "total": 200, "scenario_id": "public_0115", "success": true, "turns": 3, "elapsed_ms": 1011.243}
+{"timestamp": "2026-08-28T16:08:47.034832+00:00", "event": "session_started", "index": 116, "total": 200, "scenario_id": "public_0116", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:47.183536+00:00", "event": "session_completed", "index": 116, "total": 200, "scenario_id": "public_0116", "success": true, "turns": 1, "elapsed_ms": 148.775}
+{"timestamp": "2026-08-28T16:08:47.183536+00:00", "event": "session_started", "index": 117, "total": 200, "scenario_id": "public_0117", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:49.305369+00:00", "event": "session_completed", "index": 117, "total": 200, "scenario_id": "public_0117", "success": true, "turns": 4, "elapsed_ms": 2121.612}
+{"timestamp": "2026-08-28T16:08:49.305369+00:00", "event": "session_started", "index": 118, "total": 200, "scenario_id": "public_0118", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:49.445261+00:00", "event": "session_completed", "index": 118, "total": 200, "scenario_id": "public_0118", "success": true, "turns": 1, "elapsed_ms": 139.755}
+{"timestamp": "2026-08-28T16:08:49.445261+00:00", "event": "session_started", "index": 119, "total": 200, "scenario_id": "public_0119", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:49.596546+00:00", "event": "session_completed", "index": 119, "total": 200, "scenario_id": "public_0119", "success": true, "turns": 1, "elapsed_ms": 151.324}
+{"timestamp": "2026-08-28T16:08:49.596546+00:00", "event": "session_started", "index": 120, "total": 200, "scenario_id": "public_0120", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:49.743547+00:00", "event": "session_completed", "index": 120, "total": 200, "scenario_id": "public_0120", "success": true, "turns": 1, "elapsed_ms": 146.867}
+{"timestamp": "2026-08-28T16:08:49.743547+00:00", "event": "session_started", "index": 121, "total": 200, "scenario_id": "public_0121", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:50.727016+00:00", "event": "session_completed", "index": 121, "total": 200, "scenario_id": "public_0121", "success": true, "turns": 3, "elapsed_ms": 983.461}
+{"timestamp": "2026-08-28T16:08:50.727016+00:00", "event": "session_started", "index": 122, "total": 200, "scenario_id": "public_0122", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:52.798780+00:00", "event": "session_completed", "index": 122, "total": 200, "scenario_id": "public_0122", "success": true, "turns": 4, "elapsed_ms": 2072.094}
+{"timestamp": "2026-08-28T16:08:52.798780+00:00", "event": "session_started", "index": 123, "total": 200, "scenario_id": "public_0123", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:54.373223+00:00", "event": "session_completed", "index": 123, "total": 200, "scenario_id": "public_0123", "success": true, "turns": 3, "elapsed_ms": 1574.123}
+{"timestamp": "2026-08-28T16:08:54.373223+00:00", "event": "session_started", "index": 124, "total": 200, "scenario_id": "public_0124", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:57.295812+00:00", "event": "session_completed", "index": 124, "total": 200, "scenario_id": "public_0124", "success": true, "turns": 5, "elapsed_ms": 2922.241}
+{"timestamp": "2026-08-28T16:08:57.295812+00:00", "event": "session_started", "index": 125, "total": 200, "scenario_id": "public_0125", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:08:59.173332+00:00", "event": "session_completed", "index": 125, "total": 200, "scenario_id": "public_0125", "success": true, "turns": 4, "elapsed_ms": 1878.25}
+{"timestamp": "2026-08-28T16:08:59.174332+00:00", "event": "session_started", "index": 126, "total": 200, "scenario_id": "public_0126", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:02.609977+00:00", "event": "session_completed", "index": 126, "total": 200, "scenario_id": "public_0126", "success": true, "turns": 5, "elapsed_ms": 3435.682}
+{"timestamp": "2026-08-28T16:09:02.609977+00:00", "event": "session_started", "index": 127, "total": 200, "scenario_id": "public_0127", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:03.357822+00:00", "event": "session_completed", "index": 127, "total": 200, "scenario_id": "public_0127", "success": true, "turns": 3, "elapsed_ms": 747.98}
+{"timestamp": "2026-08-28T16:09:03.357822+00:00", "event": "session_started", "index": 128, "total": 200, "scenario_id": "public_0128", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:05.053533+00:00", "event": "session_completed", "index": 128, "total": 200, "scenario_id": "public_0128", "success": true, "turns": 3, "elapsed_ms": 1695.739}
+{"timestamp": "2026-08-28T16:09:05.053533+00:00", "event": "session_started", "index": 129, "total": 200, "scenario_id": "public_0129", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:05.214100+00:00", "event": "session_completed", "index": 129, "total": 200, "scenario_id": "public_0129", "success": true, "turns": 1, "elapsed_ms": 160.96}
+{"timestamp": "2026-08-28T16:09:05.214100+00:00", "event": "session_started", "index": 130, "total": 200, "scenario_id": "public_0130", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:16.572633+00:00", "event": "session_completed", "index": 130, "total": 200, "scenario_id": "public_0130", "success": false, "turns": 10, "elapsed_ms": 11358.62}
+{"timestamp": "2026-08-28T16:09:16.572633+00:00", "event": "session_started", "index": 131, "total": 200, "scenario_id": "public_0131", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:16.725113+00:00", "event": "session_completed", "index": 131, "total": 200, "scenario_id": "public_0131", "success": true, "turns": 1, "elapsed_ms": 152.195}
+{"timestamp": "2026-08-28T16:09:16.725113+00:00", "event": "session_started", "index": 132, "total": 200, "scenario_id": "public_0132", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:19.662365+00:00", "event": "session_completed", "index": 132, "total": 200, "scenario_id": "public_0132", "success": true, "turns": 5, "elapsed_ms": 2937.368}
+{"timestamp": "2026-08-28T16:09:19.662365+00:00", "event": "session_started", "index": 133, "total": 200, "scenario_id": "public_0133", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:31.413888+00:00", "event": "session_completed", "index": 133, "total": 200, "scenario_id": "public_0133", "success": false, "turns": 10, "elapsed_ms": 11751.861}
+{"timestamp": "2026-08-28T16:09:31.413888+00:00", "event": "session_started", "index": 134, "total": 200, "scenario_id": "public_0134", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:31.603732+00:00", "event": "session_completed", "index": 134, "total": 200, "scenario_id": "public_0134", "success": true, "turns": 1, "elapsed_ms": 189.356}
+{"timestamp": "2026-08-28T16:09:31.603732+00:00", "event": "session_started", "index": 135, "total": 200, "scenario_id": "public_0135", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:35.758753+00:00", "event": "session_completed", "index": 135, "total": 200, "scenario_id": "public_0135", "success": true, "turns": 6, "elapsed_ms": 4154.547}
+{"timestamp": "2026-08-28T16:09:35.758753+00:00", "event": "session_started", "index": 136, "total": 200, "scenario_id": "public_0136", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:35.892678+00:00", "event": "session_completed", "index": 136, "total": 200, "scenario_id": "public_0136", "success": true, "turns": 1, "elapsed_ms": 134.496}
+{"timestamp": "2026-08-28T16:09:35.892678+00:00", "event": "session_started", "index": 137, "total": 200, "scenario_id": "public_0137", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:36.290680+00:00", "event": "session_completed", "index": 137, "total": 200, "scenario_id": "public_0137", "success": true, "turns": 2, "elapsed_ms": 397.737}
+{"timestamp": "2026-08-28T16:09:36.290680+00:00", "event": "session_started", "index": 138, "total": 200, "scenario_id": "public_0138", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:36.407940+00:00", "event": "session_completed", "index": 138, "total": 200, "scenario_id": "public_0138", "success": true, "turns": 1, "elapsed_ms": 117.508}
+{"timestamp": "2026-08-28T16:09:36.407940+00:00", "event": "session_started", "index": 139, "total": 200, "scenario_id": "public_0139", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:38.376898+00:00", "event": "session_completed", "index": 139, "total": 200, "scenario_id": "public_0139", "success": true, "turns": 4, "elapsed_ms": 1968.653}
+{"timestamp": "2026-08-28T16:09:38.376898+00:00", "event": "session_started", "index": 140, "total": 200, "scenario_id": "public_0140", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:39.035426+00:00", "event": "session_completed", "index": 140, "total": 200, "scenario_id": "public_0140", "success": true, "turns": 2, "elapsed_ms": 658.607}
+{"timestamp": "2026-08-28T16:09:39.035426+00:00", "event": "session_started", "index": 141, "total": 200, "scenario_id": "public_0141", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:39.533335+00:00", "event": "session_completed", "index": 141, "total": 200, "scenario_id": "public_0141", "success": true, "turns": 2, "elapsed_ms": 497.91}
+{"timestamp": "2026-08-28T16:09:39.533335+00:00", "event": "session_started", "index": 142, "total": 200, "scenario_id": "public_0142", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:42.148020+00:00", "event": "session_completed", "index": 142, "total": 200, "scenario_id": "public_0142", "success": true, "turns": 4, "elapsed_ms": 2614.359}
+{"timestamp": "2026-08-28T16:09:42.148020+00:00", "event": "session_started", "index": 143, "total": 200, "scenario_id": "public_0143", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:42.292244+00:00", "event": "session_completed", "index": 143, "total": 200, "scenario_id": "public_0143", "success": true, "turns": 1, "elapsed_ms": 144.312}
+{"timestamp": "2026-08-28T16:09:42.292244+00:00", "event": "session_started", "index": 144, "total": 200, "scenario_id": "public_0144", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:49.903969+00:00", "event": "session_completed", "index": 144, "total": 200, "scenario_id": "public_0144", "success": true, "turns": 8, "elapsed_ms": 7611.2}
+{"timestamp": "2026-08-28T16:09:49.903969+00:00", "event": "session_started", "index": 145, "total": 200, "scenario_id": "public_0145", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:50.075791+00:00", "event": "session_completed", "index": 145, "total": 200, "scenario_id": "public_0145", "success": true, "turns": 1, "elapsed_ms": 172.426}
+{"timestamp": "2026-08-28T16:09:50.075791+00:00", "event": "session_started", "index": 146, "total": 200, "scenario_id": "public_0146", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:51.253374+00:00", "event": "session_completed", "index": 146, "total": 200, "scenario_id": "public_0146", "success": true, "turns": 3, "elapsed_ms": 1176.967}
+{"timestamp": "2026-08-28T16:09:51.253374+00:00", "event": "session_started", "index": 147, "total": 200, "scenario_id": "public_0147", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:51.362290+00:00", "event": "session_completed", "index": 147, "total": 200, "scenario_id": "public_0147", "success": true, "turns": 1, "elapsed_ms": 109.253}
+{"timestamp": "2026-08-28T16:09:51.362290+00:00", "event": "session_started", "index": 148, "total": 200, "scenario_id": "public_0148", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:51.491438+00:00", "event": "session_completed", "index": 148, "total": 200, "scenario_id": "public_0148", "success": true, "turns": 1, "elapsed_ms": 129.188}
+{"timestamp": "2026-08-28T16:09:51.491438+00:00", "event": "session_started", "index": 149, "total": 200, "scenario_id": "public_0149", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:52.124797+00:00", "event": "session_completed", "index": 149, "total": 200, "scenario_id": "public_0149", "success": true, "turns": 1, "elapsed_ms": 632.788}
+{"timestamp": "2026-08-28T16:09:52.124797+00:00", "event": "session_started", "index": 150, "total": 200, "scenario_id": "public_0150", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:52.254838+00:00", "event": "session_completed", "index": 150, "total": 200, "scenario_id": "public_0150", "success": true, "turns": 1, "elapsed_ms": 131.242}
+{"timestamp": "2026-08-28T16:09:52.254838+00:00", "event": "session_started", "index": 151, "total": 200, "scenario_id": "public_0151", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:09:52.680120+00:00", "event": "session_completed", "index": 151, "total": 200, "scenario_id": "public_0151", "success": true, "turns": 2, "elapsed_ms": 424.054}
+{"timestamp": "2026-08-28T16:09:52.680120+00:00", "event": "session_started", "index": 152, "total": 200, "scenario_id": "public_0152", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:04.438507+00:00", "event": "session_completed", "index": 152, "total": 200, "scenario_id": "public_0152", "success": false, "turns": 10, "elapsed_ms": 11758.421}
+{"timestamp": "2026-08-28T16:10:04.438507+00:00", "event": "session_started", "index": 153, "total": 200, "scenario_id": "public_0153", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:05.842096+00:00", "event": "session_completed", "index": 153, "total": 200, "scenario_id": "public_0153", "success": true, "turns": 4, "elapsed_ms": 1403.366}
+{"timestamp": "2026-08-28T16:10:05.842096+00:00", "event": "session_started", "index": 154, "total": 200, "scenario_id": "public_0154", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:17.893992+00:00", "event": "session_completed", "index": 154, "total": 200, "scenario_id": "public_0154", "success": false, "turns": 10, "elapsed_ms": 12052.013}
+{"timestamp": "2026-08-28T16:10:17.893992+00:00", "event": "session_started", "index": 155, "total": 200, "scenario_id": "public_0155", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:18.045934+00:00", "event": "session_completed", "index": 155, "total": 200, "scenario_id": "public_0155", "success": true, "turns": 1, "elapsed_ms": 151.749}
+{"timestamp": "2026-08-28T16:10:18.045934+00:00", "event": "session_started", "index": 156, "total": 200, "scenario_id": "public_0156", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:18.230868+00:00", "event": "session_completed", "index": 156, "total": 200, "scenario_id": "public_0156", "success": true, "turns": 1, "elapsed_ms": 185.818}
+{"timestamp": "2026-08-28T16:10:18.230868+00:00", "event": "session_started", "index": 157, "total": 200, "scenario_id": "public_0157", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:18.403883+00:00", "event": "session_completed", "index": 157, "total": 200, "scenario_id": "public_0157", "success": true, "turns": 1, "elapsed_ms": 172.056}
+{"timestamp": "2026-08-28T16:10:18.403883+00:00", "event": "session_started", "index": 158, "total": 200, "scenario_id": "public_0158", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:18.538007+00:00", "event": "session_completed", "index": 158, "total": 200, "scenario_id": "public_0158", "success": true, "turns": 1, "elapsed_ms": 134.254}
+{"timestamp": "2026-08-28T16:10:18.538007+00:00", "event": "session_started", "index": 159, "total": 200, "scenario_id": "public_0159", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:18.935019+00:00", "event": "session_completed", "index": 159, "total": 200, "scenario_id": "public_0159", "success": true, "turns": 2, "elapsed_ms": 397.535}
+{"timestamp": "2026-08-28T16:10:18.935019+00:00", "event": "session_started", "index": 160, "total": 200, "scenario_id": "public_0160", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:19.119341+00:00", "event": "session_completed", "index": 160, "total": 200, "scenario_id": "public_0160", "success": true, "turns": 1, "elapsed_ms": 184.228}
+{"timestamp": "2026-08-28T16:10:19.119341+00:00", "event": "session_started", "index": 161, "total": 200, "scenario_id": "public_0161", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:30.736612+00:00", "event": "session_completed", "index": 161, "total": 200, "scenario_id": "public_0161", "success": false, "turns": 10, "elapsed_ms": 11616.68}
+{"timestamp": "2026-08-28T16:10:30.736612+00:00", "event": "session_started", "index": 162, "total": 200, "scenario_id": "public_0162", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:31.945417+00:00", "event": "session_completed", "index": 162, "total": 200, "scenario_id": "public_0162", "success": true, "turns": 3, "elapsed_ms": 1209.109}
+{"timestamp": "2026-08-28T16:10:31.945417+00:00", "event": "session_started", "index": 163, "total": 200, "scenario_id": "public_0163", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:44.061342+00:00", "event": "session_completed", "index": 163, "total": 200, "scenario_id": "public_0163", "success": false, "turns": 10, "elapsed_ms": 12115.71}
+{"timestamp": "2026-08-28T16:10:44.061342+00:00", "event": "session_started", "index": 164, "total": 200, "scenario_id": "public_0164", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:46.654376+00:00", "event": "session_completed", "index": 164, "total": 200, "scenario_id": "public_0164", "success": true, "turns": 5, "elapsed_ms": 2593.195}
+{"timestamp": "2026-08-28T16:10:46.654376+00:00", "event": "session_started", "index": 165, "total": 200, "scenario_id": "public_0165", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:10:57.715298+00:00", "event": "session_completed", "index": 165, "total": 200, "scenario_id": "public_0165", "success": false, "turns": 10, "elapsed_ms": 11060.742}
+{"timestamp": "2026-08-28T16:10:57.715298+00:00", "event": "session_started", "index": 166, "total": 200, "scenario_id": "public_0166", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:00.052272+00:00", "event": "session_completed", "index": 166, "total": 200, "scenario_id": "public_0166", "success": true, "turns": 4, "elapsed_ms": 2336.683}
+{"timestamp": "2026-08-28T16:11:00.052272+00:00", "event": "session_started", "index": 167, "total": 200, "scenario_id": "public_0167", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:08.919084+00:00", "event": "session_completed", "index": 167, "total": 200, "scenario_id": "public_0167", "success": false, "turns": 10, "elapsed_ms": 8867.263}
+{"timestamp": "2026-08-28T16:11:08.920085+00:00", "event": "session_started", "index": 168, "total": 200, "scenario_id": "public_0168", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:09.231304+00:00", "event": "session_completed", "index": 168, "total": 200, "scenario_id": "public_0168", "success": true, "turns": 1, "elapsed_ms": 311.951}
+{"timestamp": "2026-08-28T16:11:09.231304+00:00", "event": "session_started", "index": 169, "total": 200, "scenario_id": "public_0169", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:10.332544+00:00", "event": "session_completed", "index": 169, "total": 200, "scenario_id": "public_0169", "success": true, "turns": 3, "elapsed_ms": 1101.385}
+{"timestamp": "2026-08-28T16:11:10.332544+00:00", "event": "session_started", "index": 170, "total": 200, "scenario_id": "public_0170", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:12.339305+00:00", "event": "session_completed", "index": 170, "total": 200, "scenario_id": "public_0170", "success": true, "turns": 4, "elapsed_ms": 2006.032}
+{"timestamp": "2026-08-28T16:11:12.339305+00:00", "event": "session_started", "index": 171, "total": 200, "scenario_id": "public_0171", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:13.460652+00:00", "event": "session_completed", "index": 171, "total": 200, "scenario_id": "public_0171", "success": true, "turns": 3, "elapsed_ms": 1121.995}
+{"timestamp": "2026-08-28T16:11:13.460652+00:00", "event": "session_started", "index": 172, "total": 200, "scenario_id": "public_0172", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:24.764814+00:00", "event": "session_completed", "index": 172, "total": 200, "scenario_id": "public_0172", "success": false, "turns": 10, "elapsed_ms": 11303.851}
+{"timestamp": "2026-08-28T16:11:24.764814+00:00", "event": "session_started", "index": 173, "total": 200, "scenario_id": "public_0173", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:28.541320+00:00", "event": "session_completed", "index": 173, "total": 200, "scenario_id": "public_0173", "success": true, "turns": 5, "elapsed_ms": 3776.321}
+{"timestamp": "2026-08-28T16:11:28.541320+00:00", "event": "session_started", "index": 174, "total": 200, "scenario_id": "public_0174", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:29.235477+00:00", "event": "session_completed", "index": 174, "total": 200, "scenario_id": "public_0174", "success": true, "turns": 3, "elapsed_ms": 693.75}
+{"timestamp": "2026-08-28T16:11:29.235477+00:00", "event": "session_started", "index": 175, "total": 200, "scenario_id": "public_0175", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:30.244970+00:00", "event": "session_completed", "index": 175, "total": 200, "scenario_id": "public_0175", "success": true, "turns": 3, "elapsed_ms": 1010.219}
+{"timestamp": "2026-08-28T16:11:30.244970+00:00", "event": "session_started", "index": 176, "total": 200, "scenario_id": "public_0176", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:30.838537+00:00", "event": "session_completed", "index": 176, "total": 200, "scenario_id": "public_0176", "success": true, "turns": 1, "elapsed_ms": 593.358}
+{"timestamp": "2026-08-28T16:11:30.838537+00:00", "event": "session_started", "index": 177, "total": 200, "scenario_id": "public_0177", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:33.013032+00:00", "event": "session_completed", "index": 177, "total": 200, "scenario_id": "public_0177", "success": true, "turns": 4, "elapsed_ms": 2174.684}
+{"timestamp": "2026-08-28T16:11:33.014032+00:00", "event": "session_started", "index": 178, "total": 200, "scenario_id": "public_0178", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:33.396185+00:00", "event": "session_completed", "index": 178, "total": 200, "scenario_id": "public_0178", "success": true, "turns": 2, "elapsed_ms": 382.932}
+{"timestamp": "2026-08-28T16:11:33.396185+00:00", "event": "session_started", "index": 179, "total": 200, "scenario_id": "public_0179", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:40.213731+00:00", "event": "session_completed", "index": 179, "total": 200, "scenario_id": "public_0179", "success": true, "turns": 8, "elapsed_ms": 6817.54}
+{"timestamp": "2026-08-28T16:11:40.214632+00:00", "event": "session_started", "index": 180, "total": 200, "scenario_id": "public_0180", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:51.043779+00:00", "event": "session_completed", "index": 180, "total": 200, "scenario_id": "public_0180", "success": false, "turns": 10, "elapsed_ms": 10829.612}
+{"timestamp": "2026-08-28T16:11:51.043779+00:00", "event": "session_started", "index": 181, "total": 200, "scenario_id": "public_0181", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:51.162414+00:00", "event": "session_completed", "index": 181, "total": 200, "scenario_id": "public_0181", "success": true, "turns": 1, "elapsed_ms": 118.872}
+{"timestamp": "2026-08-28T16:11:51.162414+00:00", "event": "session_started", "index": 182, "total": 200, "scenario_id": "public_0182", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:51.297817+00:00", "event": "session_completed", "index": 182, "total": 200, "scenario_id": "public_0182", "success": true, "turns": 1, "elapsed_ms": 134.749}
+{"timestamp": "2026-08-28T16:11:51.297817+00:00", "event": "session_started", "index": 183, "total": 200, "scenario_id": "public_0183", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:11:52.949979+00:00", "event": "session_completed", "index": 183, "total": 200, "scenario_id": "public_0183", "success": true, "turns": 4, "elapsed_ms": 1652.319}
+{"timestamp": "2026-08-28T16:11:52.949979+00:00", "event": "session_started", "index": 184, "total": 200, "scenario_id": "public_0184", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:04.575009+00:00", "event": "session_completed", "index": 184, "total": 200, "scenario_id": "public_0184", "success": false, "turns": 10, "elapsed_ms": 11625.24}
+{"timestamp": "2026-08-28T16:12:04.575009+00:00", "event": "session_started", "index": 185, "total": 200, "scenario_id": "public_0185", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:04.749763+00:00", "event": "session_completed", "index": 185, "total": 200, "scenario_id": "public_0185", "success": true, "turns": 1, "elapsed_ms": 174.317}
+{"timestamp": "2026-08-28T16:12:04.749763+00:00", "event": "session_started", "index": 186, "total": 200, "scenario_id": "public_0186", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:06.042718+00:00", "event": "session_completed", "index": 186, "total": 200, "scenario_id": "public_0186", "success": true, "turns": 3, "elapsed_ms": 1293.408}
+{"timestamp": "2026-08-28T16:12:06.042718+00:00", "event": "session_started", "index": 187, "total": 200, "scenario_id": "public_0187", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:16.866429+00:00", "event": "session_completed", "index": 187, "total": 200, "scenario_id": "public_0187", "success": false, "turns": 10, "elapsed_ms": 10823.739}
+{"timestamp": "2026-08-28T16:12:16.866429+00:00", "event": "session_started", "index": 188, "total": 200, "scenario_id": "public_0188", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:17.715215+00:00", "event": "session_completed", "index": 188, "total": 200, "scenario_id": "public_0188", "success": true, "turns": 2, "elapsed_ms": 848.435}
+{"timestamp": "2026-08-28T16:12:17.715215+00:00", "event": "session_started", "index": 189, "total": 200, "scenario_id": "public_0189", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:17.854100+00:00", "event": "session_completed", "index": 189, "total": 200, "scenario_id": "public_0189", "success": true, "turns": 1, "elapsed_ms": 138.973}
+{"timestamp": "2026-08-28T16:12:17.854100+00:00", "event": "session_started", "index": 190, "total": 200, "scenario_id": "public_0190", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:18.002058+00:00", "event": "session_completed", "index": 190, "total": 200, "scenario_id": "public_0190", "success": true, "turns": 1, "elapsed_ms": 147.748}
+{"timestamp": "2026-08-28T16:12:18.002058+00:00", "event": "session_started", "index": 191, "total": 200, "scenario_id": "public_0191", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:18.356330+00:00", "event": "session_completed", "index": 191, "total": 200, "scenario_id": "public_0191", "success": true, "turns": 2, "elapsed_ms": 354.221}
+{"timestamp": "2026-08-28T16:12:18.356330+00:00", "event": "session_started", "index": 192, "total": 200, "scenario_id": "public_0192", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:20.376093+00:00", "event": "session_completed", "index": 192, "total": 200, "scenario_id": "public_0192", "success": true, "turns": 4, "elapsed_ms": 2019.727}
+{"timestamp": "2026-08-28T16:12:20.376093+00:00", "event": "session_started", "index": 193, "total": 200, "scenario_id": "public_0193", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:20.535264+00:00", "event": "session_completed", "index": 193, "total": 200, "scenario_id": "public_0193", "success": true, "turns": 1, "elapsed_ms": 159.602}
+{"timestamp": "2026-08-28T16:12:20.535264+00:00", "event": "session_started", "index": 194, "total": 200, "scenario_id": "public_0194", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:21.367018+00:00", "event": "session_completed", "index": 194, "total": 200, "scenario_id": "public_0194", "success": true, "turns": 2, "elapsed_ms": 831.67}
+{"timestamp": "2026-08-28T16:12:21.367018+00:00", "event": "session_started", "index": 195, "total": 200, "scenario_id": "public_0195", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:23.481113+00:00", "event": "session_completed", "index": 195, "total": 200, "scenario_id": "public_0195", "success": true, "turns": 4, "elapsed_ms": 2113.559}
+{"timestamp": "2026-08-28T16:12:23.481113+00:00", "event": "session_started", "index": 196, "total": 200, "scenario_id": "public_0196", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:33.548060+00:00", "event": "session_completed", "index": 196, "total": 200, "scenario_id": "public_0196", "success": false, "turns": 10, "elapsed_ms": 10067.021}
+{"timestamp": "2026-08-28T16:12:33.548060+00:00", "event": "session_started", "index": 197, "total": 200, "scenario_id": "public_0197", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:36.098888+00:00", "event": "session_completed", "index": 197, "total": 200, "scenario_id": "public_0197", "success": true, "turns": 4, "elapsed_ms": 2551.277}
+{"timestamp": "2026-08-28T16:12:36.099888+00:00", "event": "session_started", "index": 198, "total": 200, "scenario_id": "public_0198", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:47.359248+00:00", "event": "session_completed", "index": 198, "total": 200, "scenario_id": "public_0198", "success": false, "turns": 10, "elapsed_ms": 11259.946}
+{"timestamp": "2026-08-28T16:12:47.359248+00:00", "event": "session_started", "index": 199, "total": 200, "scenario_id": "public_0199", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:47.498599+00:00", "event": "session_completed", "index": 199, "total": 200, "scenario_id": "public_0199", "success": true, "turns": 1, "elapsed_ms": 139.457}
+{"timestamp": "2026-08-28T16:12:47.498599+00:00", "event": "session_started", "index": 200, "total": 200, "scenario_id": "public_0200", "protocol": "techjam"}
+{"timestamp": "2026-08-28T16:12:47.919451+00:00", "event": "session_completed", "index": 200, "total": 200, "scenario_id": "public_0200", "success": true, "turns": 2, "elapsed_ms": 420.671}
