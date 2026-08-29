@@ -42,6 +42,14 @@ def _price_band(price: object) -> str:
     return "120_plus"
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def prepare(
     metadata_path: Path,
     output_path: Path,
@@ -49,6 +57,7 @@ def prepare(
     *,
     sample_points: int,
     seed: int,
+    target_products: int | None = None,
 ) -> dict[str, Any]:
     file_size = metadata_path.stat().st_size
     offsets = _sample_offsets(file_size, sample_points, seed)
@@ -76,6 +85,14 @@ def prepare(
             seen.add(parent_asin)
             selected.append(row)
 
+    if target_products is not None:
+        if len(selected) < target_products:
+            raise ValueError(
+                f"only {len(selected)} unique products were sampled; "
+                f"target_products={target_products}"
+            )
+        selected = selected[:target_products]
+
     with output_path.open("w", encoding="utf-8", newline="\n") as target:
         for row in selected:
             target.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")))
@@ -85,7 +102,7 @@ def prepare(
         str((row.get("categories") or ["unknown"])[-1]) for row in selected
     )
     price_distribution = Counter(_price_band(row.get("price")) for row in selected)
-    output_sha256 = hashlib.sha256(output_path.read_bytes()).hexdigest()
+    output_sha256 = _sha256_file(output_path)
     manifest = {
         "schema_version": "1.0",
         "source_dataset": "Amazon Reviews 2023 Clothing_Shoes_and_Jewelry metadata",
@@ -95,6 +112,7 @@ def prepare(
             "method": "systematic_byte_segments_with_seeded_jitter",
             "seed": seed,
             "requested_sample_points": sample_points,
+            "target_products": target_products,
             "unique_products_written": len(selected),
             "invalid_json": invalid_json,
             "missing_parent_asin": missing_parent_asin,
@@ -124,16 +142,25 @@ def main() -> int:
     parser.add_argument("output_path", type=Path)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--sample-points", type=int, default=20_000)
+    parser.add_argument("--target-products", type=int)
     parser.add_argument("--seed", type=int, default=20260829)
     args = parser.parse_args()
     if args.sample_points < 1:
         raise ValueError("sample_points must be positive")
+    if args.target_products is not None and args.target_products < 1:
+        raise ValueError("target_products must be positive")
+    if (
+        args.target_products is not None
+        and args.sample_points < args.target_products
+    ):
+        raise ValueError("sample_points must be at least target_products")
     result = prepare(
         args.metadata_path,
         args.output_path,
         args.manifest,
         sample_points=args.sample_points,
         seed=args.seed,
+        target_products=args.target_products,
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0

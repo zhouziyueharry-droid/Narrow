@@ -15,9 +15,12 @@ def main() -> int:
     parser.add_argument("catalog_path", type=Path)
     parser.add_argument("index_output", type=Path)
     parser.add_argument("summary_output", type=Path)
+    parser.add_argument("--preset", default="realistic_broad", choices=PRESETS)
     args = parser.parse_args()
 
-    config = PRESETS["realistic_broad"]
+    config = PRESETS[args.preset]
+    if config["mode"] != "realistic":
+        raise ValueError("scenario export only supports realistic presets")
     difficulty = config["difficulty"]
     dataset = config["dataset"]
     products = list(TechJamDatasetAdapter(args.catalog_path).load_products())
@@ -98,7 +101,7 @@ def main() -> int:
     variants = Counter(scenario.scenario_type for scenario in scenarios)
     summary = {
         "schema_version": "1.0",
-        "preset": "realistic_broad",
+        "preset": args.preset,
         "source_dataset": dataset["source_dataset"],
         "catalog_path": str(args.catalog_path.resolve()),
         "catalog_products": len(products),

@@ -49,6 +49,10 @@ def test_yaml_configs_match_builtin_presets():
         "realistic": root / "configs" / "realistic.yaml",
         "realistic_hard": root / "configs" / "realistic_hard.yaml",
         "realistic_broad": root / "configs" / "realistic_broad.yaml",
+        "realistic_scale_200k": root / "configs" / "realistic_scale_200k.yaml",
+        "realistic_cross_category_500k": (
+            root / "configs" / "realistic_cross_category_500k.yaml"
+        ),
     }
     for name, path in config_paths.items():
         assert yaml.safe_load(path.read_text(encoding="utf-8")) == PRESETS[name]
