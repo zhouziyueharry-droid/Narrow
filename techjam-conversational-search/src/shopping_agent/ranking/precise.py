@@ -30,30 +30,55 @@ from shopping_agent.ranking.precise_features import build_global_idf, extract_ba
 # i.e. this is not an overfitting artifact. Full breakdown, the CV sweep, and
 # the bootstrap methodology are in docs/precise_reranker_change_report.md.
 #
-# Caveat: exact_matches and partial_matches are still negative and
-# budget_penalty is still ~0 (same multicollinearity story as v3 -- only 100
-# training sessions, ~306 positive rows out of 180k). Looser regularization
-# also means larger raw magnitudes (rrf_raw=266, partial_matches=-60) than
-# v3's; that is expected at high C and is why this was validated on a
-# disjoint holdout rather than trusted from training performance alone, but
-# it does mean these coefficients would likely shift again with more
-# training sessions -- treat this as "beats v3 on held-out data today", not
-# as a finished, interpretable model. A sign-constrained fit was also tried
-# earlier (see change report) and performed worse (0.566) -- not used.
+# Caveat on v4: exact_matches and partial_matches were negative and
+# budget_penalty was ~0 (multicollinearity -- only 100 training sessions,
+# ~306 positive rows out of 180k). Looser regularization also meant larger
+# raw magnitudes (rrf_raw=266, partial_matches=-60) than v3's. A
+# sign-constrained fit was also tried and performed worse (0.566) -- not
+# used.
+#
+# v5 (current): still only 100 official training sessions exist
+# (data/public_set.jsonl[100:200]), and v4's fragility traced back to that.
+# evaluator/local_evaluator.py's own scenario machinery (intent_card() /
+# behavior_for()) needs almost nothing to synthesize a *new*, fully valid
+# scenario -- just a target parent_asin, a scenario_type and a user_profile
+# -- so scripts/generate_synthetic_scenarios.py turns the full 50k-product
+# catalog into more training scenarios. First attempt: picked targets
+# uniformly at random -- this made the fit *worse* (0.594531 on the
+# holdout, worse than even FallbackReranker) because official targets are
+# NOT a random catalog sample: 89% have a price (vs 21% catalog-wide),
+# median rating_number 6846 (vs 12 catalog-wide -- i.e. roughly the top 1-2%
+# most-reviewed products), median 8 features (vs 5), price typically
+# $5-90. Re-generating with a filter matching that distribution (see
+# generate_synthetic_scenarios.py's default flags) and combining 500 of
+# those synthetic scenarios with the 100 real training sessions (fit via
+# `fit_precise_reranker_weights.py --extra-dataset
+# data/synthetic_scenarios_500.jsonl`, same C=100) validated on the same
+# disjoint [0:100] holdout at TechnicalScore 0.666743 vs FallbackReranker's
+# 0.634392 (+0.032351, bootstrap 95% CI [-0.023, +0.087], 87.3% of
+# resamples favored it) and vs v4's 0.661866 (+0.004877, 95% CI
+# [-0.009, +0.022], 72.1% of resamples favored it) -- a real but more
+# modest edge over v4 than an earlier ad-hoc trial run suggested (that run
+# used a differently-ordered random draw of the same filter and happened to
+# land nearer +0.014/93% win rate; this discrepancy between two draws of
+# "the same" synthetic generator is itself evidence of how much sampling
+# noise is still in play at this data size -- see
+# docs/precise_reranker_change_report.md for the full before/after story,
+# including the failed random-target attempt).
 DEFAULT_WEIGHTS: dict[str, float] = {
-    "exact_matches": -0.3593254966381364,
-    "partial_matches": -60.376664049001725,
-    "category_match": 1.0394807105122161,
-    "term_coverage": 2.4449026807580445,
-    "lexical_signal": 2.482095725827034,
-    "rrf_raw": 265.705713751426,
-    "dense_raw": -6.325204252236754,
-    "attribute_raw": 0.23545172724238964,
-    "profile_match": 1.284135952480367,
-    "quality": 27.0213313892136,
-    "contradictions": -4.314578338439157,
+    "exact_matches": -0.16342453170734514,
+    "partial_matches": -55.22335009739622,
+    "category_match": 1.8035450412747347,
+    "term_coverage": 1.7884411000722666,
+    "lexical_signal": 2.238576066293218,
+    "rrf_raw": 262.1056510356536,
+    "dense_raw": -4.871153899236736,
+    "attribute_raw": 0.25853380797458114,
+    "profile_match": 0.7254752522007718,
+    "quality": 26.913792990490393,
+    "contradictions": -4.615105631297439,
     "budget_penalty": 0.0,
-    "novelty_penalty": -1.9312692624384888,
+    "novelty_penalty": -2.1179146352957723,
 }
 
 
