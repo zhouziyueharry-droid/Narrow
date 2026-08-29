@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import random
+from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -207,6 +208,73 @@ def _realistic_goal(
     )
 
 
+def _price_band(price: float | None) -> str:
+    if price is None:
+        return "unknown"
+    if price < 15:
+        return "under_15"
+    if price < 30:
+        return "15_30"
+    if price < 60:
+        return "30_60"
+    if price < 120:
+        return "60_120"
+    return "120_plus"
+
+
+def _soft_signature(goal: NeedBasedGoal) -> str:
+    return "+".join(constraint.attribute for constraint in goal.soft_preferences)
+
+
+def _select_broad_coverage_candidates(
+    candidates: list[tuple[Product, NeedBasedGoal]],
+    count: int,
+    rng: random.Random,
+) -> list[tuple[Product, NeedBasedGoal]]:
+    """Balance diagnostic coverage across price, category, and preference shape."""
+
+    price_bands = ("under_15", "15_30", "30_60", "60_120", "120_plus")
+    pools: dict[str, list[tuple[Product, NeedBasedGoal]]] = {
+        band: [] for band in price_bands
+    }
+    shuffled = list(candidates)
+    rng.shuffle(shuffled)
+    for candidate in shuffled:
+        pools[_price_band(candidate[0].price)].append(candidate)
+
+    selected: list[tuple[Product, NeedBasedGoal]] = []
+    category_counts: Counter[str] = Counter()
+    signature_counts: Counter[str] = Counter()
+    selected_ids: set[str] = set()
+    while len(selected) < count:
+        band = price_bands[len(selected) % len(price_bands)]
+        available = [
+            candidate
+            for candidate in pools[band]
+            if candidate[0].product_id not in selected_ids
+        ]
+        if not available:
+            available = [
+                candidate
+                for candidate in shuffled
+                if candidate[0].product_id not in selected_ids
+            ]
+        if not available:
+            break
+        product, goal = min(
+            available,
+            key=lambda candidate: (
+                category_counts[str(candidate[1].category)],
+                signature_counts[_soft_signature(candidate[1])],
+            ),
+        )
+        selected.append((product, goal))
+        selected_ids.add(product.product_id)
+        category_counts[str(goal.category)] += 1
+        signature_counts[_soft_signature(goal)] += 1
+    return selected
+
+
 def build_realistic_scenarios(
     products: Iterable[Product],
     count: int = 100,
@@ -222,6 +290,8 @@ def build_realistic_scenarios(
     min_turns_before_acceptance: int = 1,
     require_no_pending_question: bool = False,
     scheduled_variants: bool = False,
+    sampling_strategy: str = "shuffled",
+    source_dataset: str | None = None,
 ) -> list[ScenarioSpec]:
     """Build satisfiable need-based sessions from catalog metadata only."""
 
@@ -237,9 +307,12 @@ def build_realistic_scenarios(
             min_soft_preferences=min_soft_preferences,
             min_soft_matches=min_soft_matches,
             source_dataset=(
-                f"catalog_realistic_{difficulty_profile}"
-                if difficulty_profile != "standard"
-                else "catalog_realistic"
+                source_dataset
+                or (
+                    f"catalog_realistic_{difficulty_profile}"
+                    if difficulty_profile != "standard"
+                    else "catalog_realistic"
+                )
             ),
         )
         if scheduled_variants and goal is not None and not any(
@@ -250,7 +323,12 @@ def build_realistic_scenarios(
         if goal is not None:
             candidates.append((product, goal))
     rng = random.Random(seed)
-    rng.shuffle(candidates)
+    if sampling_strategy == "broad_coverage":
+        candidates = _select_broad_coverage_candidates(candidates, count, rng)
+    elif sampling_strategy == "shuffled":
+        rng.shuffle(candidates)
+    else:
+        raise ValueError(f"Unknown realistic sampling strategy: {sampling_strategy}")
     scenarios: list[ScenarioSpec] = []
     for index, (product, goal) in enumerate(candidates[:count]):
         persona = persona_pool[index % len(persona_pool)]
@@ -295,7 +373,7 @@ def build_realistic_scenarios(
                 seed=_stable_seed(seed, product.product_id, persona),
                 protocol="realistic",
                 scenario_type=(
-                    f"realistic_hard:{variant}"
+                    f"realistic_{difficulty_profile.split('_', 1)[0]}:{variant}"
                     if difficulty_profile != "standard"
                     else "realistic"
                 ),
@@ -310,6 +388,12 @@ def build_realistic_scenarios(
                     "seed_product_id": product.product_id,
                     "difficulty_profile": difficulty_profile,
                     "difficulty_variant": variant,
+                    "coverage": {
+                        "category": goal.category,
+                        "price_band": _price_band(product.price),
+                        "soft_signature": _soft_signature(goal),
+                        "sampling_strategy": sampling_strategy,
+                    },
                 },
                 min_turns_before_acceptance=scenario_min_turns,
                 require_no_pending_question=require_no_pending_question,

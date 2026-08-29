@@ -48,6 +48,7 @@ def test_yaml_configs_match_builtin_presets():
         "techjam": root / "configs" / "techjam_benchmark.yaml",
         "realistic": root / "configs" / "realistic.yaml",
         "realistic_hard": root / "configs" / "realistic_hard.yaml",
+        "realistic_broad": root / "configs" / "realistic_broad.yaml",
     }
     for name, path in config_paths.items():
         assert yaml.safe_load(path.read_text(encoding="utf-8")) == PRESETS[name]
@@ -221,6 +222,77 @@ def test_hard_realistic_scenarios_cover_deterministic_pressure_variants(tmp_path
     assert all(scenario.initial_disclosure_policy == "category_only" for scenario in scenarios)
     assert all(scenario.require_no_pending_question for scenario in scenarios)
     assert [scenario.min_turns_before_acceptance for scenario in scenarios] == [2, 3, 5, 5]
+
+
+def test_broad_realistic_sampling_balances_coverage_dimensions(tmp_path):
+    catalog_path = tmp_path / "catalog.jsonl"
+    prices = [10.0, 20.0, 40.0, 80.0, 150.0]
+    rows = []
+    for band_index, price in enumerate(prices):
+        for item_index in range(10):
+            index = band_index * 10 + item_index
+            rows.append(
+                {
+                    "parent_asin": f"P{index}",
+                    "title": f"Product {index}",
+                    "features": [f"feature-{index}"],
+                    "details": {
+                        "Color": f"color-{index}",
+                        "Material": f"material-{index}",
+                    },
+                    "categories": ["Clothing", f"Category {index}"],
+                    "store": f"Brand {index}",
+                    "price": price,
+                }
+            )
+    catalog_path.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
+    )
+    products = list(TechJamDatasetAdapter(catalog_path).load_products())
+
+    scenarios = build_realistic_scenarios(
+        products,
+        count=40,
+        seed=20260829,
+        difficulty_profile="broad_v1",
+        budget_multiplier=1.02,
+        min_soft_preferences=3,
+        min_soft_matches=2,
+        initial_disclosure_policy="category_only",
+        min_turns_before_acceptance=2,
+        require_no_pending_question=True,
+        scheduled_variants=True,
+        sampling_strategy="broad_coverage",
+    )
+
+    price_distribution = {}
+    for scenario in scenarios:
+        band = scenario.metadata["coverage"]["price_band"]
+        price_distribution[band] = price_distribution.get(band, 0) + 1
+    assert price_distribution == {
+        "under_15": 8,
+        "15_30": 8,
+        "30_60": 8,
+        "60_120": 8,
+        "120_plus": 8,
+    }
+    assert len({scenario.goal.category for scenario in scenarios}) == 40
+    assert len({scenario.metadata["seed_product_id"] for scenario in scenarios}) == 40
+    assert all(
+        scenario.metadata["coverage"]["sampling_strategy"] == "broad_coverage"
+        for scenario in scenarios
+    )
+    assert {
+        scenario.scenario_type: sum(
+            item.scenario_type == scenario.scenario_type for item in scenarios
+        )
+        for scenario in scenarios
+    } == {
+        "realistic_broad:hidden_preferences": 10,
+        "realistic_broad:preference_override": 10,
+        "realistic_broad:budget_relaxation": 10,
+        "realistic_broad:override_and_relaxation": 10,
+    }
 
 
 def test_realistic_acceptance_waits_until_agent_finishes_clarifying(tmp_path):

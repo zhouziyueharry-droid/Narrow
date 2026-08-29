@@ -306,6 +306,7 @@ class SimulatorSession:
             "protocol": self.scenario.protocol,
             "scenario_type": self.scenario.scenario_type,
             "difficulty_profile": self.scenario.difficulty_profile,
+            "coverage": dict(self.scenario.metadata.get("coverage") or {}),
             "acceptance_gate": {
                 "min_turns_before_acceptance": self.scenario.min_turns_before_acceptance,
                 "require_no_pending_question": self.scenario.require_no_pending_question,
