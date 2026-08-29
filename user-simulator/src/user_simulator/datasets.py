@@ -7,7 +7,15 @@ import random
 from collections.abc import Iterable
 from pathlib import Path
 
-from .models import Constraint, NeedBasedGoal, Product, ScenarioSpec, TargetProductGoal
+from .models import (
+    Constraint,
+    NeedBasedGoal,
+    OverrideEvent,
+    Product,
+    RelaxationEvent,
+    ScenarioSpec,
+    TargetProductGoal,
+)
 from .personas import PERSONA_TEMPLATES
 from .techjam import (
     build_behavior,
@@ -153,7 +161,14 @@ class TechJamDatasetAdapter:
         return result
 
 
-def _realistic_goal(product: Product) -> NeedBasedGoal | None:
+def _realistic_goal(
+    product: Product,
+    *,
+    budget_multiplier: float = 1.10,
+    min_soft_preferences: int = 1,
+    min_soft_matches: int = 1,
+    source_dataset: str = "catalog_realistic",
+) -> NeedBasedGoal | None:
     category = product.categories[-1] if product.categories else None
     hard: list[Constraint] = []
     if category:
@@ -162,7 +177,7 @@ def _realistic_goal(product: Product) -> NeedBasedGoal | None:
         hard.append(
             Constraint(
                 "budget_max",
-                [f"{product.price * 1.10:.2f}"],
+                [f"{product.price * budget_multiplier:.2f}"],
                 "hard",
                 source="catalog",
                 relaxable=True,
@@ -180,15 +195,15 @@ def _realistic_goal(product: Product) -> NeedBasedGoal | None:
             )
         if len(soft) >= 3:
             break
-    if not hard or not soft:
+    if not hard or len(soft) < min_soft_preferences:
         return None
     return NeedBasedGoal(
         goal_id=f"realistic:{product.product_id}",
         category=category,
         hard_constraints=hard,
         soft_preferences=soft,
-        min_soft_matches=1,
-        source_dataset="catalog_realistic",
+        min_soft_matches=min(min_soft_matches, len(soft)),
+        source_dataset=source_dataset,
     )
 
 
@@ -199,6 +214,14 @@ def build_realistic_scenarios(
     max_turns: int = 10,
     persona_templates: list[str] | None = None,
     persona_driven_override_enabled: bool = True,
+    difficulty_profile: str = "standard",
+    budget_multiplier: float = 1.10,
+    min_soft_preferences: int = 1,
+    min_soft_matches: int = 1,
+    initial_disclosure_policy: str = "category_plus_one",
+    min_turns_before_acceptance: int = 1,
+    require_no_pending_question: bool = False,
+    scheduled_variants: bool = False,
 ) -> list[ScenarioSpec]:
     """Build satisfiable need-based sessions from catalog metadata only."""
 
@@ -208,7 +231,22 @@ def build_realistic_scenarios(
         raise ValueError(f"Unknown persona templates: {', '.join(unknown)}")
     candidates: list[tuple[Product, NeedBasedGoal]] = []
     for product in products:
-        goal = _realistic_goal(product)
+        goal = _realistic_goal(
+            product,
+            budget_multiplier=budget_multiplier,
+            min_soft_preferences=min_soft_preferences,
+            min_soft_matches=min_soft_matches,
+            source_dataset=(
+                f"catalog_realistic_{difficulty_profile}"
+                if difficulty_profile != "standard"
+                else "catalog_realistic"
+            ),
+        )
+        if scheduled_variants and goal is not None and not any(
+            constraint.attribute == "budget_max"
+            for constraint in goal.hard_constraints
+        ):
+            continue
         if goal is not None:
             candidates.append((product, goal))
     rng = random.Random(seed)
@@ -217,16 +255,50 @@ def build_realistic_scenarios(
     for index, (product, goal) in enumerate(candidates[:count]):
         persona = persona_pool[index % len(persona_pool)]
         preference_tags = [constraint.attribute for constraint in goal.soft_preferences]
+        variant = "hidden_preferences"
+        scheduled_overrides: list[OverrideEvent] = []
+        scheduled_relaxations: list[RelaxationEvent] = []
+        scenario_min_turns = min_turns_before_acceptance
+        if scheduled_variants:
+            variant = (
+                "hidden_preferences",
+                "preference_override",
+                "budget_relaxation",
+                "override_and_relaxation",
+            )[index % 4]
+            if variant in {"preference_override", "override_and_relaxation"}:
+                preference = goal.soft_preferences[0]
+                scheduled_overrides.append(
+                    OverrideEvent(2, preference.attribute, list(preference.values), [])
+                )
+                scenario_min_turns = max(scenario_min_turns, 3)
+            if variant in {"budget_relaxation", "override_and_relaxation"}:
+                budget = next(
+                    constraint
+                    for constraint in goal.hard_constraints
+                    if constraint.attribute == "budget_max"
+                )
+                scheduled_relaxations.append(
+                    RelaxationEvent(4, budget.attribute, list(budget.values), [])
+                )
+                scenario_min_turns = max(scenario_min_turns, 5)
         scenarios.append(
             ScenarioSpec(
                 scenario_id=f"realistic_{index + 1:04d}_{product.product_id}",
                 goal=goal,
                 persona_template=persona,
                 max_turns=max_turns,
+                initial_disclosure_policy=initial_disclosure_policy,
+                scheduled_overrides=scheduled_overrides,
+                scheduled_relaxations=scheduled_relaxations,
                 persona_driven_override_enabled=persona_driven_override_enabled,
                 seed=_stable_seed(seed, product.product_id, persona),
                 protocol="realistic",
-                scenario_type="realistic",
+                scenario_type=(
+                    f"realistic_hard:{variant}"
+                    if difficulty_profile != "standard"
+                    else "realistic"
+                ),
                 user_profile={
                     "purchase_frequency": "3-4 prior purchases",
                     "average_prior_rating": 4.0,
@@ -234,7 +306,14 @@ def build_realistic_scenarios(
                     "preference_tags": preference_tags,
                     "summary": f"Prior purchases emphasize {', '.join(preference_tags)}.",
                 },
-                metadata={"seed_product_id": product.product_id},
+                metadata={
+                    "seed_product_id": product.product_id,
+                    "difficulty_profile": difficulty_profile,
+                    "difficulty_variant": variant,
+                },
+                min_turns_before_acceptance=scenario_min_turns,
+                require_no_pending_question=require_no_pending_question,
+                difficulty_profile=difficulty_profile,
             )
         )
     if len(scenarios) < count:

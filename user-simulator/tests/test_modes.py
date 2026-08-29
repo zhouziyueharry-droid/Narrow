@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import yaml
-
 from user_simulator.adapters import PythonAgentAdapter
 from user_simulator.cli import PRESETS
 from user_simulator.datasets import TechJamDatasetAdapter, build_realistic_scenarios
@@ -48,6 +47,7 @@ def test_yaml_configs_match_builtin_presets():
     config_paths = {
         "techjam": root / "configs" / "techjam_benchmark.yaml",
         "realistic": root / "configs" / "realistic.yaml",
+        "realistic_hard": root / "configs" / "realistic_hard.yaml",
     }
     for name, path in config_paths.items():
         assert yaml.safe_load(path.read_text(encoding="utf-8")) == PRESETS[name]
@@ -172,6 +172,85 @@ def test_realistic_mode_builds_satisfiable_need_goal_without_extra_data(tmp_path
         result["mode_specific_metrics"]["hard_constraint_satisfaction_at_acceptance"]
         == 1.0
     )
+
+
+def test_hard_realistic_scenarios_cover_deterministic_pressure_variants(tmp_path):
+    catalog_path = tmp_path / "catalog.jsonl"
+    rows = []
+    for index in range(8):
+        rows.append(
+            {
+                "parent_asin": f"P{index}",
+                "title": f"Product {index}",
+                "features": [f"feature-{index}"],
+                "details": {
+                    "Color": f"color-{index}",
+                    "Material": f"material-{index}",
+                },
+                "categories": ["Clothing", "Women"],
+                "store": f"Brand {index}",
+                "price": 50.0 + index,
+            }
+        )
+    catalog_path.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
+    )
+    products = list(TechJamDatasetAdapter(catalog_path).load_products())
+
+    scenarios = build_realistic_scenarios(
+        products,
+        count=4,
+        difficulty_profile="hard_v1",
+        budget_multiplier=1.02,
+        min_soft_preferences=3,
+        min_soft_matches=2,
+        initial_disclosure_policy="category_only",
+        min_turns_before_acceptance=2,
+        require_no_pending_question=True,
+        scheduled_variants=True,
+    )
+
+    assert {scenario.scenario_type for scenario in scenarios} == {
+        "realistic_hard:hidden_preferences",
+        "realistic_hard:preference_override",
+        "realistic_hard:budget_relaxation",
+        "realistic_hard:override_and_relaxation",
+    }
+    assert all(scenario.goal.min_soft_matches == 2 for scenario in scenarios)
+    assert all(len(scenario.goal.soft_preferences) == 3 for scenario in scenarios)
+    assert all(scenario.initial_disclosure_policy == "category_only" for scenario in scenarios)
+    assert all(scenario.require_no_pending_question for scenario in scenarios)
+    assert [scenario.min_turns_before_acceptance for scenario in scenarios] == [2, 3, 5, 5]
+
+
+def test_realistic_acceptance_waits_until_agent_finishes_clarifying(tmp_path):
+    catalog_path, _, _ = _write_fixture(tmp_path, "buying")
+    dataset = TechJamDatasetAdapter(catalog_path)
+    products = list(dataset.load_products())
+    catalog = {product.product_id: product for product in products}
+    scenario = build_realistic_scenarios(products, count=1)[0]
+    scenario.min_turns_before_acceptance = 2
+    scenario.require_no_pending_question = True
+
+    class ClarifyThenFinishAgent(AlwaysTargetAgent):
+        def respond(self, session_id, user_message, turn, top_k):
+            response = super().respond(session_id, user_message, turn, top_k)
+            response["ask_attribute"] = "material" if turn == 1 else None
+            return response
+
+    result = Simulator(
+        catalog, PythonAgentAdapter(ClarifyThenFinishAgent())
+    ).run_many([scenario])
+    session = result["sessions"][0]
+
+    assert session["success"] is True
+    assert session["turns"] == 2
+    assert session["acceptance_gate"]["blocked_candidate_events"] == 1
+    assert session["conversation"][0]["acceptance_candidate"] is True
+    assert session["conversation"][0]["acceptance_block_reason"] == (
+        "minimum_conversation_turns_not_reached"
+    )
+    assert result["mode_specific_metrics"]["accepted_while_agent_asks"] == 0
 
 
 def test_agent_adapter_keeps_first_ten_valid_unique_candidates():

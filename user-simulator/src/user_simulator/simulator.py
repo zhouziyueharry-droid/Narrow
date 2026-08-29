@@ -194,6 +194,26 @@ class SimulatorSession:
             acceptance_result = self.acceptance.check(
                 self.state.goal, response.recommendations
             )
+            acceptance_candidate = acceptance_result.accepted
+            acceptance_block_reason = None
+            if self.scenario.protocol == "realistic" and acceptance_result.accepted:
+                if turn < self.scenario.min_turns_before_acceptance:
+                    acceptance_block_reason = "minimum_conversation_turns_not_reached"
+                elif self.scenario.require_no_pending_question and response.ask_attribute:
+                    acceptance_block_reason = "agent_still_asking_clarification"
+                if acceptance_block_reason:
+                    acceptance_result = AcceptanceResult(
+                        False,
+                        hard_matches=acceptance_result.hard_matches,
+                        hard_total=acceptance_result.hard_total,
+                        soft_matches=acceptance_result.soft_matches,
+                        evidence={
+                            **acceptance_result.evidence,
+                            "blocked_by": acceptance_block_reason,
+                            "candidate_product_id": acceptance_result.product_id,
+                            "candidate_rank": acceptance_result.rank,
+                        },
+                    )
             if (
                 self.scenario.protocol == "techjam"
                 and isinstance(self.policy, TechJamUserPolicy)
@@ -217,6 +237,8 @@ class SimulatorSession:
                     agent_usage_reported=response.usage is not None,
                     agent_layer_trace=agent_layer_trace,
                     agent_trace_error=agent_trace_error,
+                    acceptance_candidate=acceptance_candidate,
+                    acceptance_block_reason=acceptance_block_reason,
                 )
             )
 
@@ -283,6 +305,15 @@ class SimulatorSession:
             "sample_id": self.scenario.scenario_id,
             "protocol": self.scenario.protocol,
             "scenario_type": self.scenario.scenario_type,
+            "difficulty_profile": self.scenario.difficulty_profile,
+            "acceptance_gate": {
+                "min_turns_before_acceptance": self.scenario.min_turns_before_acceptance,
+                "require_no_pending_question": self.scenario.require_no_pending_question,
+                "blocked_candidate_events": sum(
+                    item.acceptance_block_reason is not None
+                    for item in self.state.conversation_history
+                ),
+            },
             "goal_type": self.state.goal.goal_type,
             "goal_snapshot": self._initial_goal_snapshot,
             "effective_goal_snapshot": {
@@ -376,6 +407,8 @@ class SimulatorSession:
                     "agent_usage_reported": item.agent_usage_reported,
                     "agent_layer_trace": item.agent_layer_trace,
                     "agent_trace_error": item.agent_trace_error,
+                    "acceptance_candidate": item.acceptance_candidate,
+                    "acceptance_block_reason": item.acceptance_block_reason,
                     "reported_token_usage": {
                         "prompt_tokens": (
                             item.agent_response.usage.prompt_tokens

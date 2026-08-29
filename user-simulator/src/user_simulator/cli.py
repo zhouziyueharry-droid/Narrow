@@ -70,6 +70,54 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
+    "realistic_hard": {
+        "version": "0.4",
+        "language": "en",
+        "mode": "realistic",
+        "seed": 20260829,
+        "max_turns": 8,
+        "top_k": 5,
+        "dataset": {
+            "name": "catalog",
+            "catalog_path": "data/raw/techjam/catalog.jsonl",
+            "scenario_count": 24,
+        },
+        "persona": {
+            "templates": [
+                "decisive_buyer",
+                "casual_browser",
+                "bargain_hunter",
+                "brand_loyalist",
+                "picky_shopper",
+                "novice_shopper",
+                "expert_shopper",
+                "indecisive_shopper",
+            ]
+        },
+        "override": {"persona_driven_enabled": False},
+        "difficulty": {
+            "profile": "hard_v1",
+            "budget_multiplier": 1.02,
+            "min_soft_preferences": 3,
+            "min_soft_matches": 2,
+            "initial_disclosure_policy": "category_only",
+            "min_turns_before_acceptance": 2,
+            "require_no_pending_question": True,
+            "scheduled_variants": True,
+        },
+        "verbalizer": {
+            "type": "openai_compatible",
+            "provider": "deepseek",
+            "temperature": 0.35,
+            "max_tokens": 120,
+            "timeout": 30,
+        },
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+            "provider": "deepseek",
+        },
+    },
 }
 
 
@@ -217,6 +265,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         scenario_count = int(dataset_cfg.get("scenario_count", 100))
         if args.limit:
             scenario_count = min(scenario_count, args.limit)
+        difficulty_cfg = config.get("difficulty", {})
         scenarios = build_realistic_scenarios(
             products,
             count=scenario_count,
@@ -226,6 +275,20 @@ def cmd_run(args: argparse.Namespace) -> int:
             persona_driven_override_enabled=bool(
                 config.get("override", {}).get("persona_driven_enabled", True)
             ),
+            difficulty_profile=str(difficulty_cfg.get("profile", "standard")),
+            budget_multiplier=float(difficulty_cfg.get("budget_multiplier", 1.10)),
+            min_soft_preferences=int(difficulty_cfg.get("min_soft_preferences", 1)),
+            min_soft_matches=int(difficulty_cfg.get("min_soft_matches", 1)),
+            initial_disclosure_policy=str(
+                difficulty_cfg.get("initial_disclosure_policy", "category_plus_one")
+            ),
+            min_turns_before_acceptance=int(
+                difficulty_cfg.get("min_turns_before_acceptance", 1)
+            ),
+            require_no_pending_question=bool(
+                difficulty_cfg.get("require_no_pending_question", False)
+            ),
+            scheduled_variants=bool(difficulty_cfg.get("scheduled_variants", False)),
         )
 
     agent_cfg = config.get("agent", {})
