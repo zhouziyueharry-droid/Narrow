@@ -17,7 +17,7 @@ from shopping_agent.ranking.precise_features import build_global_idf, extract_ba
 # statistically fragile win: 5000-resample bootstrap 95% CI [-0.047, +0.061],
 # only 60.6% of resamples favored it).
 #
-# v4 (current): grouped 5-fold CV over the training rows showed held-out
+# v4 (superseded): grouped 5-fold CV over the training rows showed held-out
 # classification AUC kept improving as C increased (0.9245 at C=1.0 up to
 # 0.939 at C=30, still rising at C=100) instead of the expected U-shape --
 # i.e. the default C=1.0 regularization was actually too strong for this
@@ -37,7 +37,7 @@ from shopping_agent.ranking.precise_features import build_global_idf, extract_ba
 # sign-constrained fit was also tried and performed worse (0.566) -- not
 # used.
 #
-# v5 (current): still only 100 official training sessions exist
+# v5 (superseded): still only 100 official training sessions exist
 # (data/public_set.jsonl[100:200]), and v4's fragility traced back to that.
 # evaluator/local_evaluator.py's own scenario machinery (intent_card() /
 # behavior_for()) needs almost nothing to synthesize a *new*, fully valid
@@ -65,20 +65,44 @@ from shopping_agent.ranking.precise_features import build_global_idf, extract_ba
 # noise is still in play at this data size -- see
 # docs/precise_reranker_change_report.md for the full before/after story,
 # including the failed random-target attempt).
+#
+# v6 (current): went further and trained on 1000 *purely synthetic* scenarios
+# (scripts/generate_synthetic_scenarios.py --count 1000 --seed 20260829 ->
+# data/synthetic_scenarios_1000.jsonl, same official-distribution filter as
+# v5) with ZERO official samples in the training set at all -- fit via
+# fit_weights() directly on the ~1.77M feature rows collected from those
+# 1000 sessions (2976 positive rows), C=100. Because none of the 200
+# official samples were touched during training, this is the first version
+# validated on the FULL official 200 with no train/test overlap whatsoever
+# (v5's own real-data component trained on samples [100:200], so evaluating
+# v5 on the full 200 is partly in-sample for it). Full-200 results: v6
+# 0.855 hit_rate / 0.409813 MRR / 3.75 MTTC / TechnicalScore 0.695444, vs
+# FallbackReranker's 0.825 / 0.334397 / 3.97 / 0.653419, vs v5's 0.85 /
+# 0.39322 / 3.725 / 0.688466 (v5's number here is the optimistic,
+# partly-in-sample one). Bootstrap (5000 resamples, paired over the 200
+# sessions): v6 vs FallbackReranker +0.042199, 95% CI [0.002480, 0.083187]
+# (does not cross zero), 98.0% win rate -- the most statistically solid
+# result of any version so far. v6 vs v5 (on the same, leaky-for-v5
+# full-200 set): +0.006964, 95% CI [-0.000629, 0.015608], 96.2% win rate --
+# a real but modest edge, CI lower bound close to zero. The qualifying
+# synthetic-target pool is still only 600 catalog products (same filter as
+# v5), so this remains an incremental improvement, not a fix for the
+# underlying small-sample-size problem -- see
+# docs/precise_reranker_change_report.md for the full writeup.
 DEFAULT_WEIGHTS: dict[str, float] = {
-    "exact_matches": -0.16342453170734514,
-    "partial_matches": -55.22335009739622,
-    "category_match": 1.8035450412747347,
-    "term_coverage": 1.7884411000722666,
-    "lexical_signal": 2.238576066293218,
-    "rrf_raw": 262.1056510356536,
-    "dense_raw": -4.871153899236736,
-    "attribute_raw": 0.25853380797458114,
-    "profile_match": 0.7254752522007718,
-    "quality": 26.913792990490393,
-    "contradictions": -4.615105631297439,
+    "exact_matches": -0.2799303427242344,
+    "partial_matches": -9.257487065717305,
+    "category_match": 1.9266749986896547,
+    "term_coverage": 1.816133237234712,
+    "lexical_signal": 1.936948222589057,
+    "rrf_raw": 262.0181678821963,
+    "dense_raw": -4.263442910021638,
+    "attribute_raw": 0.301156912762998,
+    "profile_match": 0.35626062104129724,
+    "quality": 24.321212306409222,
+    "contradictions": -4.349849973336815,
     "budget_penalty": 0.0,
-    "novelty_penalty": -2.1179146352957723,
+    "novelty_penalty": -2.267398473362835,
 }
 
 
