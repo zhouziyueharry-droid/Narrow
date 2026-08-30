@@ -49,13 +49,14 @@ uv run --project techjam-conversational-search `
 uv also reuses its global package cache, so recreating an environment normally
 does not download unchanged packages again.
 
-## Dual-mode operation
+## Isolated evaluation modes
 
-The same Agent can be evaluated under two isolated protocols:
+The same Agent can be evaluated under isolated protocols:
 
 | Preset | Sessions | User policy | Acceptance | Metrics |
 |---|---|---|---|---|
 | `techjam` | Official public/private session records | Buying, Browsing, Intent Override, Boundary | Exact `parent_asin`, with override gating | Hit Rate@10, MRR, MTTC, Efficiency, technical score, per-scenario metrics |
+| `techjam_compatible_*` | Catalog-derived non-official session cards | Buying, Browsing, Intent Override, Boundary | Exact `parent_asin`, with override gating | Official-style formulas with `official_metric_contract=false` |
 | `realistic` | Deterministic goals generated from catalog metadata | Persona-driven disclosure, clarification, and override | All hard constraints plus configured soft matches | Need-based success, MRR, turns, hard/soft satisfaction |
 
 Switch modes with one flag. Both presets use the same catalog by default, so
@@ -64,7 +65,15 @@ realistic mode does not require an extra dataset:
 ```bash
 user-simulator run --preset techjam
 user-simulator run --preset realistic
+user-simulator run --preset techjam_compatible_resampled_50k
+user-simulator run --preset techjam_compatible_scale_200k
+user-simulator run --preset techjam_compatible_scale_500k
 ```
+
+The three compatible scale presets use the same reconstructed core set of 1,000
+sessions across nested catalogs. They never reuse the official 200 conversations
+or official targets. Development, challenge, smoke, index, and provenance files
+are under `data/derived/techjam_compatible_scale_v1/sessions/`.
 
 Without `--output`, results are kept separately as `runs/techjam.json` and
 `runs/realistic.json`.

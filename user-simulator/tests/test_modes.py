@@ -46,6 +46,15 @@ def test_yaml_configs_match_builtin_presets():
     root = Path(__file__).resolve().parents[1]
     config_paths = {
         "techjam": root / "configs" / "techjam_benchmark.yaml",
+        "techjam_compatible_resampled_50k": (
+            root / "configs" / "techjam_compatible_resampled_50k.yaml"
+        ),
+        "techjam_compatible_scale_200k": (
+            root / "configs" / "techjam_compatible_scale_200k.yaml"
+        ),
+        "techjam_compatible_scale_500k": (
+            root / "configs" / "techjam_compatible_scale_500k.yaml"
+        ),
         "realistic": root / "configs" / "realistic.yaml",
         "realistic_hard": root / "configs" / "realistic_hard.yaml",
         "realistic_broad": root / "configs" / "realistic_broad.yaml",
@@ -104,6 +113,39 @@ def test_techjam_mode_preserves_profile_and_official_initial_message(tmp_path):
     assert agent.profile == profile
     assert result["sessions"][0]["conversation"][0]["user"] == (
         "I'm looking for Women Shoes. A key requirement is: leather."
+    )
+
+
+def test_techjam_compatible_mode_is_explicitly_non_official(tmp_path):
+    catalog_path, sessions_path, _ = _write_fixture(tmp_path, "buying")
+    sample = json.loads(sessions_path.read_text(encoding="utf-8"))
+    sample["intent_card"] = {
+        "target_category": "Women Shoes",
+        "hard_constraints": ["material: leather", "color: black"],
+        "soft_preferences": ["waterproof"],
+    }
+    sample["behavior"] = {
+        "scenario_type": "buying",
+        "initial_message": "I need women's shoes with leather as a hard requirement.",
+        "initial_disclosed": ["material: leather"],
+    }
+    sessions_path.write_text(json.dumps(sample) + "\n", encoding="utf-8")
+    dataset = TechJamDatasetAdapter(catalog_path, sessions_path)
+    catalog = {product.product_id: product for product in dataset.load_products()}
+    scenario = dataset.build_target_sessions(
+        protocol="techjam_compatible",
+        source_dataset="techjam_compatible_scale_v1",
+    )[0]
+
+    result = Simulator(catalog, PythonAgentAdapter(AlwaysTargetAgent())).run_many(
+        [scenario]
+    )
+
+    assert result["mode"] == "techjam_compatible"
+    assert result["evaluation"]["benchmark"] == "techjam_compatible_scale_v1"
+    assert result["evaluation"]["official_metric_contract"] is False
+    assert result["sessions"][0]["conversation"][0]["user"] == (
+        "I need women's shoes with leather as a hard requirement."
     )
 
 

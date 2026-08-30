@@ -4,6 +4,7 @@ param(
     [string]$Model = "deepseek-v4-pro",
     [int]$CandidateLimit = 20,
     [string]$OutputRoot = "evaluation_runs/parallel_pro_200",
+    [switch]$EnableLlm,
     [switch]$SkipTests,
     [switch]$SkipEvaluation,
     [switch]$SkipFrontendBuild
@@ -57,9 +58,12 @@ try {
     }
 
     if (-not $SkipEvaluation) {
-        Write-Host "[2/4] Running official evaluator semantics with $Workers traced LLM workers..."
+        $LlmFlag = if ($EnableLlm) { "--llm" } else { "--no-llm" }
+        $ExecutionMode = if ($EnableLlm) { "DeepSeek LLM" } else { "local fallback (no API)" }
+        Write-Host "[2/4] Running official evaluator semantics with $Workers workers: $ExecutionMode..."
         Invoke-ProjectPython @(
             "scripts\evaluate_parallel_with_traces.py",
+            $LlmFlag,
             "--workers", "$Workers",
             "--model", $Model,
             "--candidate-limit", "$CandidateLimit",
@@ -83,7 +87,12 @@ $LatestFile = Join-Path $EvaluationRoot "LATEST.txt"
 if (-not (Test-Path -LiteralPath $LatestFile)) {
     throw "Evaluation LATEST.txt not found: $LatestFile"
 }
-$RunDir = (Get-Content -LiteralPath $LatestFile -Raw).Trim()
+$RunRef = (Get-Content -LiteralPath $LatestFile -Raw).Trim()
+$RunDir = if ([IO.Path]::IsPathRooted($RunRef)) {
+    $RunRef
+} else {
+    Join-Path $EvaluationRoot $RunRef
+}
 
 Push-Location $FrontendRoot
 try {

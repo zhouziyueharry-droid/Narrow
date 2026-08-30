@@ -10,8 +10,8 @@
 |---|---|---:|---:|
 | 跑 Python 测试 | `pytest tests` | 否 | 否 |
 | 验证官方基础评分器 | `python -m evaluator.local_evaluator` | 取决于环境开关 | 否 |
-| 团队正式全量评测 | `scripts/evaluate_parallel_with_traces.py` | 是 | 是 |
-| 一键完成测试、评测和前端刷新 | `scripts/run_test_trace_frontend.ps1` | 是 | 是 |
+| 团队正式全量评测 | `scripts/evaluate_parallel_with_traces.py` | 默认否，`--llm` 时是 | 是 |
+| 一键完成测试、评测和前端刷新 | `scripts/run_test_trace_frontend.ps1` | 默认否，`-EnableLlm` 时是 | 是 |
 
 团队日常对比模型、召回或排序改动时，优先使用仓库根目录的一键入口：
 
@@ -24,7 +24,7 @@ cd C:\path\to\tiktok_project_4
 
 1. 运行 `techjam-conversational-search/tests` 下的全部测试。
 2. 使用官方 evaluator 的用户模拟、命中判定和评分公式运行 200 条公开集。
-3. 开启 DeepSeek，保证 Agent 的意图理解和对话决策走当前 LLM 架构。
+3. 默认明确关闭 Agent API；只有传入 `-EnableLlm` 才开启 DeepSeek。
 4. 按 worker 分片并行执行，聚合为一份结果。
 5. 保存每个 session、每轮对话和每个 LangGraph 节点的 Trace。
 6. 离线重放目标商品在各排序阶段的精确排名。
@@ -87,7 +87,7 @@ SHOPPING_AGENT_ENABLE_LLM=true
 要求：
 
 - 不要把 `.env`、API Key 或访问令牌提交到 Git。
-- `evaluate_parallel_with_traces.py` 会显式设置 `SHOPPING_AGENT_ENABLE_LLM=true`。
+- `evaluate_parallel_with_traces.py` 默认显式设置 `SHOPPING_AGENT_ENABLE_LLM=false`；只有 `--llm` 才设为 `true`。
 - 每个 LLM 请求温度为 0；供应商仍可能存在少量服务端非确定性。
 - 429、连接错误和 5xx 会重试一次；业务层仍保留本地 fallback。
 
@@ -102,7 +102,7 @@ Node.js 要求 22.13 或更高版本。
 
 ## 4. 推荐流程：一条命令执行
 
-### 4.1 全量正式跑法
+### 4.1 默认无 API 跑法
 
 ```powershell
 cd C:\path\to\tiktok_project_4
@@ -116,11 +116,19 @@ cd C:\path\to\tiktok_project_4
 - worker：当前机器逻辑处理器数量。
 - 每节点保存的候选快照：前 20 条。
 - 评测根目录：`evaluation_runs/parallel_pro_200`。
+- Agent：本地 fallback，不调用 DeepSeek。
+
+需要测 Agent 的 DeepSeek 路径时必须显式授权：
+
+```powershell
+.\scripts\run_test_trace_frontend.ps1 -EnableLlm
+```
 
 ### 4.2 显式指定并发和模型
 
 ```powershell
 .\scripts\run_test_trace_frontend.ps1 `
+  -EnableLlm `
   -Workers 12 `
   -Model deepseek-v4-pro `
   -CandidateLimit 20
@@ -190,16 +198,18 @@ Windows 上建议把 `--basetemp` 放在项目内，避免系统临时目录权�
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\evaluate_with_traces.py `
-  --llm `
+  --no-llm `
   --candidate-limit 20
 ```
 
-该入口适合调试单个分片或少量样本。正式全量测试使用并行入口。
+该入口适合调试单个分片或少量样本。需要 DeepSeek 时将 `--no-llm`
+改成显式的 `--llm`，并在运行前确认调用量和预算。
 
 ### 5.4 跑带 Trace 的并行全量版本
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\evaluate_parallel_with_traces.py `
+  --no-llm `
   --workers 12 `
   --model deepseek-v4-pro `
   --candidate-limit 20 `
@@ -209,7 +219,7 @@ Windows 上建议把 `--basetemp` 放在项目内，避免系统临时目录权�
 并行脚本所做的事情：
 
 1. 轮询分配 200 条样本到多个 shard。
-2. 每个 shard 启动独立 `evaluate_with_traces.py --llm` 进程。
+2. 每个 shard 启动独立 `evaluate_with_traces.py` 进程，并继承明确的 `--llm` 或 `--no-llm`。
 3. 每个进程使用相同官方用户模拟和评分规则。
 4. 所有进程成功后，按 `sample_id` 和 `turn` 聚合结果。
 5. 使用 `evaluator.local_evaluator.metric_summary` 计算最终指标。
@@ -294,6 +304,10 @@ evaluation_runs/parallel_pro_200/20260829_232205_+0800/
 shards/shard_XX/stderr.log
 ```
 
+`evaluation_runs/`、`public/diagnostics.json` 和完整 Trace 都是生成物，不提交到
+Git。共享时将一次完整运行打包到 GitHub Release，并在仓库中只提交报告、索引、
+manifest 和 SHA-256。
+
 ## 7. 为什么前端不能直接只读 `node_traces.jsonl`
 
 `node_traces.jsonl` 为了控制体积，默认只保存每个候选节点的前 20 条商品。目标商品没有出现在快照中可能有两种含义：
@@ -366,6 +380,20 @@ public/diagnostics.json
 --output            diagnostics.json 输出位置
 ```
 
+### 8.3 使用统一 user-simulator 报告
+
+如果输入是 user-simulator 的统一 JSON 报告，不需要伪装成官方运行目录：
+
+```powershell
+..\techjam-conversational-search\.venv\Scripts\python.exe `
+  scripts\build-diagnostics.py `
+  --simulator-report "C:\path\to\simulator-result.json" `
+  --output public\diagnostics.json
+```
+
+转换器只使用报告中实际保存的 `agent_layer_trace`。Agent 未暴露的层会显示为
+`unavailable`，不会被误判为目标商品在该层丢失。
+
 生成完成后应检查控制台最后一行包含输出文件路径和字节数。
 
 ## 9. 打开最新前端
@@ -410,6 +438,7 @@ npm run build
 | `response` | 目标进入精排 Top 10，但最终响应中不存在 |
 | `gated` | 目标已推荐，但 intent override 尚未生效，官方评测暂不计命中 |
 | `hit` | 评测门控已开启，目标进入最终推荐 Top 10 |
+| `trace_unavailable` | Agent 未暴露足够的中间层信息，无法可靠定位流失阶段 |
 
 诊断时优先关注未命中 session 的有效评测轮次。`gated` 不是模型错误，不能计为召回或排序流失。
 
@@ -423,16 +452,17 @@ Agent 执行完流程后必须检查以下项目：
 - [ ] `sessions.jsonl` 的唯一 `sample_id` 数等于 200。
 - [ ] `turns.jsonl` 不存在非空 `error`。
 - [ ] `sessions.jsonl` 不存在非空 `errors`。
-- [ ] 每个 LLM 轮次有合理的 token 使用量。
+- [ ] `run_config.json` 明确记录 `llm_enabled`；只有启用 LLM 时才要求合理 token 使用量。
 - [ ] `summary.json`、`report.md` 和聚合 JSONL 均存在。
 - [ ] `diagnostics.json` 的 Run ID 与 `summary.json` 相同。
 - [ ] `npm run build` 成功。
-- [ ] Git 中只出现预期的代码、文档和新评测产物。
+- [ ] Git 中只出现代码、配置、报告、索引、manifest 和校验值；完整运行产物放 Release。
 
 可用下面的只读检查快速验证聚合完整性：
 
 ```powershell
-$run = (Get-Content evaluation_runs\parallel_pro_200\LATEST.txt).Trim()
+$runRef = (Get-Content evaluation_runs\parallel_pro_200\LATEST.txt).Trim()
+$run = Join-Path (Resolve-Path evaluation_runs\parallel_pro_200) $runRef
 $sessions = Get-Content "$run\sessions.jsonl"
 $turns = Get-Content "$run\turns.jsonl"
 "sessions=$($sessions.Count) turns=$($turns.Count)"
@@ -480,8 +510,8 @@ $turns = Get-Content "$run\turns.jsonl"
 
 ```text
 在 tiktok_project_4 根目录执行官方评测与 Trace 前端流水线。
-先确认 techjam-conversational-search/.env 已配置 DEEPSEEK_API_KEY，但绝不打印或提交密钥。
-运行 .\scripts\run_test_trace_frontend.ps1，默认 worker 使用逻辑 CPU 数。
+默认运行 .\scripts\run_test_trace_frontend.ps1，不调用 API，worker 使用逻辑 CPU 数。
+只有用户明确要求 LLM 测试时，才确认 .env 已配置 DEEPSEEK_API_KEY 并增加 -EnableLlm；绝不打印或提交密钥。
 必须等待全部 pytest、全部 shard、Trace 聚合、diagnostics.json 生成和 npm build 完成。
 失败时读取对应 shard 的 stderr.log，不得用部分 shard 计算结果。
 完成后汇报 summary.json 中的 HitRate@10、MRR、MTTC、Efficiency、Technical Score、总耗时、worker 数、错误数，以及前端 diagnostics.json 的 Run ID。

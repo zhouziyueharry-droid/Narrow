@@ -39,6 +39,72 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
+    "techjam_compatible_resampled_50k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "techjam_compatible_scale_v1",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/resampled_50k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
+            "source_dataset": "amazon_reviews_2023_resampled_clothing_50k",
+            "catalog_size": 50000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
+    "techjam_compatible_scale_200k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "techjam_compatible_scale_v1",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/nested_200k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
+            "source_dataset": "amazon_reviews_2023_nested_clothing_200k",
+            "catalog_size": 200000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
+    "techjam_compatible_scale_500k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "techjam_compatible_scale_v1",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/nested_500k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
+            "source_dataset": "amazon_reviews_2023_nested_cross_category_500k",
+            "catalog_size": 500000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
     "realistic": {
         "version": "0.3",
         "language": "en",
@@ -339,25 +405,26 @@ def _config_from_args(args: argparse.Namespace) -> dict:
 def _validation_errors(config: dict) -> list[str]:
     errors: list[str] = []
     mode = config.get("mode")
-    if mode not in {"techjam", "realistic"}:
-        errors.append("mode must be techjam or realistic")
+    target_modes = {"techjam", "techjam_compatible"}
+    if mode not in {*target_modes, "realistic"}:
+        errors.append("mode must be techjam, techjam_compatible, or realistic")
     if config.get("language", "en") != "en":
         errors.append("v0.2 supports English only")
     if int(config.get("max_turns", 10)) < 1:
         errors.append("max_turns must be >= 1")
-    if mode == "techjam" and int(config.get("max_turns", 10)) != 10:
-        errors.append("TechJam mode requires max_turns=10")
-    if mode == "techjam" and int(config.get("top_k", 10)) != 10:
-        errors.append("TechJam mode requires top_k=10")
+    if mode in target_modes and int(config.get("max_turns", 10)) != 10:
+        errors.append("TechJam target-product modes require max_turns=10")
+    if mode in target_modes and int(config.get("top_k", 10)) != 10:
+        errors.append("TechJam target-product modes require top_k=10")
     dataset = config.get("dataset", {})
     if not dataset.get("catalog_path"):
         errors.append("dataset.catalog_path is required")
-    if mode == "techjam" and not dataset.get("sessions_path"):
-        errors.append("TechJam mode requires dataset.sessions_path")
+    if mode in target_modes and not dataset.get("sessions_path"):
+        errors.append("TechJam target-product modes require dataset.sessions_path")
     if mode == "realistic" and int(dataset.get("scenario_count", 100)) < 1:
         errors.append("realistic dataset.scenario_count must be >= 1")
-    if mode == "techjam" and config.get("verbalizer", {}).get("type") != "template":
-        errors.append("TechJam mode requires the deterministic template verbalizer")
+    if mode in target_modes and config.get("verbalizer", {}).get("type") != "template":
+        errors.append("TechJam target-product modes require the deterministic template verbalizer")
     agent = config.get("agent", {})
     if not agent.get("class_path"):
         errors.append("agent.class_path is required")
@@ -406,10 +473,12 @@ def cmd_run(args: argparse.Namespace) -> int:
     products = list(adapter.load_products())
     catalog = {product.product_id: product for product in products}
     max_turns = int(config.get("max_turns", 10))
-    if mode == "techjam":
+    if mode in {"techjam", "techjam_compatible"}:
         scenarios = adapter.build_target_sessions(
             persona_template=config.get("persona", {}).get("default", "casual_browser"),
             max_turns=max_turns,
+            protocol=mode,
+            source_dataset=str(dataset_cfg.get("source_dataset", mode)),
         )
     else:
         scenario_count = int(dataset_cfg.get("scenario_count", 100))

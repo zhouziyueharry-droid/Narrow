@@ -61,7 +61,7 @@
 .recall-group { position: relative; padding: 22px 12px 12px; border: 1px dashed #8eb6b2; background: rgba(233,247,243,.8); } .group-label { position: absolute; top: -8px; left: 13px; padding: 1px 7px; color: #3f777a; background: #f3faf7; font-family: var(--font-geist-mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; }
 .recall-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
 .stage-card { min-width: 0; min-height: 64px; display: flex; align-items: center; gap: 10px; padding: 10px 11px; border: 1px solid; border-radius: 6px; cursor: pointer; transition: transform .15s,box-shadow .15s; }
-.stage-card:hover { transform: translateY(-1px); } .stage-present { border-color: #75b79e; background: #f0faf4; color: #246448; } .stage-absent { border-color: #e5a092; background: #fff7f4; color: #9a4435; }
+.stage-card:hover { transform: translateY(-1px); } .stage-present { border-color: #75b79e; background: #f0faf4; color: #246448; } .stage-absent { border-color: #e5a092; background: #fff7f4; color: #9a4435; } .stage-unavailable { border-color: #b7b7b7; background: #f5f5f5; color: #666; }
 .stage-active { box-shadow: 0 0 0 2px var(--ink),0 6px 15px rgba(18,45,54,.12); } .stage-icon { width: 27px; height: 27px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: currentColor; } .stage-icon svg { width: 14px; color: white; }
 .stage-label { display: block; font-size: 12px; font-weight: 800; color: #213d44; } .stage-meta { display: block; margin-top: 3px; font-family: var(--font-geist-mono); font-size: 9px; color: currentColor; }
 .flow-arrow { height: 34px; display: grid; place-items: center; color: #6e9393; } .flow-arrow svg { width: 19px; }

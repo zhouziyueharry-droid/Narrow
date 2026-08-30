@@ -154,8 +154,15 @@ class TechJamUserPolicy:
     def initial_act(self, state: UserState) -> DialogueAct:
         category = str(self.spec.get("category") or "clothing item")
         card = self.spec.get("intent_card", {})
+        behavior = self.spec.get("behavior", {})
         scenario_type = self.scenario.scenario_type
-        if scenario_type == "buying" and card.get("hard_constraints"):
+        custom_message = behavior.get("initial_message")
+        if isinstance(custom_message, str) and custom_message.strip():
+            disclosed = behavior.get("initial_disclosed", [])
+            if isinstance(disclosed, list):
+                self.disclosed.update(str(value) for value in disclosed)
+            message = custom_message.strip()
+        elif scenario_type == "buying" and card.get("hard_constraints"):
             constraint = str(card["hard_constraints"][0])
             self.disclosed.add(constraint)
             message = f"I'm looking for {category}. A key requirement is: {constraint}."
@@ -204,11 +211,18 @@ class TechJamUserPolicy:
         attribute = response.ask_attribute if isinstance(response.ask_attribute, str) else None
         if self.scenario.scenario_type == "boundary" and not self.boundary_used and attribute:
             self.boundary_used = True
+            boundary = self.spec.get("behavior", {}).get("boundary") or {}
+            message = boundary.get("message")
+            boundary_attribute = boundary.get("attribute")
             return DialogueAct(
                 DialogueActType.NO_PREFERENCE,
-                attribute=attribute,
+                attribute=str(boundary_attribute or attribute),
                 reason_code="techjam:boundary",
-                surface_text=f"I don't have a preference for {attribute}; please use your judgment.",
+                surface_text=(
+                    str(message)
+                    if isinstance(message, str) and message.strip()
+                    else f"I don't have a preference for {attribute}; please use your judgment."
+                ),
             )
         if not attribute:
             return DialogueAct(

@@ -26,7 +26,7 @@ type Stage = {
   label: string;
   count: number;
   targetRank: number | null;
-  status: 'present' | 'absent';
+  status: 'present' | 'absent' | 'unavailable';
   signal: Record<string, unknown> | null;
 };
 
@@ -83,6 +83,7 @@ const diagnosisLabels: Record<string, string> = {
   rerank: '精排掉队',
   response: '输出丢失',
   gated: '等待覆盖',
+  trace_unavailable: 'Trace 不完整',
 };
 
 function formatSignal(value: unknown) {
@@ -100,21 +101,22 @@ function StageCard({
   active: boolean;
   onClick: () => void;
 }) {
-  const present = stage.targetRank !== null;
+  const present = stage.status === 'present';
+  const unavailable = stage.status === 'unavailable';
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`stage-card ${present ? 'stage-present' : 'stage-absent'} ${active ? 'stage-active' : ''}`}
+      className={`stage-card ${present ? 'stage-present' : unavailable ? 'stage-unavailable' : 'stage-absent'} ${active ? 'stage-active' : ''}`}
       aria-pressed={active}
     >
       <span className="stage-icon" aria-hidden="true">
-        {present ? <Check /> : <X />}
+        {present ? <Check /> : unavailable ? <CircleAlert /> : <X />}
       </span>
       <span className="min-w-0 text-left">
         <span className="stage-label">{stage.label}</span>
         <span className="stage-meta">
-          {present ? `目标 #${stage.targetRank}` : '目标未出现'}
+          {present ? `目标 #${stage.targetRank}` : unavailable ? '该层未暴露' : '目标未出现'}
           <span aria-hidden="true"> · </span>
           {stage.count} 候选
         </span>
@@ -341,11 +343,11 @@ export default function Home() {
                 <p className="eyebrow">NODE EVIDENCE</p>
                 <div className="evidence-title">
                   <h3>{stage.label}</h3>
-                  <Badge variant={stage.targetRank !== null ? 'default' : 'destructive'}>{stage.targetRank !== null ? `目标 #${stage.targetRank}` : '目标缺失'}</Badge>
+                  <Badge variant={stage.targetRank !== null ? 'default' : stage.status === 'unavailable' ? 'outline' : 'destructive'}>{stage.targetRank !== null ? `目标 #${stage.targetRank}` : stage.status === 'unavailable' ? '该层未暴露' : '目标缺失'}</Badge>
                 </div>
                 <dl className="signal-list">
                   <div><dt>候选总数</dt><dd>{stage.count}</dd></div>
-                  <div><dt>目标排名</dt><dd>{stage.targetRank ?? '未进入'}</dd></div>
+                  <div><dt>目标排名</dt><dd>{stage.targetRank ?? (stage.status === 'unavailable' ? '不可观测' : '未进入')}</dd></div>
                   {stage.signal && Object.entries(stage.signal).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{formatSignal(value)}</dd></div>)}
                 </dl>
               </CardContent>

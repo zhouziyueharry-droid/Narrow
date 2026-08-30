@@ -264,6 +264,9 @@ def aggregate_techjam(
     agent_metadata: dict[str, Any] | None = None,
     *,
     max_turns: int = 10,
+    mode: str = "techjam",
+    benchmark: str = "techjam",
+    official_metric_contract: bool = True,
 ) -> dict[str, Any]:
     overall = _techjam_metric_summary(sessions)
     mttc = float(overall["mttc"]) if overall["mttc"] is not None else 11.0
@@ -276,10 +279,10 @@ def aggregate_techjam(
         grouped[str(session.get("scenario_type", "unknown"))].append(session)
     return {
         "schema_version": SCHEMA_VERSION,
-        "mode": "techjam",
+        "mode": mode,
         "evaluation": {
-            "benchmark": "techjam",
-            "official_metric_contract": True,
+            "benchmark": benchmark,
+            "official_metric_contract": official_metric_contract,
             **overall,
             "efficiency": round(efficiency, 6),
             "recommended_technical_score": round(technical_score, 6),

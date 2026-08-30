@@ -26,6 +26,9 @@ from .techjam import TechJamUserPolicy
 from .verbalizers import TemplateVerbalizer, VerbalizationRequest
 
 
+TARGET_PRODUCT_PROTOCOLS = {"techjam", "techjam_compatible"}
+
+
 def _goal_constraints(goal: TargetProductGoal | NeedBasedGoal):
     if isinstance(goal, TargetProductGoal):
         return list(goal.constraints)
@@ -124,7 +127,7 @@ class SimulatorSession:
         self._session_wall_ms = 0.0
         self.policy = (
             TechJamUserPolicy(scenario)
-            if scenario.protocol == "techjam"
+            if scenario.protocol in TARGET_PRODUCT_PROTOCOLS
             else UserPolicy(scenario)
         )
         self.acceptance = AcceptanceChecker(catalog)
@@ -183,7 +186,7 @@ class SimulatorSession:
             agent_layer_trace, agent_trace_error = self.agent.get_turn_trace(
                 self.state.session_id, turn, candidate_limit=max(self.top_k, 20)
             )
-            if self.scenario.protocol == "techjam" and response.error:
+            if self.scenario.protocol in TARGET_PRODUCT_PROTOCOLS and response.error:
                 response.ask_attribute = None
                 response.recommendations = []
                 response.usage = None
@@ -215,7 +218,7 @@ class SimulatorSession:
                         },
                     )
             if (
-                self.scenario.protocol == "techjam"
+                self.scenario.protocol in TARGET_PRODUCT_PROTOCOLS
                 and isinstance(self.policy, TechJamUserPolicy)
                 and not self.policy.acceptance_allowed(turn)
             ):
@@ -535,6 +538,15 @@ class Simulator:
             raise ValueError("run_many requires scenarios from one protocol")
         protocol = next(iter(protocols), "realistic")
         max_turns = max((scenario.max_turns for scenario in scenarios), default=10)
-        if protocol == "techjam":
-            return aggregate_techjam(sessions, self.agent_metadata, max_turns=max_turns)
+        if protocol in TARGET_PRODUCT_PROTOCOLS:
+            return aggregate_techjam(
+                sessions,
+                self.agent_metadata,
+                max_turns=max_turns,
+                mode=protocol,
+                benchmark=(
+                    "techjam" if protocol == "techjam" else "techjam_compatible_scale_v1"
+                ),
+                official_metric_contract=protocol == "techjam",
+            )
         return aggregate_realistic(sessions, self.agent_metadata, max_turns=max_turns)

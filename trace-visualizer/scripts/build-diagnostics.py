@@ -56,6 +56,189 @@ def stage(name: str, label: str, items: list[dict[str, Any]], target: str) -> di
     }
 
 
+def simulator_stage(
+    name: str,
+    label: str,
+    value: object,
+    target: str,
+) -> dict[str, Any]:
+    if value is None:
+        return {
+            "name": name,
+            "label": label,
+            "count": 0,
+            "targetRank": None,
+            "status": "unavailable",
+            "signal": {"trace_status": "agent_did_not_expose_this_stage"},
+        }
+    if isinstance(value, dict):
+        items = value.get("top", value.get("items", value.get("candidates", [])))
+        count = value.get("count")
+    else:
+        items = value
+        count = None
+    if not isinstance(items, list):
+        items = []
+    normalized = [
+        item if isinstance(item, dict) else {"parent_asin": str(item)}
+        for item in items
+    ]
+    result = stage(name, label, normalized, target)
+    if isinstance(count, int):
+        result["count"] = count
+    result["status"] = "present" if result["targetRank"] is not None else "absent"
+    return result
+
+
+def simulator_diagnosis(stages: list[dict[str, Any]], evaluation_active: bool) -> tuple[str, str]:
+    by_name = {item["name"]: item for item in stages}
+    response = by_name["response"]
+    if response["targetRank"] is not None:
+        if not evaluation_active:
+            return "gated", "目标已推荐，但意图覆盖尚未生效"
+        return "hit", f"目标进入最终推荐第 {response['targetRank']} 名"
+    for name, label in (
+        ("rerank", "目标未通过精排阶段"),
+        ("filter", "目标在硬约束过滤后消失"),
+        ("fusion", "目标在候选融合后消失"),
+    ):
+        item = by_name[name]
+        if item["status"] != "unavailable" and item["targetRank"] is None:
+            return name, label
+    recall = [by_name[name] for name in ("lexical", "dense", "attribute")]
+    available_recall = [item for item in recall if item["status"] != "unavailable"]
+    if available_recall and all(item["targetRank"] is None for item in available_recall):
+        return "recall", "已暴露的召回通道都没有显示目标商品"
+    if any(item["status"] == "unavailable" for item in stages[:-1]):
+        return "trace_unavailable", "Agent 未暴露足够的中间层数据，不能可靠定位流失阶段"
+    return "response", "目标曾在上游出现，但未进入最终推荐"
+
+
+def _latest_trace_updates(turn: dict[str, Any]) -> dict[str, Any]:
+    merged: dict[str, Any] = {}
+    trace = turn.get("agent_layer_trace") or []
+    if not isinstance(trace, list):
+        return merged
+    for step in trace:
+        updates = step.get("updates") if isinstance(step, dict) else None
+        if isinstance(updates, dict):
+            merged.update(updates)
+    return merged
+
+
+def build_from_simulator_report(report_path: Path, destination: Path) -> None:
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    output_sessions: list[dict[str, Any]] = []
+    diagnosis_counts: Counter[str] = Counter()
+    labels = {
+        "lexical": "词法召回",
+        "dense": "语义召回",
+        "attribute": "属性召回",
+        "fusion": "候选融合",
+        "filter": "硬约束过滤",
+        "rerank": "精排",
+        "response": "最终 Top 10",
+    }
+    stage_keys = {
+        "lexical": "lexical_candidates",
+        "dense": "dense_candidates",
+        "attribute": "attribute_candidates",
+        "fusion": "fused_candidates",
+        "filter": "filtered_candidates",
+        "rerank": "ranked_candidates",
+    }
+
+    for session in report.get("sessions", []):
+        sample_id = str(session.get("sample_id") or session.get("scenario_id") or "")
+        goal = session.get("goal_snapshot") or {}
+        target = str(goal.get("target_product_id") or session.get("accepted_product_id") or "")
+        override_turns = [
+            int(item.get("turn", 0))
+            for item in (session.get("effective_goal_snapshot") or {}).get("override_history", [])
+            if isinstance(item, dict) and item.get("turn")
+        ]
+        override_turn = min(override_turns) if override_turns else None
+        output_turns: list[dict[str, Any]] = []
+        for turn in session.get("conversation", []):
+            turn_number = int(turn.get("turn", 0))
+            updates = _latest_trace_updates(turn)
+            recommendations = [
+                {"parent_asin": str(item)} for item in turn.get("recommendations", [])
+            ]
+            stages = [
+                simulator_stage(name, labels[name], updates.get(key), target)
+                for name, key in stage_keys.items()
+            ]
+            stages.append(simulator_stage("response", labels["response"], recommendations, target))
+            evaluation_active = override_turn is None or turn_number >= override_turn
+            diagnosis, reason = simulator_diagnosis(stages, evaluation_active)
+            semantic_patch = updates.get("semantic_patch") or {}
+            semantic_query = updates.get("semantic_query") or semantic_patch.get("semantic_query") or ""
+            constraints = updates.get("active_constraints") or semantic_patch.get("constraints") or []
+            output_turns.append(
+                {
+                    "turn": turn_number,
+                    "userMessage": turn.get("user", ""),
+                    "semanticQuery": semantic_query,
+                    "constraints": constraints if isinstance(constraints, list) else [],
+                    "evaluationActive": evaluation_active,
+                    "relaxed": bool(updates.get("constraints_relaxed", False)),
+                    "latencyMs": turn.get("agent_latency_ms", 0),
+                    "diagnosis": diagnosis,
+                    "reason": reason,
+                    "stages": stages,
+                }
+            )
+        representative = next((item for item in output_turns if item["diagnosis"] == "hit"), None)
+        representative = representative or (output_turns[-1] if output_turns else None)
+        session_diagnosis = "hit" if session.get("success") else (
+            representative["diagnosis"] if representative else "trace_unavailable"
+        )
+        diagnosis_counts[session_diagnosis] += 1
+        output_sessions.append(
+            {
+                "sampleId": sample_id,
+                "scenario": session.get("scenario_type", "unknown"),
+                "hit": bool(session.get("success")),
+                "firstHitTurn": session.get("first_hit_turn"),
+                "bestRank": session.get("best_rank", session.get("acceptance_rank")),
+                "diagnosis": session_diagnosis,
+                "diagnosisReason": (
+                    representative["reason"] if representative else "No conversation turns were recorded"
+                ),
+                "target": {
+                    "parentAsin": target,
+                    "title": "",
+                    "category": str(goal.get("category") or ""),
+                    "price": None,
+                    "rating": None,
+                },
+                "turns": output_turns,
+            }
+        )
+
+    evaluation = report.get("evaluation") or {}
+    agent_usage = (report.get("model_usage") or {}).get("agent") or {}
+    payload = {
+        "run": {
+            "id": report_path.stem,
+            "model": agent_usage.get("model") or agent_usage.get("provider") or "unspecified",
+            "workers": 1,
+            "sampleCount": evaluation.get("sample_count", len(output_sessions)),
+            "hitRate": evaluation.get("hit_rate_at_10", evaluation.get("success_rate", 0)),
+            "mrr": evaluation.get("mrr", 0),
+            "technicalScore": evaluation.get("recommended_technical_score", 0),
+            "diagnosisCounts": dict(diagnosis_counts),
+        },
+        "sessions": output_sessions,
+    }
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+    )
+    print(f"wrote {destination} ({destination.stat().st_size} bytes)")
+
+
 def diagnose(stages: list[dict[str, Any]], final_rank: int | None, evaluation_active: bool) -> tuple[str, str]:
     by_name = {item["name"]: item for item in stages}
     recall_names = ("lexical", "dense", "attribute")
@@ -80,7 +263,7 @@ def diagnose(stages: list[dict[str, Any]], final_rank: int | None, evaluation_ac
 def resolve_run_root(evaluation_root: Path, run_dir: str | None) -> Path:
     if run_dir:
         candidate = Path(run_dir)
-        return candidate.resolve() if candidate.is_absolute() else (Path.cwd() / candidate).resolve()
+        return candidate.resolve() if candidate.is_absolute() else (evaluation_root / candidate).resolve()
     latest_file = evaluation_root / "LATEST.txt"
     if not latest_file.exists():
         raise SystemExit(f"LATEST.txt not found: {latest_file}")
@@ -95,6 +278,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--project-root", type=Path, default=DEFAULT_PROJECT_ROOT)
     parser.add_argument("--evaluation-root", type=Path, default=DEFAULT_EVALUATION_ROOT)
     parser.add_argument(
+        "--simulator-report",
+        type=Path,
+        help="Unified user-simulator JSON report. When set, no official-run replay is performed.",
+    )
+    parser.add_argument(
         "--run-dir",
         help="Evaluation run directory. Omit to use <evaluation-root>/LATEST.txt.",
     )
@@ -108,12 +296,21 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    destination = args.output.resolve()
+    if args.simulator_report is not None:
+        build_from_simulator_report(args.simulator_report.resolve(), destination)
+        return
     project_root = args.project_root.resolve()
     evaluation_root = args.evaluation_root.resolve()
     run_root = resolve_run_root(evaluation_root, args.run_dir)
-    destination = args.output.resolve()
 
-    required = ("sessions.jsonl", "turns.jsonl", "node_traces.jsonl", "summary.json")
+    required = (
+        "run_config.json",
+        "sessions.jsonl",
+        "turns.jsonl",
+        "node_traces.jsonl",
+        "summary.json",
+    )
     missing = [name for name in required if not (run_root / name).exists()]
     if missing:
         raise SystemExit(f"Run directory is incomplete ({', '.join(missing)}): {run_root}")
@@ -130,6 +327,7 @@ def main() -> None:
     turns = load_jsonl(run_root / "turns.jsonl")
     nodes = load_jsonl(run_root / "node_traces.jsonl")
     summary = json.loads((run_root / "summary.json").read_text(encoding="utf-8"))
+    run_config = json.loads((run_root / "run_config.json").read_text(encoding="utf-8"))
 
     turns_by_sample: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for turn in turns:
@@ -141,7 +339,13 @@ def main() -> None:
         if isinstance(patch, dict):
             patch_action[(str(row["sample_id"]), int(row["turn"]))] = str(patch.get("action", "add"))
 
-    catalog = CatalogIndex(project_root / "data" / "catalog.jsonl")
+    catalog_reference = Path(str(run_config.get("catalog") or "data/catalog.jsonl"))
+    catalog_path = (
+        catalog_reference
+        if catalog_reference.is_absolute()
+        else project_root / catalog_reference
+    ).resolve()
+    catalog = CatalogIndex(catalog_path)
     graph_nodes = ShoppingGraphNodes(
         catalog=catalog,
         semantic_retriever=LocalDenseIndex(catalog),

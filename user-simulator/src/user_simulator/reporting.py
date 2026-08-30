@@ -27,7 +27,13 @@ def _key_value_table(values: dict[str, Any]) -> list[str]:
 
 def render_markdown(result: dict[str, Any], title: str | None = None) -> str:
     mode = str(result.get("mode", "unknown"))
-    display_mode = "TechJam" if mode == "techjam" else mode.title()
+    display_mode = (
+        "TechJam"
+        if mode == "techjam"
+        else "TechJam-compatible scale"
+        if mode == "techjam_compatible"
+        else mode.title()
+    )
     lines = [
         f"# {title or f'{display_mode} simulator evaluation'}",
         "",

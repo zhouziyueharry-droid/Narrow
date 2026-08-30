@@ -96,6 +96,8 @@ class TechJamDatasetAdapter:
         self,
         persona_template: str = "casual_browser",
         max_turns: int = 10,
+        protocol: str = "techjam",
+        source_dataset: str = "techjam",
     ) -> list[ScenarioSpec]:
         if self.sessions_path is None:
             raise ValueError("sessions_path is required")
@@ -119,7 +121,7 @@ class TechJamDatasetAdapter:
                 if not isinstance(behavior, dict):
                     behavior = build_behavior(scenario_type, intent_card, sample_id)
                 constraints = [
-                    Constraint(classify_constraint(str(value)), [str(value)], "hard", source="techjam")
+                    Constraint(classify_constraint(str(value)), [str(value)], "hard", source=protocol)
                     for value in intent_card.get("hard_constraints", [])
                 ]
                 constraints.extend(
@@ -127,7 +129,7 @@ class TechJamDatasetAdapter:
                         classify_constraint(str(value)),
                         [str(value)],
                         "soft",
-                        source="techjam",
+                        source=protocol,
                         relaxable=True,
                     )
                     for value in intent_card.get("soft_preferences", [])
@@ -138,7 +140,7 @@ class TechJamDatasetAdapter:
                     target_product_id=target,
                     constraints=constraints,
                     category=category,
-                    source_dataset="techjam",
+                    source_dataset=source_dataset,
                 )
                 result.append(
                     ScenarioSpec(
@@ -147,15 +149,29 @@ class TechJamDatasetAdapter:
                         persona_template=persona_template,
                         max_turns=max_turns,
                         seed=_stable_seed(sample_id, scenario_type),
-                        protocol="techjam",
+                        protocol=protocol,
                         scenario_type=scenario_type,
                         user_profile=dict(sample.get("user_profile") or {}),
+                        difficulty_profile=str(
+                            sample.get("difficulty_bucket") or "standard"
+                        ),
                         metadata={
                             "techjam": {
                                 "category": category,
                                 "intent_card": intent_card,
                                 "behavior": behavior,
-                            }
+                            },
+                            "coverage": {
+                                "category": str(
+                                    sample.get("category_bucket") or category
+                                ),
+                                "difficulty": str(
+                                    sample.get("difficulty_bucket") or "standard"
+                                ),
+                            },
+                            "generation_metadata": dict(
+                                sample.get("generation_metadata") or {}
+                            ),
                         },
                     )
                 )

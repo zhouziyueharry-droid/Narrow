@@ -25,6 +25,13 @@ def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def _portable_path(path: Path, project_root: Path) -> str:
+    try:
+        return Path(os.path.relpath(path.resolve(), project_root.resolve())).as_posix()
+    except ValueError:
+        return f"external/{path.name}"
+
+
 def _summary(sessions: list[dict[str, Any]], usage: dict[str, int]) -> dict[str, Any]:
     from evaluator.local_evaluator import metric_summary
 
@@ -106,7 +113,7 @@ def _report(summary: dict[str, Any], config: dict[str, Any]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Run traced LLM evaluation in isolated parallel shards and aggregate results"
+        description="Run traced evaluation in isolated parallel shards and aggregate results"
     )
     parser.add_argument("--catalog", default="data/catalog.jsonl")
     parser.add_argument("--dataset", default="data/public_set.jsonl")
@@ -114,6 +121,12 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--model", default="deepseek-v4-pro")
     parser.add_argument("--candidate-limit", type=int, default=20)
+    parser.add_argument(
+        "--llm",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Enable Agent DeepSeek calls. Disabled by default to avoid accidental API use.",
+    )
     args = parser.parse_args()
 
     if args.workers < 1:
@@ -123,8 +136,8 @@ def main() -> int:
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     load_dotenv(project_root / ".env")
-    if not os.getenv("DEEPSEEK_API_KEY", "").strip():
-        raise SystemExit("DEEPSEEK_API_KEY is empty")
+    if args.llm and not os.getenv("DEEPSEEK_API_KEY", "").strip():
+        raise SystemExit("DEEPSEEK_API_KEY is empty; cannot run --llm")
 
     dataset_path = (project_root / args.dataset).resolve()
     catalog_path = (project_root / args.catalog).resolve()
@@ -136,15 +149,16 @@ def main() -> int:
     shards_dir = output_dir / "shards"
     shards_dir.mkdir(parents=True, exist_ok=False)
     output_root.mkdir(parents=True, exist_ok=True)
-    (output_root / "LATEST.txt").write_text(str(output_dir) + "\n", encoding="utf-8")
+    (output_root / "LATEST.txt").write_text(run_id + "\n", encoding="utf-8")
 
     shards: list[list[dict[str, Any]]] = [[] for _ in range(worker_count)]
     for index, sample in enumerate(samples):
         shards[index % worker_count].append(sample)
 
     env = os.environ.copy()
-    env["DEEPSEEK_MODEL"] = args.model
-    env["SHOPPING_AGENT_ENABLE_LLM"] = "true"
+    if args.llm:
+        env["DEEPSEEK_MODEL"] = args.model
+    env["SHOPPING_AGENT_ENABLE_LLM"] = "true" if args.llm else "false"
     processes: list[tuple[int, subprocess.Popen[str], Any, Any, Path]] = []
     started = time.perf_counter()
     for shard_index, shard_samples in enumerate(shards):
@@ -158,7 +172,7 @@ def main() -> int:
         command = [
             sys.executable,
             str(project_root / "scripts" / "evaluate_with_traces.py"),
-            "--llm",
+            "--llm" if args.llm else "--no-llm",
             "--catalog",
             str(catalog_path),
             "--dataset",
@@ -214,7 +228,8 @@ def main() -> int:
     usage = {"prompt_tokens": 0, "completion_tokens": 0}
     shard_runs: list[dict[str, Any]] = []
     for shard_index, _, _, _, raw_root in processes:
-        run_path = Path((raw_root / "LATEST.txt").read_text(encoding="utf-8").strip())
+        run_ref = Path((raw_root / "LATEST.txt").read_text(encoding="utf-8").strip())
+        run_path = run_ref if run_ref.is_absolute() else raw_root / run_ref
         shard_summary = json.loads((run_path / "summary.json").read_text(encoding="utf-8"))
         for key in usage:
             usage[key] += int(shard_summary["reported_token_usage"].get(key, 0))
@@ -229,7 +244,7 @@ def main() -> int:
                 target.append(row)
         shard_runs.append({
             "shard_index": shard_index,
-            "run_path": str(run_path),
+            "run_path": run_path.relative_to(output_dir).as_posix(),
             "summary": shard_summary,
         })
 
@@ -251,15 +266,17 @@ def main() -> int:
         "run_id": run_id,
         "elapsed_seconds": round(time.perf_counter() - started, 3),
         "workers": worker_count,
-        "model": args.model,
+        "model": args.model if args.llm else "local_fallback",
         "shard_runs": shard_runs,
     })
     config = {
         "run_id": run_id,
-        "model": args.model,
+        "llm_enabled": bool(args.llm),
+        "provider": "deepseek" if args.llm else "local_fallback",
+        "model": args.model if args.llm else "local_fallback",
         "workers": worker_count,
-        "catalog": str(catalog_path),
-        "dataset": str(dataset_path),
+        "catalog": _portable_path(catalog_path, project_root),
+        "dataset": _portable_path(dataset_path, project_root),
         "sample_count": len(samples),
         "candidate_limit_per_node": args.candidate_limit,
         "started_at": datetime.now().astimezone().isoformat(),

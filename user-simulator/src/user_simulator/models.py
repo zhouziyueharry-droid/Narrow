@@ -181,7 +181,7 @@ class ScenarioSpec:
     scheduled_relaxations: list[RelaxationEvent] = field(default_factory=list)
     persona_driven_override_enabled: bool = False
     seed: int = 42
-    protocol: Literal["techjam", "realistic"] = "realistic"
+    protocol: Literal["techjam", "techjam_compatible", "realistic"] = "realistic"
     scenario_type: str = "realistic"
     user_profile: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)

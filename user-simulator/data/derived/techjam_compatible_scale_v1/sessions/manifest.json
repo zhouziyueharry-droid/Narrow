@@ -1,0 +1,111 @@
+{
+  "derived_smoke_count": 20,
+  "excluded_official_target_count": 200,
+  "files": {
+    "dev_200.jsonl": {
+      "bytes": 253975,
+      "sha256": "8f7755e32c3a05d58c08aa08856168651fd8ca7fcaf09123ea3431949f442675"
+    },
+    "eval_challenge_200.jsonl": {
+      "bytes": 295797,
+      "sha256": "a11c5142ce20f14b396acd796c11d6e0856b9bc3b560c7dbcb228c9a0084abd8"
+    },
+    "eval_core_1000.jsonl": {
+      "bytes": 1264271,
+      "sha256": "03aa819946f2fe6313f3c54d8e2d922367259e111eb1f86219e9c8b2f6cb145a"
+    },
+    "session_index.csv": {
+      "bytes": 119485,
+      "sha256": "05c241d61d8bc2b281ef6cf1841813460a335e7982d611214d0f543164eed4f0"
+    },
+    "smoke_20.jsonl": {
+      "bytes": 24880,
+      "sha256": "d1929abc7c2e1c3ae90e71874a7d3e1c4c91d26e1d89ed62d0731a9c550fd6cd"
+    }
+  },
+  "official_metric_contract": false,
+  "official_sessions_reused": false,
+  "official_targets_reused": false,
+  "schema_version": "1.0",
+  "seed": 20260830,
+  "splits": {
+    "challenge": {
+      "difficulty_distribution": {
+        "hard": 200
+      },
+      "sample_count": 200,
+      "scenario_distribution": {
+        "boundary": 100,
+        "intent_override": 100
+      },
+      "subtype_distribution": {
+        "brand_change": 25,
+        "budget_change": 25,
+        "category_or_use_case_change": 25,
+        "exact_threshold": 25,
+        "hard_soft_conflict": 25,
+        "key_attribute_change": 25,
+        "negation_scope": 25,
+        "unit_or_size_ambiguity": 25
+      }
+    },
+    "core": {
+      "difficulty_distribution": {
+        "easy": 200,
+        "hard": 300,
+        "medium": 500
+      },
+      "sample_count": 1000,
+      "scenario_distribution": {
+        "boundary": 50,
+        "browsing": 400,
+        "buying": 400,
+        "intent_override": 150
+      },
+      "subtype_distribution": {
+        "brand_change": 38,
+        "budget_change": 38,
+        "category_or_use_case_change": 37,
+        "exact_threshold": 13,
+        "hard_soft_conflict": 12,
+        "key_attribute_change": 37,
+        "negation_scope": 13,
+        "standard": 800,
+        "unit_or_size_ambiguity": 12
+      }
+    },
+    "dev": {
+      "difficulty_distribution": {
+        "easy": 40,
+        "hard": 60,
+        "medium": 100
+      },
+      "sample_count": 200,
+      "scenario_distribution": {
+        "boundary": 10,
+        "browsing": 80,
+        "buying": 80,
+        "intent_override": 30
+      },
+      "subtype_distribution": {
+        "brand_change": 8,
+        "budget_change": 8,
+        "category_or_use_case_change": 7,
+        "exact_threshold": 3,
+        "hard_soft_conflict": 2,
+        "key_attribute_change": 7,
+        "negation_scope": 3,
+        "standard": 160,
+        "unit_or_size_ambiguity": 2
+      }
+    }
+  },
+  "suite_id": "techjam_compatible_scale_v1",
+  "target_source_catalog": {
+    "eligible_non_official_targets": 39830,
+    "path_hint": "broad_catalog.jsonl",
+    "row_count": 49999,
+    "sha256": "4bfba369fe7fa9eaf98ef24af12235d850328d05cfe2ba001505f5a6b22994b2"
+  },
+  "unique_session_count": 1400
+}
