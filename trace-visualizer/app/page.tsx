@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import {
   ArrowDown,
   ArrowRight,
@@ -225,6 +226,7 @@ export default function Home() {
           <span>{data.run.model}</span>
           <span>{data.run.workers} workers</span>
           <span>{data.run.id}</span>
+          <Link href="/evaluator-guide">Evaluator 指南</Link>
         </div>
         <div className="metric-strip">
           <div><span>样本</span><strong>{data.run.sampleCount}</strong></div>
