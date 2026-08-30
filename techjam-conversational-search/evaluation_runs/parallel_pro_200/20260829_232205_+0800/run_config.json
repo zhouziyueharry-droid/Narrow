@@ -1,0 +1,10 @@
+{
+  "run_id": "20260829_232205_+0800",
+  "model": "deepseek-v4-pro",
+  "workers": 12,
+  "catalog": "C:\\Users\\Harry\\Desktop\\tiktok_project_4\\techjam-conversational-search\\data\\catalog.jsonl",
+  "dataset": "C:\\Users\\Harry\\Desktop\\tiktok_project_4\\techjam-conversational-search\\data\\public_set.jsonl",
+  "sample_count": 200,
+  "candidate_limit_per_node": 20,
+  "started_at": "2026-08-29T23:28:45.662763+08:00"
+}

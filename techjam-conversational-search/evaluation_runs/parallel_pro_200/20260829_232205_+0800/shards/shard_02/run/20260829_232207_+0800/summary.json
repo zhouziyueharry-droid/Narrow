@@ -1,0 +1,42 @@
+{
+  "sample_count": 17,
+  "hit_rate_at_10": 0.882353,
+  "mrr": 0.26634,
+  "mttc": 3.176471,
+  "efficiency": 0.782353,
+  "recommended_technical_score": 0.677549,
+  "reported_token_usage": {
+    "prompt_tokens": 117816,
+    "completion_tokens": 10182,
+    "total_tokens": 127998
+  },
+  "scenario_metrics": {
+    "browsing": {
+      "sample_count": 9,
+      "hit_rate_at_10": 1.0,
+      "mrr": 0.354938,
+      "mttc": 1.777778
+    },
+    "buying": {
+      "sample_count": 5,
+      "hit_rate_at_10": 0.8,
+      "mrr": 0.176667,
+      "mttc": 3.8
+    },
+    "intent_override": {
+      "sample_count": 3,
+      "hit_rate_at_10": 0.666667,
+      "mrr": 0.15,
+      "mttc": 6.333333
+    }
+  },
+  "run_id": "20260829_232207_+0800",
+  "elapsed_seconds": 258.447,
+  "artifact_files": {
+    "config": "run_config.json",
+    "sessions": "sessions.jsonl",
+    "turns": "turns.jsonl",
+    "node_traces": "node_traces.jsonl",
+    "report": "report.md"
+  }
+}
