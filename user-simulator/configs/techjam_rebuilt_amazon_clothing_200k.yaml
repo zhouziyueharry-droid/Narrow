@@ -5,10 +5,10 @@ seed: 20260830
 max_turns: 10
 top_k: 10
 dataset:
-  name: techjam_compatible_scale_v1
-  catalog_path: data/derived/techjam_compatible_scale_v1/catalogs/nested_200k.jsonl
-  sessions_path: data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl
-  source_dataset: amazon_reviews_2023_nested_clothing_200k
+  name: rebuilt_amazon_clothing_200k
+  catalog_path: data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_200k.jsonl
+  sessions_path: data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl
+  source_dataset: rebuilt_amazon_reviews_2023_clothing_200k
   catalog_size: 200000
 persona:
   default: casual_browser

@@ -8,9 +8,9 @@ from typing import Any, TextIO
 
 
 TARGETS = {
-    "resampled_50k.jsonl": 50_000,
-    "nested_200k.jsonl": 200_000,
-    "nested_500k.jsonl": 500_000,
+    "rebuilt_amazon_clothing_50k.jsonl": 50_000,
+    "rebuilt_amazon_clothing_200k.jsonl": 200_000,
+    "rebuilt_amazon_broad_500k.jsonl": 500_000,
 }
 
 
@@ -107,21 +107,21 @@ def main() -> int:
     if missing:
         raise SystemExit("Missing source catalogs: " + ", ".join(missing))
 
-    base = output_dir / "resampled_50k.jsonl"
-    medium = output_dir / "nested_200k.jsonl"
-    large = output_dir / "nested_500k.jsonl"
+    base = output_dir / "rebuilt_amazon_clothing_50k.jsonl"
+    medium = output_dir / "rebuilt_amazon_clothing_200k.jsonl"
+    large = output_dir / "rebuilt_amazon_broad_500k.jsonl"
     catalogs = {
-        "resampled_50k": _build(base, TARGETS[base.name], [resampled, scale, cross]),
-        "nested_200k": _build(medium, TARGETS[medium.name], [base, scale, cross]),
-        "nested_500k": _build(large, TARGETS[large.name], [medium, cross, scale]),
+        "rebuilt_amazon_clothing_50k": _build(base, TARGETS[base.name], [resampled, scale, cross]),
+        "rebuilt_amazon_clothing_200k": _build(medium, TARGETS[medium.name], [base, scale, cross]),
+        "rebuilt_amazon_broad_500k": _build(large, TARGETS[large.name], [medium, cross, scale]),
     }
     manifest = {
         "schema_version": "1.0",
         "suite_id": "techjam_compatible_scale_v1",
         "construction": "nested_by_parent_asin",
         "subset_invariants": [
-            "resampled_50k is a prefix/subset of nested_200k",
-            "nested_200k is a prefix/subset of nested_500k",
+            "rebuilt_amazon_clothing_50k is a prefix/subset of rebuilt_amazon_clothing_200k",
+            "rebuilt_amazon_clothing_200k is a prefix/subset of rebuilt_amazon_broad_500k",
         ],
         "catalogs": catalogs,
     }

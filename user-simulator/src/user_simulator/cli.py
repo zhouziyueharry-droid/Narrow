@@ -39,7 +39,7 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
-    "techjam_compatible_resampled_50k": {
+    "techjam_rebuilt_amazon_clothing_50k": {
         "version": "0.6",
         "language": "en",
         "mode": "techjam_compatible",
@@ -47,10 +47,10 @@ PRESETS: dict[str, dict] = {
         "max_turns": 10,
         "top_k": 10,
         "dataset": {
-            "name": "techjam_compatible_scale_v1",
-            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/resampled_50k.jsonl",
-            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
-            "source_dataset": "amazon_reviews_2023_resampled_clothing_50k",
+            "name": "rebuilt_amazon_clothing_50k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_50k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_clothing_50k",
             "catalog_size": 50000,
         },
         "persona": {"default": "casual_browser"},
@@ -61,7 +61,7 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
-    "techjam_compatible_scale_200k": {
+    "techjam_rebuilt_amazon_clothing_200k": {
         "version": "0.6",
         "language": "en",
         "mode": "techjam_compatible",
@@ -69,10 +69,10 @@ PRESETS: dict[str, dict] = {
         "max_turns": 10,
         "top_k": 10,
         "dataset": {
-            "name": "techjam_compatible_scale_v1",
-            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/nested_200k.jsonl",
-            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
-            "source_dataset": "amazon_reviews_2023_nested_clothing_200k",
+            "name": "rebuilt_amazon_clothing_200k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_200k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_clothing_200k",
             "catalog_size": 200000,
         },
         "persona": {"default": "casual_browser"},
@@ -83,7 +83,7 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
-    "techjam_compatible_scale_500k": {
+    "techjam_rebuilt_amazon_broad_500k": {
         "version": "0.6",
         "language": "en",
         "mode": "techjam_compatible",
@@ -91,10 +91,10 @@ PRESETS: dict[str, dict] = {
         "max_turns": 10,
         "top_k": 10,
         "dataset": {
-            "name": "techjam_compatible_scale_v1",
-            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/nested_500k.jsonl",
-            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/eval_core_1000.jsonl",
-            "source_dataset": "amazon_reviews_2023_nested_cross_category_500k",
+            "name": "rebuilt_amazon_broad_500k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_broad_500k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_cross_category_500k",
             "catalog_size": 500000,
         },
         "persona": {"default": "casual_browser"},

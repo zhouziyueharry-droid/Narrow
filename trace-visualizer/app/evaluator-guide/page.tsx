@@ -41,15 +41,15 @@ const catalogModes = [
   },
   {
     id: '50k',
-    label: '重抽样 50k',
+    label: '本项目重构 50K（非官方）',
     products: '50,000',
     sessions: '固定 1,400',
-    source: 'Amazon Reviews 2023 · Clothing',
+    source: 'rebuilt_amazon_clothing_50k · Amazon Reviews 2023',
     contract: '兼容指标',
   },
   {
     id: '200k',
-    label: '扩容 200k',
+    label: '本项目重构 Clothing 200K',
     products: '200,000',
     sessions: '同一批 1,400',
     source: 'Amazon Reviews 2023 · Clothing scale',
@@ -57,7 +57,7 @@ const catalogModes = [
   },
   {
     id: '500k',
-    label: '跨品类 500k',
+    label: '本项目重构 Broad 500K',
     products: '500,000',
     sessions: '同一批 1,400',
     source: 'Amazon Reviews 2023 · Cross-category',
@@ -165,8 +165,8 @@ const jsonPreviewLines = [
 
 const runCommand = [
   'uv run --project user-simulator user-simulator run `',
-  '  --preset techjam_compatible_resampled_50k `',
-  '  --sessions-path user-simulator/data/derived/techjam_compatible_scale_v1/sessions/smoke_20.jsonl `',
+  '  --preset techjam_rebuilt_amazon_clothing_50k `',
+  '  --sessions-path user-simulator/data/derived/techjam_compatible_scale_v1/sessions/official_style_smoke_20_rebuilt_amazon_clothing_50k.jsonl `',
   '  --output runs/compatible_50k_smoke.json `',
   '  --report-output runs/compatible_50k_smoke.md',
 ].join('\n');
@@ -361,7 +361,7 @@ export default function EvaluatorGuidePage() {
               <div className="guide-mix"><span>场景构成</span><strong>{split.mix}</strong></div>
               <div className="guide-file-path">
                 <FileJson2 />
-                <code>{split.id === 'core' ? 'eval_core_1000.jsonl' : split.id === 'challenge' ? 'eval_challenge_200.jsonl' : `${split.id}_${split.count}.jsonl`}</code>
+                <code>{split.id === 'core' ? 'official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl' : split.id === 'challenge' ? 'custom_challenge_200_rebuilt_amazon_clothing_50k.jsonl' : split.id === 'dev' ? 'official_style_dev_200_rebuilt_amazon_clothing_50k.jsonl' : 'official_style_smoke_20_rebuilt_amazon_clothing_50k.jsonl'}</code>
               </div>
             </CardContent>
           </Card>
@@ -379,7 +379,7 @@ export default function EvaluatorGuidePage() {
         <div className="guide-json-grid">
           <Card className="guide-code-card">
             <CardContent>
-              <div className="guide-code-head"><span><Braces /> dev_200.jsonl · line 1</span><Badge variant="outline">interactive goal card</Badge></div>
+              <div className="guide-code-head"><span><Braces /> official_style_dev_200_rebuilt_amazon_clothing_50k.jsonl · line 1</span><Badge variant="outline">interactive goal card</Badge></div>
               <pre aria-label="一条会话 JSONL 示例"><code>{'{\n'}{jsonPreviewLines.map((line, index) => <span key={line.text}>  {line.field ? <button onClick={() => setSelectedField(line.field!)} className={selectedField === line.field ? 'active' : ''}>{line.text}</button> : line.text}{index < jsonPreviewLines.length - 1 ? ',' : ''}{'\n'}</span>)}{'}'}</code></pre>
             </CardContent>
           </Card>
@@ -456,7 +456,7 @@ export default function EvaluatorGuidePage() {
           <ol>
             <li><span>01</span><div><strong>准备 catalog</strong><p>从 Release 解压或运行 nested catalog builder；大 JSONL 不在 Git 中。</p></div></li>
             <li><span>02</span><div><strong>检查 preset 路径</strong><p>50k / 200k / 500k 配置分别指向对应目录，但会话可以保持同一份。</p></div></li>
-            <li><span>03</span><div><strong>先跑 smoke_20</strong><p>确认 Agent 接口、Top-10、逐轮 Trace 和五段报告都存在。</p></div></li>
+            <li><span>03</span><div><strong>先跑 rebuilt Amazon Clothing 50K smoke 20</strong><p>确认 Agent 接口、Top-10、逐轮 Trace 和五段报告都存在。</p></div></li>
             <li><span>04</span><div><strong>保存并比较</strong><p>固定代码 commit、catalog hash、session hash、模型状态和运行参数。</p></div></li>
           </ol>
           <Card className="guide-command-card">

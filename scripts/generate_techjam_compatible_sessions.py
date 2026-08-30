@@ -186,9 +186,12 @@ def _product_candidate(raw: dict[str, Any]) -> dict[str, Any] | None:
 
     if len(facts) < 5:
         return None
+    raw_categories = _categories(raw)
     return {
         "parent_asin": parent_asin,
         "title": title,
+        "main_category": _clean(raw.get("main_category"), 80) or "unknown",
+        "root_category": raw_categories[0] if raw_categories else "unknown",
         "category": category,
         "category_bucket": _slug(category),
         "price": value,
@@ -273,25 +276,38 @@ def _difficulty_sequence(count: int, rng: random.Random) -> list[str]:
 
 def _assignments(rng: random.Random) -> list[dict[str, str]]:
     assignments: list[dict[str, str]] = []
-    for split in ("dev", "core"):
-        for scenario, count in SCENARIO_COUNTS[split].items():
-            subtype_pool = (
-                OVERRIDE_SUBTYPES if scenario == "intent_override" else BOUNDARY_SUBTYPES
+    # The 1,000-session core is an exact 5x scaling of the participant kit's
+    # public 200-session scenario/difficulty distribution.
+    official_difficulty = {
+        "buying": "easy",
+        "browsing": "medium",
+        "intent_override": "hard",
+        "boundary": "medium",
+    }
+    for scenario, count in SCENARIO_COUNTS["core"].items():
+        for _ in range(count):
+            assignments.append(
+                {
+                    "split": "core",
+                    "scenario_type": scenario,
+                    "difficulty": official_difficulty[scenario],
+                    "subtype": "official_style",
+                }
             )
-            difficulties = _difficulty_sequence(count, rng)
-            for index in range(count):
-                subtype = subtype_pool[index % len(subtype_pool)] if scenario in {
-                    "intent_override",
-                    "boundary",
-                } else "standard"
-                assignments.append(
-                    {
-                        "split": split,
-                        "scenario_type": scenario,
-                        "difficulty": difficulties[index],
-                        "subtype": subtype,
-                    }
-                )
+
+    # The independent 200-session development split follows the same public
+    # distribution exactly, but remains separate from the 1,000-session
+    # headline evaluation split to reduce tuning leakage.
+    for scenario, count in SCENARIO_COUNTS["dev"].items():
+        for _ in range(count):
+            assignments.append(
+                {
+                    "split": "dev",
+                    "scenario_type": scenario,
+                    "difficulty": official_difficulty[scenario],
+                    "subtype": "official_style",
+                }
+            )
     for scenario, count in SCENARIO_COUNTS["challenge"].items():
         subtype_pool = OVERRIDE_SUBTYPES if scenario == "intent_override" else BOUNDARY_SUBTYPES
         for index in range(count):
@@ -450,28 +466,35 @@ def _session_row(
         rng,
     )
     all_facts = hard + soft
-    return {
+    row = {
         "sample_id": sample_id,
         "scenario_type": scenario_type,
         "difficulty_bucket": assignment["difficulty"],
         "category_bucket": candidate["category_bucket"],
         "ground_truth": {"parent_asin": candidate["parent_asin"]},
         "user_profile": _profile(all_facts, rng),
-        "intent_card": {
-            "target_category": candidate["category"],
-            "hard_constraints": [item["text"] for item in hard],
-            "soft_preferences": [item["text"] for item in soft],
-        },
-        "behavior": behavior,
         "generation_metadata": {
             "suite_id": SUITE_ID,
             "split": split,
             "subtype": assignment["subtype"],
+            "construction_track": (
+                "official_style_participant_materialized"
+                if split in {"core", "dev"}
+                else "custom_diagnostic"
+            ),
             "source_dataset": "amazon_reviews_2023_resampled_clothing_50k",
             "official_session_reused": False,
             "official_metric_contract": False,
         },
     }
+    if split not in {"core", "dev"}:
+        row["intent_card"] = {
+            "target_category": candidate["category"],
+            "hard_constraints": [item["text"] for item in hard],
+            "soft_preferences": [item["text"] for item in soft],
+        }
+        row["behavior"] = behavior
+    return row
 
 
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -485,12 +508,12 @@ def _distribution(rows: list[dict[str, Any]], field: str) -> dict[str, int]:
     return dict(sorted(Counter(str(row[field]) for row in rows).items()))
 
 
-def _smoke_rows(dev_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _smoke_rows(official_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     wanted = {"buying": 8, "browsing": 8, "intent_override": 3, "boundary": 1}
     selected: list[dict[str, Any]] = []
     for scenario_type, count in wanted.items():
         selected.extend(
-            [row for row in dev_rows if row["scenario_type"] == scenario_type][:count]
+            [row for row in official_rows if row["scenario_type"] == scenario_type][:count]
         )
     return sorted(selected, key=lambda row: row["sample_id"])
 
@@ -528,10 +551,10 @@ def main() -> int:
         rows.sort(key=lambda row: row["sample_id"])
     smoke = _smoke_rows(rows_by_split["dev"])
     outputs = {
-        "dev_200.jsonl": rows_by_split["dev"],
-        "eval_core_1000.jsonl": rows_by_split["core"],
-        "eval_challenge_200.jsonl": rows_by_split["challenge"],
-        "smoke_20.jsonl": smoke,
+        "official_style_dev_200_rebuilt_amazon_clothing_50k.jsonl": rows_by_split["dev"],
+        "official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl": rows_by_split["core"],
+        "custom_challenge_200_rebuilt_amazon_clothing_50k.jsonl": rows_by_split["challenge"],
+        "official_style_smoke_20_rebuilt_amazon_clothing_50k.jsonl": smoke,
     }
     for name, rows in outputs.items():
         _write_jsonl(output_dir / name, rows)
@@ -583,6 +606,15 @@ def main() -> int:
         "official_sessions_reused": False,
         "official_targets_reused": False,
         "official_metric_contract": False,
+        "official_style_session_count": (
+            len(rows_by_split["core"]) + len(rows_by_split["dev"])
+        ),
+        "official_style_development_session_count": len(rows_by_split["dev"]),
+        "official_style_headline_session_count": len(rows_by_split["core"]),
+        "custom_diagnostic_session_count": len(rows_by_split["challenge"]),
+        "headline_split": "core",
+        "headline_construction": "official_style_participant_materialized",
+        "official_public_distribution_multiplier": 5,
         "target_source_catalog": {
             "path_hint": args.catalog.name,
             "sha256": _sha256(catalog),

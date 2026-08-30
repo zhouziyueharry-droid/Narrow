@@ -46,14 +46,14 @@ def test_yaml_configs_match_builtin_presets():
     root = Path(__file__).resolve().parents[1]
     config_paths = {
         "techjam": root / "configs" / "techjam_benchmark.yaml",
-        "techjam_compatible_resampled_50k": (
-            root / "configs" / "techjam_compatible_resampled_50k.yaml"
+        "techjam_rebuilt_amazon_clothing_50k": (
+            root / "configs" / "techjam_rebuilt_amazon_clothing_50k.yaml"
         ),
-        "techjam_compatible_scale_200k": (
-            root / "configs" / "techjam_compatible_scale_200k.yaml"
+        "techjam_rebuilt_amazon_clothing_200k": (
+            root / "configs" / "techjam_rebuilt_amazon_clothing_200k.yaml"
         ),
-        "techjam_compatible_scale_500k": (
-            root / "configs" / "techjam_compatible_scale_500k.yaml"
+        "techjam_rebuilt_amazon_broad_500k": (
+            root / "configs" / "techjam_rebuilt_amazon_broad_500k.yaml"
         ),
         "realistic": root / "configs" / "realistic.yaml",
         "realistic_hard": root / "configs" / "realistic_hard.yaml",

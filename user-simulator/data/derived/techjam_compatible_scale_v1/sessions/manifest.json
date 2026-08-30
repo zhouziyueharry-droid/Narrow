@@ -1,30 +1,37 @@
 {
+  "custom_diagnostic_session_count": 200,
   "derived_smoke_count": 20,
   "excluded_official_target_count": 200,
   "files": {
-    "dev_200.jsonl": {
-      "bytes": 253975,
-      "sha256": "8f7755e32c3a05d58c08aa08856168651fd8ca7fcaf09123ea3431949f442675"
+    "custom_challenge_200_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 305041,
+      "sha256": "5eae0e20a5ac28fe183568d03d2d0bfc08c159181f2283fc68844f1e82c3ec73"
     },
-    "eval_challenge_200.jsonl": {
-      "bytes": 295797,
-      "sha256": "a11c5142ce20f14b396acd796c11d6e0856b9bc3b560c7dbcb228c9a0084abd8"
+    "official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 848742,
+      "sha256": "ddebd71bff612416f4cc934d855d7f64e2346dfc9a59b70a6f1700211fe1226d"
     },
-    "eval_core_1000.jsonl": {
-      "bytes": 1264271,
-      "sha256": "03aa819946f2fe6313f3c54d8e2d922367259e111eb1f86219e9c8b2f6cb145a"
+    "official_style_dev_200_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 169339,
+      "sha256": "18a70cd9fa66325505478d24e85b03968d6429435dec313be7b6806e085e87cb"
     },
     "session_index.csv": {
-      "bytes": 119485,
-      "sha256": "05c241d61d8bc2b281ef6cf1841813460a335e7982d611214d0f543164eed4f0"
+      "bytes": 124437,
+      "sha256": "3118567202faaf2441b13da01c007e658e8ec20dbdf7065c68167295ab0cd62f"
     },
-    "smoke_20.jsonl": {
-      "bytes": 24880,
-      "sha256": "d1929abc7c2e1c3ae90e71874a7d3e1c4c91d26e1d89ed62d0731a9c550fd6cd"
+    "official_style_smoke_20_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 16904,
+      "sha256": "6ace08f25268ed9f98192962d971009408b52daa25df9d3323ba6f777f525ca6"
     }
   },
+  "headline_construction": "official_style_participant_materialized",
+  "headline_split": "core",
   "official_metric_contract": false,
+  "official_public_distribution_multiplier": 5,
   "official_sessions_reused": false,
+  "official_style_development_session_count": 200,
+  "official_style_headline_session_count": 1000,
+  "official_style_session_count": 1200,
   "official_targets_reused": false,
   "schema_version": "1.0",
   "seed": 20260830,
@@ -51,9 +58,9 @@
     },
     "core": {
       "difficulty_distribution": {
-        "easy": 200,
-        "hard": 300,
-        "medium": 500
+        "easy": 400,
+        "hard": 150,
+        "medium": 450
       },
       "sample_count": 1000,
       "scenario_distribution": {
@@ -63,22 +70,14 @@
         "intent_override": 150
       },
       "subtype_distribution": {
-        "brand_change": 38,
-        "budget_change": 38,
-        "category_or_use_case_change": 37,
-        "exact_threshold": 13,
-        "hard_soft_conflict": 12,
-        "key_attribute_change": 37,
-        "negation_scope": 13,
-        "standard": 800,
-        "unit_or_size_ambiguity": 12
+        "official_style": 1000
       }
     },
     "dev": {
       "difficulty_distribution": {
-        "easy": 40,
-        "hard": 60,
-        "medium": 100
+        "easy": 80,
+        "hard": 30,
+        "medium": 90
       },
       "sample_count": 200,
       "scenario_distribution": {
@@ -88,15 +87,7 @@
         "intent_override": 30
       },
       "subtype_distribution": {
-        "brand_change": 8,
-        "budget_change": 8,
-        "category_or_use_case_change": 7,
-        "exact_threshold": 3,
-        "hard_soft_conflict": 2,
-        "key_attribute_change": 7,
-        "negation_scope": 3,
-        "standard": 160,
-        "unit_or_size_ambiguity": 2
+        "official_style": 200
       }
     }
   },

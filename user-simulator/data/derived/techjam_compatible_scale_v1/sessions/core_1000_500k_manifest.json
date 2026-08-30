@@ -1,0 +1,47 @@
+{
+  "catalog_path_hint": "rebuilt_amazon_broad_500k.jsonl",
+  "catalog_rows": 500000,
+  "catalog_sha256": "baa85a3ba8421e46540999684acd6ce94fb961673bb5988452b7c6f36a8236ac",
+  "construction": "official_style_participant_materialized",
+  "difficulty_distribution": {
+    "easy": 400,
+    "hard": 150,
+    "medium": 450
+  },
+  "eligible_full_catalog_targets": 277176,
+  "excluded_target_count": 200,
+  "main_category_distribution": {
+    "AMAZON FASHION": 537,
+    "All Beauty": 2,
+    "All Electronics": 1,
+    "Amazon Home": 17,
+    "Appliances": 15,
+    "Automotive": 3,
+    "Baby": 2,
+    "Gift Cards": 11,
+    "Handmade": 308,
+    "Health & Personal Care": 4,
+    "Industrial & Scientific": 4,
+    "Office Products": 1,
+    "Sports & Outdoors": 14,
+    "Tools & Home Improvement": 35,
+    "Toys & Games": 1,
+    "unknown": 45
+  },
+  "official_metric_contract": false,
+  "output": {
+    "bytes": 853146,
+    "path": "official_style_core_1000_rebuilt_amazon_broad_500k.jsonl",
+    "sha256": "7444e18443aa0788a7720fb97321366c6b1705b76f07a7b779a44f4c2acb0bf8"
+  },
+  "sample_count": 1000,
+  "scenario_distribution": {
+    "boundary": 50,
+    "browsing": 400,
+    "buying": 400,
+    "intent_override": 150
+  },
+  "schema_version": "1.0",
+  "seed": 20260830,
+  "suite_id": "techjam_compatible_broad_500k_v1"
+}

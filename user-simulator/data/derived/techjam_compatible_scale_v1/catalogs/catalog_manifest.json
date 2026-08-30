@@ -1,0 +1,71 @@
+{
+  "catalogs": {
+    "rebuilt_amazon_clothing_200k": {
+      "bytes": 484636028,
+      "path": "rebuilt_amazon_clothing_200k.jsonl",
+      "product_count": 200000,
+      "sha256": "8ec283ee1f955db12f2618bb9d11f84d271bc60f854d07f26964c70260481a1e",
+      "sources": [
+        {
+          "added": 50000,
+          "catalog_count_after_source": 50000,
+          "catalog_count_before_source": 0,
+          "source": "rebuilt_amazon_clothing_50k.jsonl"
+        },
+        {
+          "added": 150000,
+          "catalog_count_after_source": 200000,
+          "catalog_count_before_source": 50000,
+          "source": "scale_200k_catalog.jsonl"
+        }
+      ]
+    },
+    "rebuilt_amazon_broad_500k": {
+      "bytes": 1182665413,
+      "path": "rebuilt_amazon_broad_500k.jsonl",
+      "product_count": 500000,
+      "sha256": "baa85a3ba8421e46540999684acd6ce94fb961673bb5988452b7c6f36a8236ac",
+      "sources": [
+        {
+          "added": 200000,
+          "catalog_count_after_source": 200000,
+          "catalog_count_before_source": 0,
+          "source": "rebuilt_amazon_clothing_200k.jsonl"
+        },
+        {
+          "added": 300000,
+          "catalog_count_after_source": 500000,
+          "catalog_count_before_source": 200000,
+          "source": "cross_category_500k_catalog.jsonl"
+        }
+      ]
+    },
+    "rebuilt_amazon_clothing_50k": {
+      "bytes": 120150639,
+      "path": "rebuilt_amazon_clothing_50k.jsonl",
+      "product_count": 50000,
+      "sha256": "17a5229b4863c5c74642c34f1f3a471347276cf14242efed6c1de9d8041af11a",
+      "sources": [
+        {
+          "added": 49999,
+          "catalog_count_after_source": 49999,
+          "catalog_count_before_source": 0,
+          "source": "broad_catalog.jsonl"
+        },
+        {
+          "added": 1,
+          "catalog_count_after_source": 50000,
+          "catalog_count_before_source": 49999,
+          "source": "scale_200k_catalog.jsonl"
+        }
+      ]
+    }
+  },
+  "construction": "nested_by_parent_asin",
+  "schema_version": "1.0",
+  "subset_invariants": [
+    "rebuilt_amazon_clothing_50k is a prefix/subset of rebuilt_amazon_clothing_200k",
+    "rebuilt_amazon_clothing_200k is a prefix/subset of rebuilt_amazon_broad_500k"
+  ],
+  "suite_id": "techjam_compatible_scale_v1"
+}
