@@ -99,4 +99,3 @@ This is primarily a **contextual answer-resolution defect**, not a catalog absen
 - Crash-resilient session records are in `realistic.sessions.jsonl`; progress events are in `realistic.events.jsonl`.
 - Human-readable generated metrics are in `realistic.md`; logs are under `logs/`.
 - `00_manifest.json` fixes the exact commit, catalog hash, model configuration, and runtime without exposing the API key.
-

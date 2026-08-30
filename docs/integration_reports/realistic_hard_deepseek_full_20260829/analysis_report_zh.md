@@ -99,4 +99,3 @@ Agent 的 DeepSeek 路径只负责语义理解，不直接从商品目录中选�
 - `realistic.sessions.jsonl` 保存可恢复的逐会话记录；`realistic.events.jsonl` 保存运行进度事件。
 - `realistic.md` 是自动生成的指标报告；全部测试和验证日志位于 `logs/`。
 - `00_manifest.json` 固定了准确的 commit、商品目录哈希、模型配置和运行环境，并且没有暴露 API key。
-

@@ -1,9 +1,9 @@
 # Parallel Traced Evaluation Report
 
-Run: `20260829_232205_+0800`  
-Model: `deepseek-v4-pro`  
-Workers: `12`  
-Samples: `200`
+- Run: `20260829_232205_+0800`
+- Model: `deepseek-v4-pro`
+- Workers: `12`
+- Samples: `200`
 
 ## Score
 

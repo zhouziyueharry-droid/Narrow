@@ -47,4 +47,3 @@ agent:
   adapter: python
   class_path: shopping_agent.agent:ShoppingAgent
   provider: deepseek
-
