@@ -1,7 +1,7 @@
 'use client';
+/* oxlint-disable next/no-html-link-for-pages -- Vinext beta currently breaks next/link hydration. */
 
 import { useState } from 'react';
-import Link from 'next/link';
 import {
   ArrowLeft,
   ArrowRight,
@@ -189,10 +189,10 @@ export default function EvaluatorGuidePage() {
   return (
     <main className="guide-shell">
       <header className="guide-nav">
-        <Link href="/" className="guide-back">
+        <a href="/" className="guide-back">
           <ArrowLeft aria-hidden="true" />
           返回 Trace Lab
-        </Link>
+        </a>
         <div className="guide-wordmark">
           <span>SHOPPING EVAL LAB</span>
           <strong>Evaluator 使用指南</strong>
@@ -487,7 +487,7 @@ export default function EvaluatorGuidePage() {
 
       <footer className="guide-footer">
         <div><Target /><strong>记住：</strong>Catalog 定义“从哪里找”，JSONL 定义“找什么”，Evaluator 定义“怎么算找到”。</div>
-        <Link href="/">打开标准答案流失诊断 <ArrowRight /></Link>
+        <a href="/">打开标准答案流失诊断 <ArrowRight /></a>
       </footer>
     </main>
   );
