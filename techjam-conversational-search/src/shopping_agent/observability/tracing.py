@@ -17,6 +17,8 @@ CANDIDATE_FIELDS = (
     "average_rating", "rating_number", "lexical_rank", "lexical_score",
     "dense_rank", "dense_score", "attribute_rank", "attribute_score",
     "rrf_score", "route_count", "reranker_score", "reranker_explanation",
+    "route_ranks", "route_weights", "retrieval_intent", "constraint_evidence",
+    "constraint_boost", "coarse_score",
 )
 
 

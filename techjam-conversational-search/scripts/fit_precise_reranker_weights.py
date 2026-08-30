@@ -18,15 +18,23 @@ itself, just better numbers.
 Usage (from techjam-conversational-search/):
 
     PYTHONPATH=".:src" python3 scripts/fit_precise_reranker_weights.py \
-        --train-slice 100:200 --val-slice 0:100 --output fitted_weights.json
+        --train-slice 100:200 --val-slice 0:100 --C 100 --output fitted_weights.json
 
 This trains on samples[100:200] and validates on the disjoint samples[0:100]
-so the reported comparison against FallbackReranker has no data leakage. Once
-you're happy with a fit, retrain on the full dataset (--train-slice 0:200,
-no --val-slice) before shipping it as PreciseReranker's DEFAULT_WEIGHTS, since
-more training rows will stabilize the coefficients further (see the caveat in
-precise.py's DEFAULT_WEIGHTS docstring about exact_matches/partial_matches
-coming out negative on only 100 training sessions).
+so the reported comparison against FallbackReranker has no data leakage.
+--C defaults to 100 (see fit_weights()'s docstring/comment): a grouped 5-fold
+CV sweep over the training rows found sklearn's own default (C=1.0) was
+noticeably over-regularized for this feature set, and C=100 is what is
+currently shipped as PreciseReranker.DEFAULT_WEIGHTS. If you add meaningfully
+more training data, re-run a small C sweep rather than assuming 100 is still
+optimal -- it was found by search on this specific 100-session slice, not
+derived analytically.
+
+Once you're happy with a fit, retrain on the full dataset (--train-slice
+0:200, no --val-slice) before shipping it as PreciseReranker's
+DEFAULT_WEIGHTS, since more training rows will stabilize the coefficients
+further (see the caveat in precise.py's DEFAULT_WEIGHTS docstring about
+exact_matches/partial_matches coming out negative even at C=100).
 """
 
 from __future__ import annotations
@@ -163,7 +171,7 @@ def collect_training_rows(
     return rows
 
 
-def fit_weights(rows: list[tuple[list[float], int]]) -> dict[str, float]:
+def fit_weights(rows: list[tuple[list[float], int]], C: float = 100.0) -> dict[str, float]:
     import numpy as np
     from sklearn.linear_model import LogisticRegression
 
@@ -171,7 +179,19 @@ def fit_weights(rows: list[tuple[list[float], int]]) -> dict[str, float]:
     y = np.array([row[1] for row in rows], dtype=int)
     # class_weight="balanced" matters a lot here: positives are a tiny fraction
     # of rows (one true target per candidate batch of dozens to hundreds).
-    model = LogisticRegression(max_iter=3000, class_weight="balanced", C=1.0)
+    #
+    # C defaults to 100 (much looser than sklearn's default C=1.0), not 1.0.
+    # A grouped 5-fold CV sweep over C in [1, 3, 10, 30, 100] showed held-out
+    # classification AUC kept climbing as C increased instead of the expected
+    # U-shape (0.9245 at C=1.0 -> 0.939 at C=30, still rising at C=100), and
+    # C=100 validated on the disjoint [0:100] holdout beat both the official
+    # baseline and the earlier C=1.0 fit by a wider, more bootstrap-robust
+    # margin. See docs/precise_reranker_change_report.md and the comment
+    # above PreciseReranker.DEFAULT_WEIGHTS in ranking/precise.py for the full
+    # numbers. Re-run the CV sweep before trusting C=100 blindly on a
+    # meaningfully different training slice -- the optimum was found by
+    # search on this specific 100-session slice, not derived analytically.
+    model = LogisticRegression(max_iter=3000, class_weight="balanced", C=C)
     model.fit(X, y)
     return dict(zip(FEATURE_NAMES, model.coef_[0].tolist()))
 
@@ -183,6 +203,7 @@ def main() -> None:
     parser.add_argument("--train-slice", default="100:200", help="python slice syntax, e.g. 100:200")
     parser.add_argument("--val-slice", default="0:100", help="python slice syntax, or empty to skip validation")
     parser.add_argument("--output", default="fitted_weights.json")
+    parser.add_argument("--C", type=float, default=100.0, help="logistic regression inverse regularization strength (see fit_weights() docstring/comment)")
     args = parser.parse_args()
 
     samples = load_jsonl(args.dataset)
@@ -195,7 +216,7 @@ def main() -> None:
     rows = collect_training_rows(train_samples, args.catalog, catalog_ids, categories, products, idf)
     print(f"collected {len(rows)} rows, positives={sum(r[1] for r in rows)}", flush=True)
 
-    weights = fit_weights(rows)
+    weights = fit_weights(rows, C=args.C)
     print("fitted weights:", json.dumps(weights, indent=2), flush=True)
     Path(args.output).write_text(json.dumps(weights, indent=2) + "\n", encoding="utf-8")
 

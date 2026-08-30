@@ -9,7 +9,11 @@ from shopping_agent.domain.schemas import Constraint
 from shopping_agent.domain.state import ShoppingState
 from shopping_agent.ranking.interfaces import CandidateRanker
 from shopping_agent.retrieval.attributes import AttributeIndex
-from shopping_agent.retrieval.fusion import reciprocal_rank_fusion
+from shopping_agent.retrieval.coarse import (
+    CoarseRankRequest,
+    CoarseRanker,
+    infer_retrieval_intent,
+)
 from shopping_agent.retrieval.interfaces import SemanticRetriever
 from shopping_agent.retrieval.lexical import CatalogIndex
 from shopping_agent.understanding.interpreter import (
@@ -44,6 +48,7 @@ class ShoppingGraphNodes:
     catalog: CatalogIndex
     semantic_retriever: SemanticRetriever
     attribute_index: AttributeIndex
+    coarse_ranker: CoarseRanker
     reranker: CandidateRanker
 
     def understand_user(self, state: ShoppingState) -> dict[str, Any]:
@@ -147,19 +152,27 @@ class ShoppingGraphNodes:
         return update
 
     def build_query(self, state: ShoppingState) -> dict[str, Any]:
+        constraints = _constraints(state.get("active_constraints", []))
         parts = [state.get("category", "")]
         parts.extend(
             _constraint_text(item)
-            for item in _constraints(state.get("active_constraints", []))
+            for item in constraints
             if item.operator != "not_contains"
         )
         semantic_query = state.get("semantic_query", "").strip()
         if semantic_query:
             parts.append(semantic_query)
         lexical_query = " ".join(dict.fromkeys(part for part in parts if part)).strip()
+        retrieval_intent = infer_retrieval_intent(
+            None,
+            category=state.get("category", ""),
+            constraints=constraints,
+            message=state.get("user_message", ""),
+        )
         return {
             "lexical_query": lexical_query,
             "search_query": semantic_query or lexical_query,
+            "retrieval_intent": retrieval_intent,
         }
 
     def lexical_retrieve(self, state: ShoppingState) -> dict[str, Any]:
@@ -167,7 +180,7 @@ class ShoppingGraphNodes:
             "lexical_candidates": self.catalog.search(
                 state.get("lexical_query", ""),
                 constraints=[],
-                limit=300,
+                limit=self.coarse_ranker.config.lexical_limit,
             )
         }
 
@@ -175,7 +188,7 @@ class ShoppingGraphNodes:
         return {
             "dense_candidates": self.semantic_retriever.search(
                 state.get("semantic_query", "") or state.get("search_query", ""),
-                limit=200,
+                limit=self.coarse_ranker.config.dense_limit,
             )
         }
 
@@ -184,26 +197,31 @@ class ShoppingGraphNodes:
             "attribute_candidates": self.attribute_index.search(
                 state.get("category", ""),
                 _constraints(state.get("active_constraints", [])),
-                limit=200,
+                limit=self.coarse_ranker.config.attribute_limit,
             )
         }
 
     def fuse_candidates(self, state: ShoppingState) -> dict[str, Any]:
-        fused = reciprocal_rank_fusion([
-            (state.get("lexical_candidates", []), 1.0),
-            (state.get("dense_candidates", []), 0.35),
-            (state.get("attribute_candidates", []), 0.45),
-        ])
+        fused = self.coarse_ranker.rank_from_routes(
+            CoarseRankRequest(
+                query=state.get("semantic_query", "") or state.get("search_query", ""),
+                message=state.get("user_message", ""),
+                category=state.get("category", ""),
+                intent=state.get("retrieval_intent", "unknown"),
+                constraints=tuple(_constraints(state.get("active_constraints", []))),
+                profile=state.get("user_profile", {}),
+                limit=self.coarse_ranker.config.fused_limit,
+            ),
+            lexical=list(state.get("lexical_candidates", [])),
+            dense=list(state.get("dense_candidates", [])),
+            attributes=list(state.get("attribute_candidates", [])),
+        )
         return {"fused_candidates": fused}
 
     def apply_constraints(self, state: ShoppingState) -> dict[str, Any]:
-        constraints = _constraints(state.get("active_constraints", []))
-        filtered = [
-            candidate
-            for candidate in state.get("fused_candidates", [])
-            if not self.catalog.violates_hard_constraint(candidate, constraints)
-        ]
-        return {"filtered_candidates": filtered}
+        # CoarseRanker already applies tri-state hard filtering and soft boosts.
+        # Keep this graph boundary/node name stable for traces and routing.
+        return {"filtered_candidates": list(state.get("fused_candidates", []))}
 
     def relax_and_backfill(self, state: ShoppingState) -> dict[str, Any]:
         constraints = _constraints(state.get("active_constraints", []))

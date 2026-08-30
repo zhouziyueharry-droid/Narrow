@@ -1,0 +1,237 @@
+{
+  "backend": "sentence-transformer",
+  "model": "BAAI/bge-small-en-v1.5",
+  "vector_search": "numpy-exact-dot",
+  "catalog_count": 50000,
+  "case_count": 200,
+  "startup_seconds": 8.593,
+  "config": {
+    "lexical_limit": 300,
+    "dense_limit": 250,
+    "attribute_limit": 250,
+    "fused_limit": 500,
+    "output_limit": 100,
+    "rrf_rank_constant": 60.0,
+    "buying_weights": {
+      "lexical": 1.0,
+      "dense": 0.35,
+      "attribute": 0.75
+    },
+    "browsing_weights": {
+      "lexical": 0.45,
+      "dense": 1.0,
+      "attribute": 0.45
+    },
+    "unknown_weights": {
+      "lexical": 0.8,
+      "dense": 0.75,
+      "attribute": 0.55
+    },
+    "hard_confidence": 0.75,
+    "soft_match_boost": 0.0035,
+    "hard_match_boost": 0.0015,
+    "unknown_hard_penalty": 0.0004,
+    "quality_tiebreak_weight": 8e-05,
+    "diversity_lambda": 0.86,
+    "diversity_pool": 80,
+    "category_cap": 5,
+    "diversify_browsing": false
+  },
+  "ablations": {
+    "lexical_only": {
+      "count": 200,
+      "hit_at_10": 0.225,
+      "recall_at_50": 0.44,
+      "recall_at_100": 0.585,
+      "mrr_at_100": 0.142105,
+      "latency_ms_mean": 26.36,
+      "latency_ms_p95": 57.715,
+      "by_scenario": {
+        "boundary": {
+          "count": 10,
+          "hit_at_10": 0.1,
+          "recall_at_50": 0.3,
+          "recall_at_100": 0.4,
+          "mrr_at_100": 0.044754
+        },
+        "browsing": {
+          "count": 80,
+          "hit_at_10": 0.05,
+          "recall_at_50": 0.225,
+          "recall_at_100": 0.3875,
+          "mrr_at_100": 0.027009
+        },
+        "buying": {
+          "count": 80,
+          "hit_at_10": 0.275,
+          "recall_at_50": 0.5875,
+          "recall_at_100": 0.725,
+          "mrr_at_100": 0.149121
+        },
+        "intent_override": {
+          "count": 30,
+          "hit_at_10": 0.6,
+          "recall_at_50": 0.666667,
+          "recall_at_100": 0.8,
+          "mrr_at_100": 0.462769
+        }
+      }
+    },
+    "fixed_hybrid": {
+      "count": 200,
+      "hit_at_10": 0.415,
+      "recall_at_50": 0.715,
+      "recall_at_100": 0.86,
+      "mrr_at_100": 0.223404,
+      "latency_ms_mean": 51.111,
+      "latency_ms_p95": 91.805,
+      "by_scenario": {
+        "boundary": {
+          "count": 10,
+          "hit_at_10": 0.4,
+          "recall_at_50": 0.5,
+          "recall_at_100": 0.7,
+          "mrr_at_100": 0.193352
+        },
+        "browsing": {
+          "count": 80,
+          "hit_at_10": 0.2625,
+          "recall_at_50": 0.5875,
+          "recall_at_100": 0.775,
+          "mrr_at_100": 0.131763
+        },
+        "buying": {
+          "count": 80,
+          "hit_at_10": 0.4875,
+          "recall_at_50": 0.8,
+          "recall_at_100": 0.95,
+          "mrr_at_100": 0.230106
+        },
+        "intent_override": {
+          "count": 30,
+          "hit_at_10": 0.633333,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9,
+          "mrr_at_100": 0.459923
+        }
+      }
+    },
+    "dynamic_no_diversity": {
+      "count": 200,
+      "hit_at_10": 0.45,
+      "recall_at_50": 0.75,
+      "recall_at_100": 0.84,
+      "mrr_at_100": 0.255048,
+      "latency_ms_mean": 48.984,
+      "latency_ms_p95": 96.068,
+      "by_scenario": {
+        "boundary": {
+          "count": 10,
+          "hit_at_10": 0.3,
+          "recall_at_50": 0.6,
+          "recall_at_100": 0.7,
+          "mrr_at_100": 0.226911
+        },
+        "browsing": {
+          "count": 80,
+          "hit_at_10": 0.2625,
+          "recall_at_50": 0.5625,
+          "recall_at_100": 0.7375,
+          "mrr_at_100": 0.135422
+        },
+        "buying": {
+          "count": 80,
+          "hit_at_10": 0.5875,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9375,
+          "mrr_at_100": 0.301362
+        },
+        "intent_override": {
+          "count": 30,
+          "hit_at_10": 0.633333,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9,
+          "mrr_at_100": 0.459923
+        }
+      }
+    },
+    "dynamic_with_diversity": {
+      "count": 200,
+      "hit_at_10": 0.415,
+      "recall_at_50": 0.695,
+      "recall_at_100": 0.84,
+      "mrr_at_100": 0.250331,
+      "latency_ms_mean": 53.884,
+      "latency_ms_p95": 92.627,
+      "by_scenario": {
+        "boundary": {
+          "count": 10,
+          "hit_at_10": 0.2,
+          "recall_at_50": 0.4,
+          "recall_at_100": 0.7,
+          "mrr_at_100": 0.209802
+        },
+        "browsing": {
+          "count": 80,
+          "hit_at_10": 0.1875,
+          "recall_at_50": 0.45,
+          "recall_at_100": 0.7375,
+          "mrr_at_100": 0.125769
+        },
+        "buying": {
+          "count": 80,
+          "hit_at_10": 0.5875,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9375,
+          "mrr_at_100": 0.301362
+        },
+        "intent_override": {
+          "count": 30,
+          "hit_at_10": 0.633333,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9,
+          "mrr_at_100": 0.459923
+        }
+      }
+    },
+    "dynamic_without_constraints": {
+      "count": 200,
+      "hit_at_10": 0.44,
+      "recall_at_50": 0.75,
+      "recall_at_100": 0.84,
+      "mrr_at_100": 0.251279,
+      "latency_ms_mean": 34.529,
+      "latency_ms_p95": 51.968,
+      "by_scenario": {
+        "boundary": {
+          "count": 10,
+          "hit_at_10": 0.2,
+          "recall_at_50": 0.6,
+          "recall_at_100": 0.7,
+          "mrr_at_100": 0.223571
+        },
+        "browsing": {
+          "count": 80,
+          "hit_at_10": 0.25,
+          "recall_at_50": 0.55,
+          "recall_at_100": 0.7375,
+          "mrr_at_100": 0.134671
+        },
+        "buying": {
+          "count": 80,
+          "hit_at_10": 0.6125,
+          "recall_at_50": 0.9125,
+          "recall_at_100": 0.9375,
+          "mrr_at_100": 0.336193
+        },
+        "intent_override": {
+          "count": 30,
+          "hit_at_10": 0.566667,
+          "recall_at_50": 0.9,
+          "recall_at_100": 0.9,
+          "mrr_at_100": 0.345028
+        }
+      }
+    }
+  }
+}

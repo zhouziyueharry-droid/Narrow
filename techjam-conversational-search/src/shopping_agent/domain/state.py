@@ -28,6 +28,7 @@ class ShoppingState(TypedDict, total=False):
     user_language: str
     lexical_query: str
     search_query: str
+    retrieval_intent: str
     lexical_candidates: list[dict[str, Any]]
     dense_candidates: list[dict[str, Any]]
     attribute_candidates: list[dict[str, Any]]

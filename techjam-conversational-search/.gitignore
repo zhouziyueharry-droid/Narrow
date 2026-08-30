@@ -3,12 +3,14 @@ __pycache__/
 .venv/
 .uv-cache/
 .pytest_cache/
+.cache/
 .pytest_tmp/
 .DS_Store
 .env
 results.json
 evaluation_runs/
 data/catalog.jsonl
+data/catalog.jsonl.gz
 data/releases/
 # Organizer-only code, private evaluation data, manifests, and build reports.
 organizer/
@@ -21,3 +23,5 @@ docs/participant_release_checklist.md
 tests/test_5core_builder.py
 tests/test_organizer_pipeline.py
 *.log
+# Local end-to-end traces can exceed tens of MB; keep summaries in docs instead.
+evaluation_runs/integrated_*/

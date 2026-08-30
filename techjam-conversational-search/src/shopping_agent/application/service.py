@@ -150,6 +150,7 @@ class ShoppingAgent:
             "no_preference": values.get("no_preference", []),
             "semantic_query": values.get("semantic_query", ""),
             "intent_summary": values.get("intent_summary", ""),
+            "retrieval_intent": values.get("retrieval_intent", "unknown"),
             "language": values.get("user_language", "en"),
         }
 

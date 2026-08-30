@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,8 @@ from shopping_agent.orchestration.routing import route_after_filter
 from shopping_agent.ranking.precise import PreciseReranker
 from shopping_agent.ranking.interfaces import CandidateRanker
 from shopping_agent.retrieval.attributes import AttributeIndex
+from shopping_agent.retrieval.coarse import CoarseRanker
+from shopping_agent.retrieval.embedding import SentenceTransformerDenseIndex
 from shopping_agent.retrieval.interfaces import SemanticRetriever
 from shopping_agent.retrieval.lexical import CatalogIndex
 from shopping_agent.retrieval.semantic import LocalDenseIndex
@@ -32,10 +35,36 @@ def build_shopping_graph(
 
     del model
     catalog = CatalogIndex(catalog_path)
+    attribute_index = AttributeIndex(catalog)
+    if semantic_retriever is None:
+        dense_backend = os.getenv("SHOPPING_DENSE_BACKEND", "local").strip().casefold()
+        if dense_backend in {"bge", "sentence-transformer", "sentence_transformer"}:
+            semantic_retriever = SentenceTransformerDenseIndex(
+                catalog,
+                model_name=os.getenv(
+                    "SHOPPING_EMBEDDING_MODEL",
+                    "BAAI/bge-small-en-v1.5",
+                ),
+                cache_dir=os.getenv(
+                    "SHOPPING_EMBEDDING_CACHE",
+                    ".cache/coarse_retrieval",
+                ),
+                use_faiss=os.getenv("SHOPPING_DENSE_USE_FAISS", "false").strip().casefold()
+                in {"1", "true", "yes", "on"},
+            )
+        elif dense_backend == "local":
+            semantic_retriever = LocalDenseIndex(catalog)
+        else:
+            raise ValueError(
+                "SHOPPING_DENSE_BACKEND must be 'local' or 'bge', "
+                f"got {dense_backend!r}"
+            )
+    coarse_ranker = CoarseRanker(catalog, semantic_retriever, attribute_index)
     nodes = ShoppingGraphNodes(
         catalog=catalog,
-        semantic_retriever=semantic_retriever or LocalDenseIndex(catalog),
-        attribute_index=AttributeIndex(catalog),
+        semantic_retriever=semantic_retriever,
+        attribute_index=attribute_index,
+        coarse_ranker=coarse_ranker,
         reranker=reranker or PreciseReranker(catalog_products=catalog.products),
     )
 

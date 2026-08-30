@@ -167,6 +167,17 @@ def test_agent_exposes_compact_node_trace(tmp_path: Path) -> None:
     retrieval = next(item for item in trace if "lexical_retrieve" in item["nodes"])
     assert retrieval["updates"]["lexical_candidates"]["count"] >= 1
     assert len(retrieval["updates"]["lexical_candidates"]["top"]) == 1
+    query = next(item for item in trace if item["nodes"] == ["build_query"])
+    assert query["updates"]["retrieval_intent"] == "unknown"
+    fusion = next(item for item in trace if item["nodes"] == ["rrf_fusion"])
+    fused_top = fusion["updates"]["fused_candidates"]["top"][0]
+    assert fused_top["retrieval_intent"] == "unknown"
+    assert fused_top["route_weights"] == {
+        "lexical": 0.8,
+        "dense": 0.75,
+        "attribute": 0.55,
+    }
+    assert "constraint_evidence" in fused_top
     agent.release_session("trace-session")
 
 
