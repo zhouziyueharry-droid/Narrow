@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "status": "stopped_before_training",
+  "branch": "experiment/final-rawmetadata500k-2k-20260831",
+  "integrated_commit": "4a4f092",
+  "training_command": "uv run python scripts/experiment_lambdamart.py --synthetic data/metadata_derived/raw_metadata_clothing_500k_sessions_2000.jsonl --catalog data/metadata_derived/raw_metadata_new100k_agent_catalog.jsonl --test-catalog data/catalog.jsonl --comparison-model-dir models/lambdamart_synthetic_2000 --output experiments/lambdamart_2k_new100k_integrated_deepseekv4pro_20260831_r2",
+  "session_source": {
+    "path": "data/metadata_derived/raw_metadata_clothing_500k_sessions_2000.jsonl",
+    "rows": 2000,
+    "unique_targets": 1536,
+    "sha256": "a3563cb7f78d9b8ea7b4ac41d7219db77c637d3e72b5b8f47b7778cadfeaf35f",
+    "construction": "official-200 scenario distribution repeated 10x; rating-number matched; price/features tie-break; diversity cap; official target rows excluded"
+  },
+  "training_catalog": {
+    "path": "data/metadata_derived/raw_metadata_new100k_agent_catalog.jsonl",
+    "rows": 100000,
+    "sha256": "51d12c525b5d90f22709d58d847db65d1f0290a96cc8af3a60329050cb1508e3"
+  },
+  "official_test_catalog": {
+    "path": "data/catalog.jsonl",
+    "role": "official-200 evaluation only; loaded after model freeze",
+    "sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67"
+  },
+  "split": {
+    "seed": 20260830,
+    "validation_fraction": 0.2,
+    "train_sessions": 1621,
+    "validation_sessions": 379,
+    "official_test_sessions": 200,
+    "official_target_overlap_in_training_catalog": 0
+  },
+  "model": {
+    "ranker": "LightGBM LambdaMART",
+    "features": 13,
+    "early_stopping": "validation NDCG@1 first, NDCG@10 second",
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "max_depth": 5,
+    "min_child_samples": 40,
+    "reg_lambda": 5.0,
+    "n_jobs": 4,
+    "deterministic": true,
+    "force_col_wise": true,
+    "lambdarank_truncation_level": 13
+  },
+  "llm_policy": {
+    "training": {
+      "enabled": false,
+      "provider": null,
+      "model": null,
+      "api_calls": 0,
+      "tokens": 0,
+      "cost": 0
+    },
+    "final_official_test": {
+      "enabled": true,
+      "provider": "DeepSeek",
+      "model": "deepseek-v4-pro",
+      "base_url": "https://api.deepseek.com",
+      "api_key_storage": "runtime environment only; never commit or log",
+      "scope": "official 200 evaluation after model freeze",
+      "calls_tokens_cost": "to be measured from the completed online run"
+    }
+  },
+  "observed_result": {
+    "split_construction": "completed",
+    "candidate_collection": "not_started",
+    "model_training": "not_started",
+    "official_test": "not_started",
+    "deepseek_api_calls": 0
+  }
+}
