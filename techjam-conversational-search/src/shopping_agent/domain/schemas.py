@@ -18,6 +18,14 @@ Attribute = Literal[
     "other",
 ]
 
+# The closed set of valid Attribute values, used by deterministic schema
+# repair (see understanding/state_patch.py and dialogue/decision.py) to
+# validate or normalize a field name coming back from the model without
+# hand-rolling the Literal args in more than one place.
+ATTRIBUTE_VALUES: frozenset[str] = frozenset(
+    {"category", "material", "color", "size", "style", "brand", "budget", "feature", "use_case", "other"}
+)
+
 
 class Constraint(BaseModel):
     """A structured constraint extracted from the active conversation."""

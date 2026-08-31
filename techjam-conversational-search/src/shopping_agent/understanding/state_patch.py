@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from shopping_agent.domain.schemas import Attribute, Constraint
+from shopping_agent.domain.schemas import ATTRIBUTE_VALUES, Attribute, Constraint
 
 
 class StatePatch(BaseModel):
@@ -26,6 +26,45 @@ class StatePatch(BaseModel):
     fallback_reasons: list[str] = Field(default_factory=list)
     retrieval_intent: Literal["buying", "browsing", "unknown"] = "unknown"
     model_output: dict[str, Any] = Field(default_factory=dict)
+
+
+def _normalize_attribute_entry(entry: Any) -> str | None:
+    """Coerce one remove_fields/no_preference entry to a bare Attribute name.
+
+    The model occasionally returns "field: extra description" instead of the
+    bare field name the schema requires (observed for ``remove_fields`` in
+    the 20260830_211751_+0800 online run, e.g. "feature: spring bar tool").
+    This is a purely mechanical formatting slip -- the field name itself is
+    still present and unambiguous -- so it is corrected locally rather than
+    spending a repair call on it. Anything that still does not resolve to a
+    known Attribute after normalization is dropped rather than guessed.
+    """
+
+    if not isinstance(entry, str):
+        return None
+    candidate = entry.split(":", 1)[0].strip().strip("\"'").casefold()
+    return candidate if candidate in ATTRIBUTE_VALUES else None
+
+
+def normalize_raw_state_patch(raw: dict[str, Any]) -> dict[str, Any]:
+    """Return a copy of a raw (still-unvalidated) state-patch dict with
+    ``remove_fields``/``no_preference`` entries normalized to bare Attribute
+    names. Never raises; fields that cannot be resolved are dropped so the
+    rest of the patch can still validate. Safe to call even when the raw
+    dict already conforms to the schema (it is then a no-op)."""
+
+    normalized = dict(raw)
+    for key in ("remove_fields", "no_preference"):
+        values = raw.get(key)
+        if not isinstance(values, list):
+            continue
+        cleaned: list[str] = []
+        for entry in values:
+            attribute = _normalize_attribute_entry(entry)
+            if attribute and attribute not in cleaned:
+                cleaned.append(attribute)
+        normalized[key] = cleaned
+    return normalized
 
 
 def validate_state_patch(patch: StatePatch) -> StatePatch:
@@ -85,8 +124,31 @@ def apply_state_patch(
     if patch.action == "replace":
         replacement_fields = {item.field for item in patch.constraints}
         if replacement_fields:
-            superseded.extend(item for item in active if item.field in replacement_fields)
-            active = [item for item in active if item.field not in replacement_fields]
+            # A replace whose incoming constraints re-state an existing value
+            # unchanged (same field, operator and value) is not really an
+            # override of that value -- the model just echoed it back while
+            # replacing a sibling field. Do not log it as superseded, or the
+            # override history misreports something as retracted when it
+            # never left the active set. Only genuinely displaced values are
+            # recorded (observed with public_0096 in the
+            # 20260830_211751_+0800 online run: an "ignore my earlier
+            # preference" reply that re-emitted the untouched category and
+            # feature constraints alongside the real new material value).
+            incoming_keys = {
+                (item.field, item.operator, str(item.value).casefold())
+                for item in patch.constraints
+            }
+            displaced = [
+                item for item in active
+                if item.field in replacement_fields
+                and (item.field, item.operator, str(item.value).casefold()) not in incoming_keys
+            ]
+            superseded.extend(displaced)
+            active = [
+                item for item in active
+                if item.field not in replacement_fields
+                or (item.field, item.operator, str(item.value).casefold()) in incoming_keys
+            ]
 
     removed_fields = set(patch.remove_fields) | set(patch.no_preference)
     if removed_fields:

@@ -27,6 +27,52 @@ class DialogueDecision(BaseModel):
         return self
 
 
+def _truncate_text_fields(raw: dict[str, Any]) -> dict[str, Any]:
+    """Deterministically fit ``message``/``reason`` back under their schema
+    limits before validation, mirroring the truncation StatePatch already
+    applies to semantic_query/intent_summary. Both are free-form natural
+    language whose exact cutoff carries no structured meaning, so trimming a
+    few trailing characters is a safe, mechanical fix -- unlike guessing at
+    ``ask_attribute`` or ``action``, which is left to the repair retry.
+    Observed for public_0029 in the 20260830_211751_+0800 online run, whose
+    ``reason`` came back at 308 characters against a 300-character limit.
+    """
+
+    trimmed = dict(raw)
+    for field, limit in (("message", 1000), ("reason", 300)):
+        value = raw.get(field)
+        if isinstance(value, str) and len(value) > limit:
+            trimmed[field] = value[:limit]
+    return trimmed
+
+
+def _validate_dialogue_decision(
+    raw: dict[str, Any],
+    known_attributes: set[str],
+    no_preference: set[str],
+) -> tuple["DialogueDecision | None", str | None]:
+    """Validate a raw dialogue-decision dict against the schema plus the two
+    bounded policy rules decide_dialogue already enforced inline. Returns
+    ``(decision, None)`` on success or ``(None, error_message)`` on failure;
+    never raises, so callers can use the error message to drive exactly one
+    repair attempt without a second layer of exception handling.
+    """
+
+    try:
+        decision = DialogueDecision.model_validate(_truncate_text_fields(raw))
+    except Exception as exc:
+        return None, f"schema validation failed: {exc}"
+    if not decision.message.strip():
+        return None, "message must not be empty"
+    if decision.ask_attribute in known_attributes | no_preference:
+        return None, (
+            f"ask_attribute '{decision.ask_attribute}' is already known or "
+            "declined; choose a different attribute, or use action=recommend "
+            "/ action=confirm / action=end instead"
+        )
+    return decision, None
+
+
 def decide_dialogue(
     *,
     turn: int,
@@ -57,6 +103,7 @@ def decide_dialogue(
     from shopping_agent.infrastructure.llm.deepseek import (
         DeepSeekInvalidResponse,
         is_configured,
+        repair_dialogue_decision,
         request_dialogue_decision,
     )
 
@@ -90,13 +137,36 @@ def decide_dialogue(
         }
         try:
             raw, usage = request_dialogue_decision(payload)
-            decision = DialogueDecision.model_validate(raw)
+            decision, error_message = _validate_dialogue_decision(
+                raw, known_attributes, no_preference,
+            )
+            if decision is None:
+                # Exactly one bounded repair turn: the provider returned
+                # parseable JSON, but it failed the DialogueDecision schema
+                # or a post-validation policy rule. Never loop past this --
+                # a repair that fails again is a real failure, surfaced to
+                # the caller, not silently retried further or handed to the
+                # offline heuristic below.
+                repaired_raw, repair_usage = repair_dialogue_decision(
+                    payload, raw, error_message or "invalid dialogue decision",
+                )
+                decision, error_message = _validate_dialogue_decision(
+                    repaired_raw, known_attributes, no_preference,
+                )
+                usage = {
+                    "prompt_tokens": usage.get("prompt_tokens", 0)
+                    + repair_usage.get("prompt_tokens", 0),
+                    "completion_tokens": usage.get("completion_tokens", 0)
+                    + repair_usage.get("completion_tokens", 0),
+                }
+                if decision is None:
+                    raise DeepSeekInvalidResponse(
+                        f"dialogue decision invalid after one repair attempt: {error_message}",
+                        kind="dialogue",
+                    )
+                raw = repaired_raw
             decision.parser = "deepseek"
             decision.model_output = raw
-            if not decision.message.strip():
-                raise DeepSeekInvalidResponse("online dialogue message is empty")
-            if decision.ask_attribute in known_attributes | no_preference:
-                raise DeepSeekInvalidResponse("dialogue decision asks an excluded attribute")
             options = question_options(candidate_attributes, decision.ask_attribute)
             return decision, scores, options, usage
         except Exception as exc:

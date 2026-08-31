@@ -681,3 +681,92 @@ def test_resolve_semantic_patch_tags_persistent_outage(monkeypatch) -> None:
     with pytest.raises(RuntimeError, match="Online intent failed.*ConnectionError"):
         resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
     assert len(calls) == 2
+
+
+def test_resolve_semantic_patch_repairs_recoverable_schema_failure_without_local_fallback(
+    monkeypatch,
+) -> None:
+    """Part B: the bounded repair retry recovers a schema-invalid reply
+    in-band; rule_state_patch/semantic_fallback_patch must never run for an
+    online sample, repaired or not."""
+
+    calls: list[int] = []
+
+    class RepairableCompletions:
+        def create(self, **kwargs):
+            calls.append(1)
+            if len(calls) == 1:
+                return SimpleNamespace(
+                    choices=[SimpleNamespace(message=SimpleNamespace(content="{not valid json"))],
+                    usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1),
+                )
+            payload = {
+                "action": "add", "category": "shoes", "constraints": [],
+                "semantic_query": "running shoes", "intent_summary": "running shoes",
+                "language": "en", "confidence": 0.9,
+            }
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))],
+                usage=SimpleNamespace(prompt_tokens=4, completion_tokens=2),
+            )
+
+    class RepairableOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(completions=RepairableCompletions())
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=RepairableOpenAI))
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "true")
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Local parser ran even though the repair call recovered the schema")
+
+    from shopping_agent.understanding import interpreter
+
+    monkeypatch.setattr(interpreter, "rule_state_patch", forbidden)
+    monkeypatch.setattr(interpreter, "semantic_fallback_patch", forbidden)
+
+    message = "I need running shoes."
+    patch, usage = resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
+
+    assert len(calls) == 2  # exactly one bounded repair call, not an open retry loop
+    assert patch.parser == "deepseek"
+    assert patch.category == "shoes"
+
+
+def test_resolve_semantic_patch_raises_intent_kind_when_repair_also_fails_no_local_fallback(
+    monkeypatch,
+) -> None:
+    """A repair that also fails to validate must still be a hard failure --
+    never a quiet handoff to the offline heuristics below it."""
+
+    class StillBrokenCompletions:
+        def create(self, **kwargs):
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="{still not valid"))],
+                usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1),
+            )
+
+    class StillBrokenOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(completions=StillBrokenCompletions())
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=StillBrokenOpenAI))
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "true")
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Local parser ran after a failed repair attempt")
+
+    from shopping_agent.understanding import interpreter
+    from shopping_agent.infrastructure.llm.deepseek import DeepSeekInvalidResponse
+
+    monkeypatch.setattr(interpreter, "rule_state_patch", forbidden)
+    monkeypatch.setattr(interpreter, "semantic_fallback_patch", forbidden)
+
+    message = "I need running shoes."
+    with pytest.raises(RuntimeError, match="Online intent failed.*DeepSeekInvalidResponse") as excinfo:
+        resolve_semantic_patch(message, 1, rule_state_patch(message, 1))
+
+    assert isinstance(excinfo.value.__cause__, DeepSeekInvalidResponse)
+    assert excinfo.value.__cause__.kind == "intent"
