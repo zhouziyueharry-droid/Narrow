@@ -1,0 +1,4 @@
+*.json -text
+*.jsonl -text
+*.jsonl.gz binary
+*.md -text

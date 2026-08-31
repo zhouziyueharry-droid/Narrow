@@ -1,0 +1,94 @@
+{
+  "run_id": "20260831_224426_+0800",
+  "description": "Complete DeepSeek v4 Pro official-200 traced evaluation; large JSONL traces are gzip-compressed for repository transport.",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 56,
+      "sha256": "19f33b5aaaf0f257066e798d2fa6dc987e4f2d22a12eaffa7cc3de07bf747449",
+      "original_path": ".gitattributes",
+      "original_bytes": 56,
+      "original_sha256": "19f33b5aaaf0f257066e798d2fa6dc987e4f2d22a12eaffa7cc3de07bf747449"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2269,
+      "sha256": "7f32c84ed114fb7b5777e30d68a6c9cfbacdba5a96da8cf66dcda6747c2fdbf6",
+      "original_path": "README.md",
+      "original_bytes": 2269,
+      "original_sha256": "7f32c84ed114fb7b5777e30d68a6c9cfbacdba5a96da8cf66dcda6747c2fdbf6"
+    },
+    {
+      "path": "report.md",
+      "bytes": 52607,
+      "sha256": "1dc33584983cd626c1f90fcea6de4c396df65274128a95f8f7fd84a5d8cfb96b",
+      "original_path": "report.md",
+      "original_bytes": 52607,
+      "original_sha256": "1dc33584983cd626c1f90fcea6de4c396df65274128a95f8f7fd84a5d8cfb96b"
+    },
+    {
+      "path": "run_config.json",
+      "bytes": 2268,
+      "sha256": "4d591f9bc10ff42d56e06c24c82ceb294bd96e51dd4afec1217656d0044f221f",
+      "original_path": "run_config.json",
+      "original_bytes": 2268,
+      "original_sha256": "4d591f9bc10ff42d56e06c24c82ceb294bd96e51dd4afec1217656d0044f221f"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 1091,
+      "sha256": "171b04fee1a2463c14ad93c6abc1b7db9c1dca5d64b9acbe498b05928158437b",
+      "original_path": "summary.json",
+      "original_bytes": 1091,
+      "original_sha256": "171b04fee1a2463c14ad93c6abc1b7db9c1dca5d64b9acbe498b05928158437b"
+    },
+    {
+      "path": "sessions.jsonl",
+      "bytes": 527186,
+      "sha256": "f330ee077f68baf937f53201e4eaafa4ed9102852c4ab99b1f0cce211759f848",
+      "original_path": "sessions.jsonl",
+      "original_bytes": 527186,
+      "original_sha256": "f330ee077f68baf937f53201e4eaafa4ed9102852c4ab99b1f0cce211759f848"
+    },
+    {
+      "path": "turns.jsonl",
+      "bytes": 931078,
+      "sha256": "30df1f116a1546f136c75047f90889e6159a22645bd6891faa714b7005472aa0",
+      "original_path": "turns.jsonl",
+      "original_bytes": 931078,
+      "original_sha256": "30df1f116a1546f136c75047f90889e6159a22645bd6891faa714b7005472aa0"
+    },
+    {
+      "path": "trace.json",
+      "bytes": 5046417,
+      "sha256": "2436b7857f1430cb548cb1fa9aa163a8a87c3be5d558c58a72c1244efc152da5",
+      "original_path": "trace.json",
+      "original_bytes": 5046417,
+      "original_sha256": "2436b7857f1430cb548cb1fa9aa163a8a87c3be5d558c58a72c1244efc152da5"
+    },
+    {
+      "path": "node_traces.jsonl.gz",
+      "bytes": 97971134,
+      "sha256": "dd515681163f3eff7eb2bfb321a8020afee5a97a8ad8c8fcbe3a46d6c79d2430",
+      "original_path": "node_traces.jsonl",
+      "original_bytes": 490885378,
+      "original_sha256": "234bea7b490fe14b85a2a1d8fcf6eba3e171761a24318d60c47ec50ad4ced980"
+    },
+    {
+      "path": "llm_calls.jsonl.gz",
+      "bytes": 616236,
+      "sha256": "4ff5c676283b1e04eb7a13ef2e2ca213d05c1a665b4132f23023815b391eecfb",
+      "original_path": "llm_calls.jsonl",
+      "original_bytes": 6379895,
+      "original_sha256": "30127532f121c812d1a43ebdce66590b369e2a5c17c50709bf0f743767d9c5bb"
+    },
+    {
+      "path": "rank_calls.jsonl.gz",
+      "bytes": 9570596,
+      "sha256": "154351aad9bdf13dcbd58c3ab3c4b15aa77dd870f828c1f7973a12cadaefddc5",
+      "original_path": "rank_calls.jsonl",
+      "original_bytes": 35871281,
+      "original_sha256": "9eb609e1b98bb081c119141f0fe54c765820bc20dceddc88e2ff03545dacffe5"
+    }
+  ]
+}
