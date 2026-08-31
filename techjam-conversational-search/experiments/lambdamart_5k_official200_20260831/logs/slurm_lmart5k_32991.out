@@ -1,0 +1,405 @@
+started_at=2026-08-31T10:13:59+08:00
+host=TC2N01
+python=Python 3.12.14
+commit=staged-source
+cpus=6
+Split: {"train": {"sessions": 4003, "unique_targets": 386, "scenarios": {"browsing": 1596, "boundary": 207, "buying": 1616, "intent_override": 584}}, "validation": {"sessions": 997, "unique_targets": 96, "scenarios": {"browsing": 404, "buying": 384, "intent_override": 166, "boundary": 43}}, "test": {"sessions": 200, "unique_targets": 200, "scenarios": {"buying": 80, "intent_override": 30, "browsing": 80, "boundary": 10}}, "excluded_synthetic_sessions": 0}
+Building catalog and frozen corpus IDF...
+collect training: 20/4003, 14.2s
+collect training: 40/4003, 35.1s
+collect training: 60/4003, 50.1s
+collect training: 80/4003, 67.2s
+collect training: 100/4003, 83.3s
+collect training: 120/4003, 94.9s
+collect training: 140/4003, 116.6s
+collect training: 160/4003, 129.4s
+collect training: 180/4003, 142.5s
+collect training: 200/4003, 158.7s
+collect training: 220/4003, 182.6s
+collect training: 240/4003, 196.2s
+collect training: 260/4003, 211.9s
+collect training: 280/4003, 226.2s
+collect training: 300/4003, 243.1s
+collect training: 320/4003, 257.4s
+collect training: 340/4003, 274.1s
+collect training: 360/4003, 292.9s
+collect training: 380/4003, 305.9s
+collect training: 400/4003, 316.7s
+collect training: 420/4003, 331.3s
+collect training: 440/4003, 349.5s
+collect training: 460/4003, 369.1s
+collect training: 480/4003, 387.4s
+collect training: 500/4003, 405.7s
+collect training: 520/4003, 423.5s
+collect training: 540/4003, 435.7s
+collect training: 560/4003, 450.3s
+collect training: 580/4003, 469.2s
+collect training: 600/4003, 486.0s
+collect training: 620/4003, 502.6s
+collect training: 640/4003, 519.8s
+collect training: 660/4003, 531.8s
+collect training: 680/4003, 551.9s
+collect training: 700/4003, 568.2s
+collect training: 720/4003, 582.9s
+collect training: 740/4003, 600.8s
+collect training: 760/4003, 613.3s
+collect training: 780/4003, 624.8s
+collect training: 800/4003, 636.5s
+collect training: 820/4003, 653.5s
+collect training: 840/4003, 668.8s
+collect training: 860/4003, 686.1s
+collect training: 880/4003, 700.0s
+collect training: 900/4003, 715.7s
+collect training: 920/4003, 728.3s
+collect training: 940/4003, 740.3s
+collect training: 960/4003, 761.6s
+collect training: 980/4003, 777.1s
+collect training: 1000/4003, 794.9s
+collect training: 1020/4003, 812.9s
+collect training: 1040/4003, 829.5s
+collect training: 1060/4003, 848.7s
+collect training: 1080/4003, 864.5s
+collect training: 1100/4003, 881.8s
+collect training: 1120/4003, 908.8s
+collect training: 1140/4003, 931.7s
+collect training: 1160/4003, 948.3s
+collect training: 1180/4003, 964.4s
+collect training: 1200/4003, 983.0s
+collect training: 1220/4003, 994.0s
+collect training: 1240/4003, 1007.5s
+collect training: 1260/4003, 1021.4s
+collect training: 1280/4003, 1038.6s
+collect training: 1300/4003, 1053.8s
+collect training: 1320/4003, 1075.8s
+collect training: 1340/4003, 1091.2s
+collect training: 1360/4003, 1112.2s
+collect training: 1380/4003, 1131.1s
+collect training: 1400/4003, 1147.0s
+collect training: 1420/4003, 1165.0s
+collect training: 1440/4003, 1182.4s
+collect training: 1460/4003, 1208.2s
+collect training: 1480/4003, 1230.8s
+collect training: 1500/4003, 1242.9s
+collect training: 1520/4003, 1256.0s
+collect training: 1540/4003, 1276.4s
+collect training: 1560/4003, 1294.8s
+collect training: 1580/4003, 1315.7s
+collect training: 1600/4003, 1322.2s
+collect training: 1620/4003, 1332.6s
+collect training: 1640/4003, 1346.3s
+collect training: 1660/4003, 1366.5s
+collect training: 1680/4003, 1383.8s
+collect training: 1700/4003, 1406.8s
+collect training: 1720/4003, 1421.5s
+collect training: 1740/4003, 1443.6s
+collect training: 1760/4003, 1465.9s
+collect training: 1780/4003, 1479.4s
+collect training: 1800/4003, 1495.6s
+collect training: 1820/4003, 1511.6s
+collect training: 1840/4003, 1523.1s
+collect training: 1860/4003, 1533.7s
+collect training: 1880/4003, 1550.8s
+collect training: 1900/4003, 1567.0s
+collect training: 1920/4003, 1590.1s
+collect training: 1940/4003, 1606.6s
+collect training: 1960/4003, 1623.0s
+collect training: 1980/4003, 1638.6s
+collect training: 2000/4003, 1659.2s
+collect training: 2020/4003, 1678.0s
+collect training: 2040/4003, 1696.9s
+collect training: 2060/4003, 1710.5s
+collect training: 2080/4003, 1723.4s
+collect training: 2100/4003, 1733.2s
+collect training: 2120/4003, 1751.0s
+collect training: 2140/4003, 1771.1s
+collect training: 2160/4003, 1789.0s
+collect training: 2180/4003, 1810.7s
+collect training: 2200/4003, 1828.8s
+collect training: 2220/4003, 1843.5s
+collect training: 2240/4003, 1862.3s
+collect training: 2260/4003, 1881.0s
+collect training: 2280/4003, 1896.1s
+collect training: 2300/4003, 1911.9s
+collect training: 2320/4003, 1933.0s
+collect training: 2340/4003, 1946.3s
+collect training: 2360/4003, 1968.0s
+collect training: 2380/4003, 1982.1s
+collect training: 2400/4003, 2002.0s
+collect training: 2420/4003, 2022.0s
+collect training: 2440/4003, 2038.0s
+collect training: 2460/4003, 2047.8s
+collect training: 2480/4003, 2065.6s
+collect training: 2500/4003, 2084.0s
+collect training: 2520/4003, 2108.7s
+collect training: 2540/4003, 2125.0s
+collect training: 2560/4003, 2139.0s
+collect training: 2580/4003, 2152.5s
+collect training: 2600/4003, 2169.4s
+collect training: 2620/4003, 2184.3s
+collect training: 2640/4003, 2209.5s
+collect training: 2660/4003, 2232.5s
+collect training: 2680/4003, 2240.3s
+collect training: 2700/4003, 2250.7s
+collect training: 2720/4003, 2271.8s
+collect training: 2740/4003, 2282.4s
+collect training: 2760/4003, 2298.7s
+collect training: 2780/4003, 2313.2s
+collect training: 2800/4003, 2331.2s
+collect training: 2820/4003, 2345.4s
+collect training: 2840/4003, 2357.6s
+collect training: 2860/4003, 2373.0s
+collect training: 2880/4003, 2385.9s
+collect training: 2900/4003, 2400.8s
+collect training: 2920/4003, 2420.9s
+collect training: 2940/4003, 2440.2s
+collect training: 2960/4003, 2459.1s
+collect training: 2980/4003, 2476.1s
+collect training: 3000/4003, 2491.7s
+collect training: 3020/4003, 2510.4s
+collect training: 3040/4003, 2525.6s
+collect training: 3060/4003, 2546.2s
+collect training: 3080/4003, 2567.6s
+collect training: 3100/4003, 2588.6s
+collect training: 3120/4003, 2600.9s
+collect training: 3140/4003, 2619.2s
+collect training: 3160/4003, 2634.7s
+collect training: 3180/4003, 2651.1s
+collect training: 3200/4003, 2663.2s
+collect training: 3220/4003, 2684.6s
+collect training: 3240/4003, 2700.0s
+collect training: 3260/4003, 2721.9s
+collect training: 3280/4003, 2736.9s
+collect training: 3300/4003, 2757.1s
+collect training: 3320/4003, 2769.2s
+collect training: 3340/4003, 2777.6s
+collect training: 3360/4003, 2806.2s
+collect training: 3380/4003, 2821.9s
+collect training: 3400/4003, 2837.3s
+collect training: 3420/4003, 2850.7s
+collect training: 3440/4003, 2869.1s
+collect training: 3460/4003, 2891.3s
+collect training: 3480/4003, 2906.8s
+collect training: 3500/4003, 2922.4s
+collect training: 3520/4003, 2946.5s
+collect training: 3540/4003, 2962.0s
+collect training: 3560/4003, 2974.7s
+collect training: 3580/4003, 2998.0s
+collect training: 3600/4003, 3014.0s
+collect training: 3620/4003, 3026.3s
+collect training: 3640/4003, 3045.3s
+collect training: 3660/4003, 3058.3s
+collect training: 3680/4003, 3076.3s
+collect training: 3700/4003, 3093.5s
+collect training: 3720/4003, 3109.0s
+collect training: 3740/4003, 3131.8s
+collect training: 3760/4003, 3146.8s
+collect training: 3780/4003, 3169.6s
+collect training: 3800/4003, 3187.1s
+collect training: 3820/4003, 3203.0s
+collect training: 3840/4003, 3226.8s
+collect training: 3860/4003, 3245.3s
+collect training: 3880/4003, 3255.2s
+collect training: 3900/4003, 3269.3s
+collect training: 3920/4003, 3281.8s
+collect training: 3940/4003, 3299.0s
+collect training: 3960/4003, 3317.2s
+collect training: 3980/4003, 3335.7s
+collect training: 4000/4003, 3351.2s
+collect training: 4003/4003, 3355.7s
+collect validation: 20/997, 9.9s
+collect validation: 40/997, 27.0s
+collect validation: 60/997, 37.5s
+collect validation: 80/997, 52.0s
+collect validation: 100/997, 70.0s
+collect validation: 120/997, 85.9s
+collect validation: 140/997, 99.4s
+collect validation: 160/997, 110.6s
+collect validation: 180/997, 127.2s
+collect validation: 200/997, 140.5s
+collect validation: 220/997, 156.7s
+collect validation: 240/997, 168.6s
+collect validation: 260/997, 185.1s
+collect validation: 280/997, 201.0s
+collect validation: 300/997, 219.1s
+collect validation: 320/997, 231.3s
+collect validation: 340/997, 251.0s
+collect validation: 360/997, 267.7s
+collect validation: 380/997, 286.5s
+collect validation: 400/997, 305.0s
+collect validation: 420/997, 314.8s
+collect validation: 440/997, 329.4s
+collect validation: 460/997, 338.4s
+collect validation: 480/997, 360.4s
+collect validation: 500/997, 374.1s
+collect validation: 520/997, 386.9s
+collect validation: 540/997, 400.2s
+collect validation: 560/997, 419.8s
+collect validation: 580/997, 434.4s
+collect validation: 600/997, 444.4s
+collect validation: 620/997, 460.0s
+collect validation: 640/997, 474.7s
+collect validation: 660/997, 492.5s
+collect validation: 680/997, 505.2s
+collect validation: 700/997, 517.0s
+collect validation: 720/997, 534.2s
+collect validation: 740/997, 551.8s
+collect validation: 760/997, 563.4s
+collect validation: 780/997, 582.7s
+collect validation: 800/997, 597.2s
+collect validation: 820/997, 612.8s
+collect validation: 840/997, 623.0s
+collect validation: 860/997, 637.6s
+collect validation: 880/997, 652.6s
+collect validation: 900/997, 671.4s
+collect validation: 920/997, 683.1s
+collect validation: 940/997, 695.4s
+collect validation: 960/997, 711.3s
+collect validation: 980/997, 727.0s
+collect validation: 997/997, 736.3s
+Training LambdaRank on grouped candidate lists: {"training": {"groups": 11625, "rows": 5676583, "groups_with_target": 8267, "sessions_with_groups": 4003}, "validation": {"groups": 2431, "rows": 1193734, "groups_with_target": 2044, "sessions_with_groups": 997}}
+Training same-data linear control...
+test precise: 20/200, 18.4s
+test precise: 40/200, 42.1s
+test precise: 60/200, 58.6s
+test precise: 80/200, 73.8s
+test precise: 100/200, 99.4s
+test precise: 120/200, 113.5s
+test precise: 140/200, 132.7s
+test precise: 160/200, 145.5s
+test precise: 180/200, 173.8s
+test precise: 200/200, 192.1s
+test linear_same_data: 20/200, 14.7s
+test linear_same_data: 40/200, 34.1s
+test linear_same_data: 60/200, 47.0s
+test linear_same_data: 80/200, 60.1s
+test linear_same_data: 100/200, 82.5s
+test linear_same_data: 120/200, 94.2s
+test linear_same_data: 140/200, 109.3s
+test linear_same_data: 160/200, 119.2s
+test linear_same_data: 180/200, 139.3s
+test linear_same_data: 200/200, 154.2s
+test lambdamart: 20/200, 15.2s
+test lambdamart: 40/200, 26.8s
+test lambdamart: 60/200, 38.5s
+test lambdamart: 80/200, 49.2s
+test lambdamart: 100/200, 64.8s
+test lambdamart: 120/200, 76.4s
+test lambdamart: 140/200, 88.9s
+test lambdamart: 160/200, 98.1s
+test lambdamart: 180/200, 117.9s
+test lambdamart: 200/200, 132.3s
+{
+  "precise": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.875,
+    "mrr": 0.411885,
+    "mttc": 3.695,
+    "efficiency": 0.7304999999999999,
+    "recommended_technical_score": 0.7071655,
+    "wall_seconds": 192.1201116410084
+  },
+  "linear_same_data": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.91,
+    "mrr": 0.431895,
+    "mttc": 3.45,
+    "efficiency": 0.755,
+    "recommended_technical_score": 0.7355685000000001,
+    "wall_seconds": 154.24545829324052
+  },
+  "lambdamart": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.9,
+    "mrr": 0.46294,
+    "mttc": 3.03,
+    "efficiency": 0.797,
+    "recommended_technical_score": 0.748282,
+    "wall_seconds": 132.28837087890133
+  },
+  "split": {
+    "train": {
+      "sessions": 4003,
+      "unique_targets": 386,
+      "scenarios": {
+        "browsing": 1596,
+        "boundary": 207,
+        "buying": 1616,
+        "intent_override": 584
+      }
+    },
+    "validation": {
+      "sessions": 997,
+      "unique_targets": 96,
+      "scenarios": {
+        "browsing": 404,
+        "buying": 384,
+        "intent_override": 166,
+        "boundary": 43
+      }
+    },
+    "test": {
+      "sessions": 200,
+      "unique_targets": 200,
+      "scenarios": {
+        "buying": 80,
+        "intent_override": 30,
+        "browsing": 80,
+        "boundary": 10
+      }
+    },
+    "excluded_synthetic_sessions": 0
+  },
+  "latency": {
+    "precise": {
+      "rank_calls": 714,
+      "median_ms": 40.6787593383342,
+      "p95_ms": 65.28368019498886
+    },
+    "linear_same_data": {
+      "rank_calls": 672,
+      "median_ms": 40.76433111913502,
+      "p95_ms": 64.96713010128586
+    },
+    "lambdamart": {
+      "rank_calls": 586,
+      "median_ms": 42.74305189028382,
+      "p95_ms": 66.74166128505021
+    }
+  },
+  "best_iteration": 85,
+  "data": {
+    "training": {
+      "groups": 11625,
+      "rows": 5676583,
+      "groups_with_target": 8267,
+      "sessions_with_groups": 4003
+    },
+    "validation": {
+      "groups": 2431,
+      "rows": 1193734,
+      "groups_with_target": 2044,
+      "sessions_with_groups": 997
+    }
+  },
+  "paired_lambdamart_vs_precise": {
+    "difference": 0.04111666666666667,
+    "ci95": [
+      0.011733720238095253,
+      0.07085062499999999
+    ],
+    "candidate_only_hits": 9,
+    "baseline_only_hits": 4
+  },
+  "paired_lambdamart_vs_same_data_linear": {
+    "difference": 0.012713690476190483,
+    "ci95": [
+      -0.014794270833333322,
+      0.03992635416666666
+    ],
+    "candidate_only_hits": 4,
+    "baseline_only_hits": 6
+  },
+  "default_changed": false,
+  "model_sha256": "28e34799afe98b5894ea432beb5e8c3af8cff62a49b3ea2e86ad4135c91f254f"
+}
+finished_at=2026-08-31T11:32:53+08:00

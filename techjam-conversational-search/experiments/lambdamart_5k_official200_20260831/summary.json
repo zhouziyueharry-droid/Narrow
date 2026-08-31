@@ -1,0 +1,114 @@
+{
+  "precise": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.875,
+    "mrr": 0.411885,
+    "mttc": 3.695,
+    "efficiency": 0.7304999999999999,
+    "recommended_technical_score": 0.7071655,
+    "wall_seconds": 192.1201116410084
+  },
+  "linear_same_data": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.91,
+    "mrr": 0.431895,
+    "mttc": 3.45,
+    "efficiency": 0.755,
+    "recommended_technical_score": 0.7355685000000001,
+    "wall_seconds": 154.24545829324052
+  },
+  "lambdamart": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.9,
+    "mrr": 0.46294,
+    "mttc": 3.03,
+    "efficiency": 0.797,
+    "recommended_technical_score": 0.748282,
+    "wall_seconds": 132.28837087890133
+  },
+  "split": {
+    "train": {
+      "sessions": 4003,
+      "unique_targets": 386,
+      "scenarios": {
+        "browsing": 1596,
+        "boundary": 207,
+        "buying": 1616,
+        "intent_override": 584
+      }
+    },
+    "validation": {
+      "sessions": 997,
+      "unique_targets": 96,
+      "scenarios": {
+        "browsing": 404,
+        "buying": 384,
+        "intent_override": 166,
+        "boundary": 43
+      }
+    },
+    "test": {
+      "sessions": 200,
+      "unique_targets": 200,
+      "scenarios": {
+        "buying": 80,
+        "intent_override": 30,
+        "browsing": 80,
+        "boundary": 10
+      }
+    },
+    "excluded_synthetic_sessions": 0
+  },
+  "latency": {
+    "precise": {
+      "rank_calls": 714,
+      "median_ms": 40.6787593383342,
+      "p95_ms": 65.28368019498886
+    },
+    "linear_same_data": {
+      "rank_calls": 672,
+      "median_ms": 40.76433111913502,
+      "p95_ms": 64.96713010128586
+    },
+    "lambdamart": {
+      "rank_calls": 586,
+      "median_ms": 42.74305189028382,
+      "p95_ms": 66.74166128505021
+    }
+  },
+  "best_iteration": 85,
+  "data": {
+    "training": {
+      "groups": 11625,
+      "rows": 5676583,
+      "groups_with_target": 8267,
+      "sessions_with_groups": 4003
+    },
+    "validation": {
+      "groups": 2431,
+      "rows": 1193734,
+      "groups_with_target": 2044,
+      "sessions_with_groups": 997
+    }
+  },
+  "paired_lambdamart_vs_precise": {
+    "difference": 0.04111666666666667,
+    "ci95": [
+      0.011733720238095253,
+      0.07085062499999999
+    ],
+    "candidate_only_hits": 9,
+    "baseline_only_hits": 4
+  },
+  "paired_lambdamart_vs_same_data_linear": {
+    "difference": 0.012713690476190483,
+    "ci95": [
+      -0.014794270833333322,
+      0.03992635416666666
+    ],
+    "candidate_only_hits": 4,
+    "baseline_only_hits": 6
+  },
+  "default_changed": false,
+  "model_sha256": "28e34799afe98b5894ea432beb5e8c3af8cff62a49b3ea2e86ad4135c91f254f"
+}

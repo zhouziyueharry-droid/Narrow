@@ -1,0 +1,73 @@
+{
+  "offline": true,
+  "llm_calls": 0,
+  "feature_names": [
+    "exact_matches",
+    "partial_matches",
+    "category_match",
+    "term_coverage",
+    "lexical_signal",
+    "rrf_raw",
+    "dense_raw",
+    "attribute_raw",
+    "profile_match",
+    "quality",
+    "contradictions",
+    "budget_penalty",
+    "novelty_penalty"
+  ],
+  "synthetic_path": "/home/msai/xjiang026/lambdamart5k_20260831/techjam-conversational-search/data/synthetic_scenarios_5000.jsonl",
+  "synthetic_sha256": "25d8d48411a08dee2f35295498a84e6b5edde1fef116db1e89bfe43a1dfd8973",
+  "public_sha256": "571359a8a69014c43fc30d39c996c4a28e875dccc249dffc707358757beb16c0",
+  "lightgbm": "4.7.0",
+  "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+  "feature_source_sha256": "72f4c0845f96dc5b09d8f7b242b3407fc5e7a88b5203bfbd1e11b7e7fd542d0a",
+  "script_sha256": "dc85f76bc8daabbe8b89cae39543a5b1eb3672e1d1c44442e1fa19dde9cbc003",
+  "selection_seed": 20260830,
+  "label_policy": "Known simulator target=1, others=0; weak target labels, NOT graded semantic relevance.",
+  "baseline_collection_policy": "Current PreciseReranker trajectories, all candidate rows, no pre-override target supervision.",
+  "schema_version": 1,
+  "best_iteration": 85,
+  "parameters": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 1.0,
+    "importance_type": "split",
+    "learning_rate": 0.05,
+    "max_depth": 5,
+    "min_child_samples": 40,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 300,
+    "n_jobs": 4,
+    "num_leaves": 15,
+    "objective": "lambdarank",
+    "random_state": 20260830,
+    "reg_alpha": 0.0,
+    "reg_lambda": 5.0,
+    "subsample": 1.0,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "metric": "ndcg",
+    "verbosity": -1,
+    "deterministic": true,
+    "force_col_wise": true,
+    "lambdarank_truncation_level": 13
+  },
+  "train_sessions": 4003,
+  "validation_sessions": 997,
+  "data_summary": {
+    "training": {
+      "groups": 11625,
+      "rows": 5676583,
+      "groups_with_target": 8267,
+      "sessions_with_groups": 4003
+    },
+    "validation": {
+      "groups": 2431,
+      "rows": 1193734,
+      "groups_with_target": 2044,
+      "sessions_with_groups": 997
+    }
+  }
+}

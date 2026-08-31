@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "report_contract": "offline_ltr_experiment_comparison",
+  "unified_simulator_report_schema": false,
+  "official_test": {
+    "sessions": 200,
+    "sha256": "571359a8a69014c43fc30d39c996c4a28e875dccc249dffc707358757beb16c0"
+  },
+  "experiments": {
+    "lambdamart_2k_source": {
+      "train_sessions": 1291,
+      "validation_sessions": 291,
+      "hit_rate_at_10": 0.92,
+      "mrr": 0.4781,
+      "mttc": 2.875,
+      "recommended_technical_score": 0.7659,
+      "frozen_test_ndcg_at_10": 0.4911,
+      "best_iteration": 167,
+      "median_rank_latency_ms": 18.13,
+      "evidence": "docs/lambdamart_experiment_report.md and models/lambdamart_synthetic_2000/metadata.json"
+    },
+    "lambdamart_5k": {
+      "train_sessions": 4003,
+      "validation_sessions": 997,
+      "hit_rate_at_10": 0.9,
+      "mrr": 0.46294,
+      "mttc": 3.03,
+      "recommended_technical_score": 0.748282,
+      "frozen_test_ndcg_at_10": 0.485086359596802,
+      "validation_ndcg_at_10": 0.617586026008781,
+      "best_iteration": 85,
+      "median_rank_latency_ms": 42.74305189028382,
+      "model_sha256": "28e34799afe98b5894ea432beb5e8c3af8cff62a49b3ea2e86ad4135c91f254f"
+    }
+  },
+  "delta_5k_minus_2k": {
+    "train_sessions": 2712,
+    "validation_sessions": 706,
+    "hit_rate_at_10": -0.02,
+    "mrr": -0.01516,
+    "mttc": 0.155,
+    "recommended_technical_score": -0.017618,
+    "frozen_test_ndcg_at_10": -0.006013640403198,
+    "best_iteration": -82,
+    "median_rank_latency_ms": 24.61305189028382
+  },
+  "model_usage": {
+    "agent_llm_enabled": false,
+    "user_verbalizer_llm_enabled": false,
+    "api_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost": 0,
+    "cost_status": "not_applicable_no_api_usage"
+  },
+  "interpretation": "The 5K model beats Precise in this run but does not beat the earlier 2K LambdaMART result. Cross-run latency is not a controlled comparison."
+}
