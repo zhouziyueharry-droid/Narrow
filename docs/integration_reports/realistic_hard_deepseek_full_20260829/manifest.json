@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "run_id": "realistic_hard_deepseek_full_20260829",
+  "created_at": "2026-08-29T17:15:39.9997882+08:00",
+  "branch": "test/realistic-hard-20260829",
+  "commit": "06795c29b36af012995217d35a4c562ae6891d88",
+  "main_commit": "8f4f392407c47c46be5c528069f088218ffbea97",
+  "worktree_clean": true,
+  "preset": "realistic_hard",
+  "expected_sessions": 24,
+  "catalog_path": "D:\\projects\\tiktok26\\tiktok_project_4\\techjam-conversational-search\\data\\catalog.jsonl",
+  "catalog_sha256": "DA979B05A68AF864CB0DCF9EE6A81C010C7E66A57978AD286C7A2E005FC69A67",
+  "agent": {
+    "class_path": "shopping_agent.agent:ShoppingAgent",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "llm_enabled": true,
+    "api_key_configured": true
+  },
+  "user_verbalizer": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "api_key_configured": true
+  },
+  "runtime": {
+    "uv": "uv 0.11.26 (396ef7ce4 2026-06-30 x86_64-pc-windows-msvc)",
+    "python": "Python 3.12.13"
+  }
+}

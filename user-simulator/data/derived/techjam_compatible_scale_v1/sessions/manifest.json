@@ -1,0 +1,102 @@
+{
+  "custom_diagnostic_session_count": 200,
+  "derived_smoke_count": 20,
+  "excluded_official_target_count": 200,
+  "files": {
+    "custom_challenge_200_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 305041,
+      "sha256": "5eae0e20a5ac28fe183568d03d2d0bfc08c159181f2283fc68844f1e82c3ec73"
+    },
+    "official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 848742,
+      "sha256": "ddebd71bff612416f4cc934d855d7f64e2346dfc9a59b70a6f1700211fe1226d"
+    },
+    "official_style_dev_200_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 169339,
+      "sha256": "18a70cd9fa66325505478d24e85b03968d6429435dec313be7b6806e085e87cb"
+    },
+    "session_index.csv": {
+      "bytes": 124437,
+      "sha256": "3118567202faaf2441b13da01c007e658e8ec20dbdf7065c68167295ab0cd62f"
+    },
+    "official_style_smoke_20_rebuilt_amazon_clothing_50k.jsonl": {
+      "bytes": 16904,
+      "sha256": "6ace08f25268ed9f98192962d971009408b52daa25df9d3323ba6f777f525ca6"
+    }
+  },
+  "headline_construction": "official_style_participant_materialized",
+  "headline_split": "core",
+  "official_metric_contract": false,
+  "official_public_distribution_multiplier": 5,
+  "official_sessions_reused": false,
+  "official_style_development_session_count": 200,
+  "official_style_headline_session_count": 1000,
+  "official_style_session_count": 1200,
+  "official_targets_reused": false,
+  "schema_version": "1.0",
+  "seed": 20260830,
+  "splits": {
+    "challenge": {
+      "difficulty_distribution": {
+        "hard": 200
+      },
+      "sample_count": 200,
+      "scenario_distribution": {
+        "boundary": 100,
+        "intent_override": 100
+      },
+      "subtype_distribution": {
+        "brand_change": 25,
+        "budget_change": 25,
+        "category_or_use_case_change": 25,
+        "exact_threshold": 25,
+        "hard_soft_conflict": 25,
+        "key_attribute_change": 25,
+        "negation_scope": 25,
+        "unit_or_size_ambiguity": 25
+      }
+    },
+    "core": {
+      "difficulty_distribution": {
+        "easy": 400,
+        "hard": 150,
+        "medium": 450
+      },
+      "sample_count": 1000,
+      "scenario_distribution": {
+        "boundary": 50,
+        "browsing": 400,
+        "buying": 400,
+        "intent_override": 150
+      },
+      "subtype_distribution": {
+        "official_style": 1000
+      }
+    },
+    "dev": {
+      "difficulty_distribution": {
+        "easy": 80,
+        "hard": 30,
+        "medium": 90
+      },
+      "sample_count": 200,
+      "scenario_distribution": {
+        "boundary": 10,
+        "browsing": 80,
+        "buying": 80,
+        "intent_override": 30
+      },
+      "subtype_distribution": {
+        "official_style": 200
+      }
+    }
+  },
+  "suite_id": "techjam_compatible_scale_v1",
+  "target_source_catalog": {
+    "eligible_non_official_targets": 39830,
+    "path_hint": "broad_catalog.jsonl",
+    "row_count": 49999,
+    "sha256": "4bfba369fe7fa9eaf98ef24af12235d850328d05cfe2ba001505f5a6b22994b2"
+  },
+  "unique_session_count": 1400
+}

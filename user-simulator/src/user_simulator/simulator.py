@@ -26,6 +26,9 @@ from .techjam import TechJamUserPolicy
 from .verbalizers import TemplateVerbalizer, VerbalizationRequest
 
 
+TARGET_PRODUCT_PROTOCOLS = {"techjam", "techjam_compatible"}
+
+
 def _goal_constraints(goal: TargetProductGoal | NeedBasedGoal):
     if isinstance(goal, TargetProductGoal):
         return list(goal.constraints)
@@ -124,7 +127,7 @@ class SimulatorSession:
         self._session_wall_ms = 0.0
         self.policy = (
             TechJamUserPolicy(scenario)
-            if scenario.protocol == "techjam"
+            if scenario.protocol in TARGET_PRODUCT_PROTOCOLS
             else UserPolicy(scenario)
         )
         self.acceptance = AcceptanceChecker(catalog)
@@ -183,7 +186,7 @@ class SimulatorSession:
             agent_layer_trace, agent_trace_error = self.agent.get_turn_trace(
                 self.state.session_id, turn, candidate_limit=max(self.top_k, 20)
             )
-            if self.scenario.protocol == "techjam" and response.error:
+            if self.scenario.protocol in TARGET_PRODUCT_PROTOCOLS and response.error:
                 response.ask_attribute = None
                 response.recommendations = []
                 response.usage = None
@@ -194,8 +197,28 @@ class SimulatorSession:
             acceptance_result = self.acceptance.check(
                 self.state.goal, response.recommendations
             )
+            acceptance_candidate = acceptance_result.accepted
+            acceptance_block_reason = None
+            if self.scenario.protocol == "realistic" and acceptance_result.accepted:
+                if turn < self.scenario.min_turns_before_acceptance:
+                    acceptance_block_reason = "minimum_conversation_turns_not_reached"
+                elif self.scenario.require_no_pending_question and response.ask_attribute:
+                    acceptance_block_reason = "agent_still_asking_clarification"
+                if acceptance_block_reason:
+                    acceptance_result = AcceptanceResult(
+                        False,
+                        hard_matches=acceptance_result.hard_matches,
+                        hard_total=acceptance_result.hard_total,
+                        soft_matches=acceptance_result.soft_matches,
+                        evidence={
+                            **acceptance_result.evidence,
+                            "blocked_by": acceptance_block_reason,
+                            "candidate_product_id": acceptance_result.product_id,
+                            "candidate_rank": acceptance_result.rank,
+                        },
+                    )
             if (
-                self.scenario.protocol == "techjam"
+                self.scenario.protocol in TARGET_PRODUCT_PROTOCOLS
                 and isinstance(self.policy, TechJamUserPolicy)
                 and not self.policy.acceptance_allowed(turn)
             ):
@@ -217,6 +240,8 @@ class SimulatorSession:
                     agent_usage_reported=response.usage is not None,
                     agent_layer_trace=agent_layer_trace,
                     agent_trace_error=agent_trace_error,
+                    acceptance_candidate=acceptance_candidate,
+                    acceptance_block_reason=acceptance_block_reason,
                 )
             )
 
@@ -283,6 +308,16 @@ class SimulatorSession:
             "sample_id": self.scenario.scenario_id,
             "protocol": self.scenario.protocol,
             "scenario_type": self.scenario.scenario_type,
+            "difficulty_profile": self.scenario.difficulty_profile,
+            "coverage": dict(self.scenario.metadata.get("coverage") or {}),
+            "acceptance_gate": {
+                "min_turns_before_acceptance": self.scenario.min_turns_before_acceptance,
+                "require_no_pending_question": self.scenario.require_no_pending_question,
+                "blocked_candidate_events": sum(
+                    item.acceptance_block_reason is not None
+                    for item in self.state.conversation_history
+                ),
+            },
             "goal_type": self.state.goal.goal_type,
             "goal_snapshot": self._initial_goal_snapshot,
             "effective_goal_snapshot": {
@@ -376,6 +411,8 @@ class SimulatorSession:
                     "agent_usage_reported": item.agent_usage_reported,
                     "agent_layer_trace": item.agent_layer_trace,
                     "agent_trace_error": item.agent_trace_error,
+                    "acceptance_candidate": item.acceptance_candidate,
+                    "acceptance_block_reason": item.acceptance_block_reason,
                     "reported_token_usage": {
                         "prompt_tokens": (
                             item.agent_response.usage.prompt_tokens
@@ -501,6 +538,15 @@ class Simulator:
             raise ValueError("run_many requires scenarios from one protocol")
         protocol = next(iter(protocols), "realistic")
         max_turns = max((scenario.max_turns for scenario in scenarios), default=10)
-        if protocol == "techjam":
-            return aggregate_techjam(sessions, self.agent_metadata, max_turns=max_turns)
+        if protocol in TARGET_PRODUCT_PROTOCOLS:
+            return aggregate_techjam(
+                sessions,
+                self.agent_metadata,
+                max_turns=max_turns,
+                mode=protocol,
+                benchmark=(
+                    "techjam" if protocol == "techjam" else "techjam_compatible_scale_v1"
+                ),
+                official_metric_contract=protocol == "techjam",
+            )
         return aggregate_realistic(sessions, self.agent_metadata, max_turns=max_turns)

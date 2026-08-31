@@ -134,6 +134,10 @@ Each run is stored under `evaluation_runs/<timestamp>/` with configuration,
 summary, session metadata, every conversation turn, node traces, and a readable
 Markdown report. `evaluation_runs/LATEST.txt` points to the newest run.
 
+For the team-standard parallel official evaluation, exact target-loss replay,
+and trace-visualizer workflow, follow
+[`../docs/TEST_TRACE_VISUALIZATION_RUNBOOK.md`](../docs/TEST_TRACE_VISUALIZATION_RUNBOOK.md).
+
 Run the tests and public evaluator with:
 
 ```bash

@@ -8,6 +8,7 @@ __pycache__/
 .DS_Store
 .env
 results.json
+evaluation_runs/
 data/catalog.jsonl
 data/catalog.jsonl.gz
 data/releases/

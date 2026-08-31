@@ -1,0 +1,50 @@
+{
+  "catalog_path_hint": "rebuilt_amazon_clothing_200k.jsonl",
+  "catalog_rows": 200000,
+  "catalog_sha256": "8ec283ee1f955db12f2618bb9d11f84d271bc60f854d07f26964c70260481a1e",
+  "construction": "official_style_participant_materialized",
+  "difficulty_distribution": {
+    "easy": 400,
+    "hard": 150,
+    "medium": 450
+  },
+  "eligible_full_catalog_targets": 159787,
+  "excluded_target_count": 200,
+  "main_category_distribution": {
+    "AMAZON FASHION": 882,
+    "All Beauty": 4,
+    "All Electronics": 2,
+    "Amazon Home": 16,
+    "Arts, Crafts & Sewing": 2,
+    "Automotive": 1,
+    "Baby": 1,
+    "Grocery": 1,
+    "Health & Personal Care": 6,
+    "Industrial & Scientific": 6,
+    "Office Products": 3,
+    "Sports & Outdoors": 13,
+    "Tools & Home Improvement": 6,
+    "Toys & Games": 8,
+    "unknown": 49
+  },
+  "official_metric_contract": false,
+  "output": {
+    "bytes": 864242,
+    "path": "official_style_core_1000_rebuilt_amazon_clothing_200k.jsonl",
+    "sha256": "13688410b3a2c7e99dc43e59c70220a66cfbcffe8dbdb71be02901c3e17fc178"
+  },
+  "root_category_distribution": {
+    "Clothing, Shoes & Jewelry": 999,
+    "Shoe, Jewelry & Watch Accessories": 1
+  },
+  "sample_count": 1000,
+  "scenario_distribution": {
+    "boundary": 50,
+    "browsing": 400,
+    "buying": 400,
+    "intent_override": 150
+  },
+  "schema_version": "1.0",
+  "seed": 20260830,
+  "suite_id": "techjam_compatible_same_category_200k_v1"
+}

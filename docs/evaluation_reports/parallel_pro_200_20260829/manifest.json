@@ -1,0 +1,28 @@
+{
+  "artifact_policy": {
+    "git_contains": [
+      "report.md",
+      "manifest.json"
+    ],
+    "raw_sessions_turns_node_traces_and_shards": "excluded_from_git_use_release_asset",
+    "historical_source_commit": "cfc261c1cc7e7cf0ee034418365b2c4ed7a9923a"
+  },
+  "catalog": "data/catalog.jsonl",
+  "dataset": "data/public_set.jsonl",
+  "evaluation": {
+    "efficiency": 0.7685,
+    "hit_rate_at_10": 0.9,
+    "mrr": 0.335181,
+    "mttc": 3.315,
+    "recommended_technical_score": 0.704254,
+    "sample_count": 200
+  },
+  "execution": {
+    "elapsed_seconds": 400.34,
+    "llm_enabled": true,
+    "model": "deepseek-v4-pro",
+    "workers": 12
+  },
+  "run_id": "20260829_232205_+0800",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,22 @@
+version: "0.6"
+language: en
+mode: techjam_compatible
+seed: 20260830
+max_turns: 10
+top_k: 10
+dataset:
+  name: rebuilt_amazon_clothing_200k
+  catalog_path: data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_200k.jsonl
+  sessions_path: data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl
+  source_dataset: rebuilt_amazon_reviews_2023_clothing_200k
+  catalog_size: 200000
+persona:
+  default: casual_browser
+override:
+  scheduled_enabled: true
+  persona_driven_enabled: false
+verbalizer:
+  type: template
+agent:
+  adapter: python
+  class_path: shopping_agent.agent:ShoppingAgent

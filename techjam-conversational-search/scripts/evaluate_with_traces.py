@@ -29,6 +29,13 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _portable_path(path: Path, project_root: Path) -> str:
+    try:
+        return Path(os.path.relpath(path.resolve(), project_root.resolve())).as_posix()
+    except ValueError:
+        return f"external/{path.name}"
+
+
 def _git_value(project_root: Path, *args: str) -> str:
     result = subprocess.run(
         ["git", *args],
@@ -219,7 +226,7 @@ def main() -> int:
     output_dir = output_root / run_id
     output_dir.mkdir(parents=True, exist_ok=False)
     output_root.mkdir(parents=True, exist_ok=True)
-    (output_root / "LATEST.txt").write_text(str(output_dir) + "\n", encoding="utf-8")
+    (output_root / "LATEST.txt").write_text(run_id + "\n", encoding="utf-8")
 
     samples = load_jsonl(dataset_path)
     if args.max_samples is not None:
@@ -231,9 +238,9 @@ def main() -> int:
         "provider": "deepseek" if args.llm else "local_fallback",
         "model": os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash") if args.llm else "local_fallback",
         "base_url": os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com") if args.llm else None,
-        "catalog": str(catalog_path),
+        "catalog": _portable_path(catalog_path, project_root),
         "catalog_sha256": _sha256(catalog_path),
-        "dataset": str(dataset_path),
+        "dataset": _portable_path(dataset_path, project_root),
         "dataset_sha256": _sha256(dataset_path),
         "sample_count": len(samples),
         "candidate_limit_per_node": args.candidate_limit,

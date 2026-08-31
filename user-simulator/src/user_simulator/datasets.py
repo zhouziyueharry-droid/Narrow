@@ -4,10 +4,19 @@ import csv
 import hashlib
 import json
 import random
+from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
 
-from .models import Constraint, NeedBasedGoal, Product, ScenarioSpec, TargetProductGoal
+from .models import (
+    Constraint,
+    NeedBasedGoal,
+    OverrideEvent,
+    Product,
+    RelaxationEvent,
+    ScenarioSpec,
+    TargetProductGoal,
+)
 from .personas import PERSONA_TEMPLATES
 from .techjam import (
     build_behavior,
@@ -87,6 +96,8 @@ class TechJamDatasetAdapter:
         self,
         persona_template: str = "casual_browser",
         max_turns: int = 10,
+        protocol: str = "techjam",
+        source_dataset: str = "techjam",
     ) -> list[ScenarioSpec]:
         if self.sessions_path is None:
             raise ValueError("sessions_path is required")
@@ -110,7 +121,7 @@ class TechJamDatasetAdapter:
                 if not isinstance(behavior, dict):
                     behavior = build_behavior(scenario_type, intent_card, sample_id)
                 constraints = [
-                    Constraint(classify_constraint(str(value)), [str(value)], "hard", source="techjam")
+                    Constraint(classify_constraint(str(value)), [str(value)], "hard", source=protocol)
                     for value in intent_card.get("hard_constraints", [])
                 ]
                 constraints.extend(
@@ -118,7 +129,7 @@ class TechJamDatasetAdapter:
                         classify_constraint(str(value)),
                         [str(value)],
                         "soft",
-                        source="techjam",
+                        source=protocol,
                         relaxable=True,
                     )
                     for value in intent_card.get("soft_preferences", [])
@@ -129,7 +140,7 @@ class TechJamDatasetAdapter:
                     target_product_id=target,
                     constraints=constraints,
                     category=category,
-                    source_dataset="techjam",
+                    source_dataset=source_dataset,
                 )
                 result.append(
                     ScenarioSpec(
@@ -138,22 +149,43 @@ class TechJamDatasetAdapter:
                         persona_template=persona_template,
                         max_turns=max_turns,
                         seed=_stable_seed(sample_id, scenario_type),
-                        protocol="techjam",
+                        protocol=protocol,
                         scenario_type=scenario_type,
                         user_profile=dict(sample.get("user_profile") or {}),
+                        difficulty_profile=str(
+                            sample.get("difficulty_bucket") or "standard"
+                        ),
                         metadata={
                             "techjam": {
                                 "category": category,
                                 "intent_card": intent_card,
                                 "behavior": behavior,
-                            }
+                            },
+                            "coverage": {
+                                "category": str(
+                                    sample.get("category_bucket") or category
+                                ),
+                                "difficulty": str(
+                                    sample.get("difficulty_bucket") or "standard"
+                                ),
+                            },
+                            "generation_metadata": dict(
+                                sample.get("generation_metadata") or {}
+                            ),
                         },
                     )
                 )
         return result
 
 
-def _realistic_goal(product: Product) -> NeedBasedGoal | None:
+def _realistic_goal(
+    product: Product,
+    *,
+    budget_multiplier: float = 1.10,
+    min_soft_preferences: int = 1,
+    min_soft_matches: int = 1,
+    source_dataset: str = "catalog_realistic",
+) -> NeedBasedGoal | None:
     category = product.categories[-1] if product.categories else None
     hard: list[Constraint] = []
     if category:
@@ -162,7 +194,7 @@ def _realistic_goal(product: Product) -> NeedBasedGoal | None:
         hard.append(
             Constraint(
                 "budget_max",
-                [f"{product.price * 1.10:.2f}"],
+                [f"{product.price * budget_multiplier:.2f}"],
                 "hard",
                 source="catalog",
                 relaxable=True,
@@ -180,16 +212,83 @@ def _realistic_goal(product: Product) -> NeedBasedGoal | None:
             )
         if len(soft) >= 3:
             break
-    if not hard or not soft:
+    if not hard or len(soft) < min_soft_preferences:
         return None
     return NeedBasedGoal(
         goal_id=f"realistic:{product.product_id}",
         category=category,
         hard_constraints=hard,
         soft_preferences=soft,
-        min_soft_matches=1,
-        source_dataset="catalog_realistic",
+        min_soft_matches=min(min_soft_matches, len(soft)),
+        source_dataset=source_dataset,
     )
+
+
+def _price_band(price: float | None) -> str:
+    if price is None:
+        return "unknown"
+    if price < 15:
+        return "under_15"
+    if price < 30:
+        return "15_30"
+    if price < 60:
+        return "30_60"
+    if price < 120:
+        return "60_120"
+    return "120_plus"
+
+
+def _soft_signature(goal: NeedBasedGoal) -> str:
+    return "+".join(constraint.attribute for constraint in goal.soft_preferences)
+
+
+def _select_broad_coverage_candidates(
+    candidates: list[tuple[Product, NeedBasedGoal]],
+    count: int,
+    rng: random.Random,
+) -> list[tuple[Product, NeedBasedGoal]]:
+    """Balance diagnostic coverage across price, category, and preference shape."""
+
+    price_bands = ("under_15", "15_30", "30_60", "60_120", "120_plus")
+    pools: dict[str, list[tuple[Product, NeedBasedGoal]]] = {
+        band: [] for band in price_bands
+    }
+    shuffled = list(candidates)
+    rng.shuffle(shuffled)
+    for candidate in shuffled:
+        pools[_price_band(candidate[0].price)].append(candidate)
+
+    selected: list[tuple[Product, NeedBasedGoal]] = []
+    category_counts: Counter[str] = Counter()
+    signature_counts: Counter[str] = Counter()
+    selected_ids: set[str] = set()
+    while len(selected) < count:
+        band = price_bands[len(selected) % len(price_bands)]
+        available = [
+            candidate
+            for candidate in pools[band]
+            if candidate[0].product_id not in selected_ids
+        ]
+        if not available:
+            available = [
+                candidate
+                for candidate in shuffled
+                if candidate[0].product_id not in selected_ids
+            ]
+        if not available:
+            break
+        product, goal = min(
+            available,
+            key=lambda candidate: (
+                category_counts[str(candidate[1].category)],
+                signature_counts[_soft_signature(candidate[1])],
+            ),
+        )
+        selected.append((product, goal))
+        selected_ids.add(product.product_id)
+        category_counts[str(goal.category)] += 1
+        signature_counts[_soft_signature(goal)] += 1
+    return selected
 
 
 def build_realistic_scenarios(
@@ -199,6 +298,16 @@ def build_realistic_scenarios(
     max_turns: int = 10,
     persona_templates: list[str] | None = None,
     persona_driven_override_enabled: bool = True,
+    difficulty_profile: str = "standard",
+    budget_multiplier: float = 1.10,
+    min_soft_preferences: int = 1,
+    min_soft_matches: int = 1,
+    initial_disclosure_policy: str = "category_plus_one",
+    min_turns_before_acceptance: int = 1,
+    require_no_pending_question: bool = False,
+    scheduled_variants: bool = False,
+    sampling_strategy: str = "shuffled",
+    source_dataset: str | None = None,
 ) -> list[ScenarioSpec]:
     """Build satisfiable need-based sessions from catalog metadata only."""
 
@@ -208,25 +317,82 @@ def build_realistic_scenarios(
         raise ValueError(f"Unknown persona templates: {', '.join(unknown)}")
     candidates: list[tuple[Product, NeedBasedGoal]] = []
     for product in products:
-        goal = _realistic_goal(product)
+        goal = _realistic_goal(
+            product,
+            budget_multiplier=budget_multiplier,
+            min_soft_preferences=min_soft_preferences,
+            min_soft_matches=min_soft_matches,
+            source_dataset=(
+                source_dataset
+                or (
+                    f"catalog_realistic_{difficulty_profile}"
+                    if difficulty_profile != "standard"
+                    else "catalog_realistic"
+                )
+            ),
+        )
+        if scheduled_variants and goal is not None and not any(
+            constraint.attribute == "budget_max"
+            for constraint in goal.hard_constraints
+        ):
+            continue
         if goal is not None:
             candidates.append((product, goal))
     rng = random.Random(seed)
-    rng.shuffle(candidates)
+    if sampling_strategy == "broad_coverage":
+        candidates = _select_broad_coverage_candidates(candidates, count, rng)
+    elif sampling_strategy == "shuffled":
+        rng.shuffle(candidates)
+    else:
+        raise ValueError(f"Unknown realistic sampling strategy: {sampling_strategy}")
     scenarios: list[ScenarioSpec] = []
     for index, (product, goal) in enumerate(candidates[:count]):
         persona = persona_pool[index % len(persona_pool)]
         preference_tags = [constraint.attribute for constraint in goal.soft_preferences]
+        variant = "hidden_preferences"
+        scheduled_overrides: list[OverrideEvent] = []
+        scheduled_relaxations: list[RelaxationEvent] = []
+        scenario_min_turns = min_turns_before_acceptance
+        if scheduled_variants:
+            variant = (
+                "hidden_preferences",
+                "preference_override",
+                "budget_relaxation",
+                "override_and_relaxation",
+            )[index % 4]
+            if variant in {"preference_override", "override_and_relaxation"}:
+                preference = goal.soft_preferences[0]
+                scheduled_overrides.append(
+                    OverrideEvent(2, preference.attribute, list(preference.values), [])
+                )
+                scenario_min_turns = max(scenario_min_turns, 3)
+            if variant in {"budget_relaxation", "override_and_relaxation"}:
+                budget = next(
+                    constraint
+                    for constraint in goal.hard_constraints
+                    if constraint.attribute == "budget_max"
+                )
+                scheduled_relaxations.append(
+                    RelaxationEvent(4, budget.attribute, list(budget.values), [])
+                )
+                scenario_min_turns = max(scenario_min_turns, 5)
         scenarios.append(
             ScenarioSpec(
                 scenario_id=f"realistic_{index + 1:04d}_{product.product_id}",
                 goal=goal,
                 persona_template=persona,
                 max_turns=max_turns,
+                initial_disclosure_policy=initial_disclosure_policy,
+                scheduled_overrides=scheduled_overrides,
+                scheduled_relaxations=scheduled_relaxations,
                 persona_driven_override_enabled=persona_driven_override_enabled,
                 seed=_stable_seed(seed, product.product_id, persona),
                 protocol="realistic",
-                scenario_type="realistic",
+                scenario_type=(
+                    f"realistic_{difficulty_profile.split('_', 1)[0]}:{variant}"
+                    if difficulty_profile != "standard"
+                    else "realistic"
+                ),
                 user_profile={
                     "purchase_frequency": "3-4 prior purchases",
                     "average_prior_rating": 4.0,
@@ -234,7 +400,20 @@ def build_realistic_scenarios(
                     "preference_tags": preference_tags,
                     "summary": f"Prior purchases emphasize {', '.join(preference_tags)}.",
                 },
-                metadata={"seed_product_id": product.product_id},
+                metadata={
+                    "seed_product_id": product.product_id,
+                    "difficulty_profile": difficulty_profile,
+                    "difficulty_variant": variant,
+                    "coverage": {
+                        "category": goal.category,
+                        "price_band": _price_band(product.price),
+                        "soft_signature": _soft_signature(goal),
+                        "sampling_strategy": sampling_strategy,
+                    },
+                },
+                min_turns_before_acceptance=scenario_min_turns,
+                require_no_pending_question=require_no_pending_question,
+                difficulty_profile=difficulty_profile,
             )
         )
     if len(scenarios) < count:

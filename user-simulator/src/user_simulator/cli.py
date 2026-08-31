@@ -39,6 +39,72 @@ PRESETS: dict[str, dict] = {
             "class_path": "shopping_agent.agent:ShoppingAgent",
         },
     },
+    "techjam_rebuilt_amazon_clothing_50k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "rebuilt_amazon_clothing_50k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_50k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_clothing_50k",
+            "catalog_size": 50000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
+    "techjam_rebuilt_amazon_clothing_200k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "rebuilt_amazon_clothing_200k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_clothing_200k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_clothing_200k",
+            "catalog_size": 200000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
+    "techjam_rebuilt_amazon_broad_500k": {
+        "version": "0.6",
+        "language": "en",
+        "mode": "techjam_compatible",
+        "seed": 20260830,
+        "max_turns": 10,
+        "top_k": 10,
+        "dataset": {
+            "name": "rebuilt_amazon_broad_500k",
+            "catalog_path": "data/derived/techjam_compatible_scale_v1/catalogs/rebuilt_amazon_broad_500k.jsonl",
+            "sessions_path": "data/derived/techjam_compatible_scale_v1/sessions/official_style_core_1000_rebuilt_amazon_clothing_50k.jsonl",
+            "source_dataset": "rebuilt_amazon_reviews_2023_cross_category_500k",
+            "catalog_size": 500000,
+        },
+        "persona": {"default": "casual_browser"},
+        "override": {"scheduled_enabled": True, "persona_driven_enabled": False},
+        "verbalizer": {"type": "template"},
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
     "realistic": {
         "version": "0.3",
         "language": "en",
@@ -68,6 +134,204 @@ PRESETS: dict[str, dict] = {
         "agent": {
             "adapter": "python",
             "class_path": "shopping_agent.agent:ShoppingAgent",
+        },
+    },
+    "realistic_hard": {
+        "version": "0.4",
+        "language": "en",
+        "mode": "realistic",
+        "seed": 20260829,
+        "max_turns": 8,
+        "top_k": 5,
+        "dataset": {
+            "name": "catalog",
+            "catalog_path": "data/raw/techjam/catalog.jsonl",
+            "scenario_count": 24,
+        },
+        "persona": {
+            "templates": [
+                "decisive_buyer",
+                "casual_browser",
+                "bargain_hunter",
+                "brand_loyalist",
+                "picky_shopper",
+                "novice_shopper",
+                "expert_shopper",
+                "indecisive_shopper",
+            ]
+        },
+        "override": {"persona_driven_enabled": False},
+        "difficulty": {
+            "profile": "hard_v1",
+            "budget_multiplier": 1.02,
+            "min_soft_preferences": 3,
+            "min_soft_matches": 2,
+            "initial_disclosure_policy": "category_only",
+            "min_turns_before_acceptance": 2,
+            "require_no_pending_question": True,
+            "scheduled_variants": True,
+        },
+        "verbalizer": {
+            "type": "openai_compatible",
+            "provider": "deepseek",
+            "temperature": 0.35,
+            "max_tokens": 120,
+            "timeout": 30,
+        },
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+            "provider": "deepseek",
+        },
+    },
+    "realistic_broad": {
+        "version": "0.5",
+        "language": "en",
+        "mode": "realistic",
+        "seed": 20260829,
+        "max_turns": 8,
+        "top_k": 5,
+        "dataset": {
+            "name": "amazon_reviews_2023_metadata",
+            "catalog_path": "data/derived/amazon_reviews_2023/broad_catalog.jsonl",
+            "scenario_count": 96,
+            "sampling_strategy": "broad_coverage",
+            "source_dataset": "amazon_reviews_2023_metadata_broad_v1",
+        },
+        "persona": {
+            "templates": [
+                "decisive_buyer",
+                "casual_browser",
+                "bargain_hunter",
+                "brand_loyalist",
+                "picky_shopper",
+                "novice_shopper",
+                "expert_shopper",
+                "indecisive_shopper",
+            ]
+        },
+        "override": {"persona_driven_enabled": False},
+        "difficulty": {
+            "profile": "broad_v1",
+            "budget_multiplier": 1.02,
+            "min_soft_preferences": 3,
+            "min_soft_matches": 2,
+            "initial_disclosure_policy": "category_only",
+            "min_turns_before_acceptance": 2,
+            "require_no_pending_question": True,
+            "scheduled_variants": True,
+        },
+        "verbalizer": {
+            "type": "openai_compatible",
+            "provider": "deepseek",
+            "temperature": 0.35,
+            "max_tokens": 120,
+            "timeout": 30,
+        },
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+            "provider": "deepseek",
+        },
+    },
+    "realistic_scale_200k": {
+        "version": "0.5",
+        "language": "en",
+        "mode": "realistic",
+        "seed": 20260829,
+        "max_turns": 8,
+        "top_k": 5,
+        "dataset": {
+            "name": "amazon_reviews_2023_metadata",
+            "catalog_path": "data/derived/amazon_reviews_2023/scale_200k_catalog.jsonl",
+            "scenario_count": 160,
+            "sampling_strategy": "broad_coverage",
+            "source_dataset": "amazon_reviews_2023_clothing_scale_200k_v1",
+        },
+        "persona": {
+            "templates": [
+                "decisive_buyer",
+                "casual_browser",
+                "bargain_hunter",
+                "brand_loyalist",
+                "picky_shopper",
+                "novice_shopper",
+                "expert_shopper",
+                "indecisive_shopper",
+            ]
+        },
+        "override": {"persona_driven_enabled": False},
+        "difficulty": {
+            "profile": "scale_200k_v1",
+            "budget_multiplier": 1.02,
+            "min_soft_preferences": 3,
+            "min_soft_matches": 2,
+            "initial_disclosure_policy": "category_only",
+            "min_turns_before_acceptance": 2,
+            "require_no_pending_question": True,
+            "scheduled_variants": True,
+        },
+        "verbalizer": {
+            "type": "openai_compatible",
+            "provider": "deepseek",
+            "temperature": 0.35,
+            "max_tokens": 120,
+            "timeout": 30,
+        },
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+            "provider": "deepseek",
+        },
+    },
+    "realistic_cross_category_500k": {
+        "version": "0.5",
+        "language": "en",
+        "mode": "realistic",
+        "seed": 20260829,
+        "max_turns": 8,
+        "top_k": 5,
+        "dataset": {
+            "name": "amazon_reviews_2023_non_clothing_metadata",
+            "catalog_path": "data/derived/amazon_reviews_2023/cross_category_500k_catalog.jsonl",
+            "scenario_count": 240,
+            "sampling_strategy": "broad_coverage",
+            "source_dataset": "amazon_reviews_2023_non_clothing_cross_category_500k_v1",
+        },
+        "persona": {
+            "templates": [
+                "decisive_buyer",
+                "casual_browser",
+                "bargain_hunter",
+                "brand_loyalist",
+                "picky_shopper",
+                "novice_shopper",
+                "expert_shopper",
+                "indecisive_shopper",
+            ]
+        },
+        "override": {"persona_driven_enabled": False},
+        "difficulty": {
+            "profile": "cross_category_500k_v1",
+            "budget_multiplier": 1.02,
+            "min_soft_preferences": 3,
+            "min_soft_matches": 2,
+            "initial_disclosure_policy": "category_only",
+            "min_turns_before_acceptance": 2,
+            "require_no_pending_question": True,
+            "scheduled_variants": True,
+        },
+        "verbalizer": {
+            "type": "openai_compatible",
+            "provider": "deepseek",
+            "temperature": 0.35,
+            "max_tokens": 120,
+            "timeout": 30,
+        },
+        "agent": {
+            "adapter": "python",
+            "class_path": "shopping_agent.agent:ShoppingAgent",
+            "provider": "deepseek",
         },
     },
 }
@@ -141,25 +405,26 @@ def _config_from_args(args: argparse.Namespace) -> dict:
 def _validation_errors(config: dict) -> list[str]:
     errors: list[str] = []
     mode = config.get("mode")
-    if mode not in {"techjam", "realistic"}:
-        errors.append("mode must be techjam or realistic")
+    target_modes = {"techjam", "techjam_compatible"}
+    if mode not in {*target_modes, "realistic"}:
+        errors.append("mode must be techjam, techjam_compatible, or realistic")
     if config.get("language", "en") != "en":
         errors.append("v0.2 supports English only")
     if int(config.get("max_turns", 10)) < 1:
         errors.append("max_turns must be >= 1")
-    if mode == "techjam" and int(config.get("max_turns", 10)) != 10:
-        errors.append("TechJam mode requires max_turns=10")
-    if mode == "techjam" and int(config.get("top_k", 10)) != 10:
-        errors.append("TechJam mode requires top_k=10")
+    if mode in target_modes and int(config.get("max_turns", 10)) != 10:
+        errors.append("TechJam target-product modes require max_turns=10")
+    if mode in target_modes and int(config.get("top_k", 10)) != 10:
+        errors.append("TechJam target-product modes require top_k=10")
     dataset = config.get("dataset", {})
     if not dataset.get("catalog_path"):
         errors.append("dataset.catalog_path is required")
-    if mode == "techjam" and not dataset.get("sessions_path"):
-        errors.append("TechJam mode requires dataset.sessions_path")
+    if mode in target_modes and not dataset.get("sessions_path"):
+        errors.append("TechJam target-product modes require dataset.sessions_path")
     if mode == "realistic" and int(dataset.get("scenario_count", 100)) < 1:
         errors.append("realistic dataset.scenario_count must be >= 1")
-    if mode == "techjam" and config.get("verbalizer", {}).get("type") != "template":
-        errors.append("TechJam mode requires the deterministic template verbalizer")
+    if mode in target_modes and config.get("verbalizer", {}).get("type") != "template":
+        errors.append("TechJam target-product modes require the deterministic template verbalizer")
     agent = config.get("agent", {})
     if not agent.get("class_path"):
         errors.append("agent.class_path is required")
@@ -208,15 +473,18 @@ def cmd_run(args: argparse.Namespace) -> int:
     products = list(adapter.load_products())
     catalog = {product.product_id: product for product in products}
     max_turns = int(config.get("max_turns", 10))
-    if mode == "techjam":
+    if mode in {"techjam", "techjam_compatible"}:
         scenarios = adapter.build_target_sessions(
             persona_template=config.get("persona", {}).get("default", "casual_browser"),
             max_turns=max_turns,
+            protocol=mode,
+            source_dataset=str(dataset_cfg.get("source_dataset", mode)),
         )
     else:
         scenario_count = int(dataset_cfg.get("scenario_count", 100))
         if args.limit:
             scenario_count = min(scenario_count, args.limit)
+        difficulty_cfg = config.get("difficulty", {})
         scenarios = build_realistic_scenarios(
             products,
             count=scenario_count,
@@ -226,6 +494,24 @@ def cmd_run(args: argparse.Namespace) -> int:
             persona_driven_override_enabled=bool(
                 config.get("override", {}).get("persona_driven_enabled", True)
             ),
+            difficulty_profile=str(difficulty_cfg.get("profile", "standard")),
+            budget_multiplier=float(difficulty_cfg.get("budget_multiplier", 1.10)),
+            min_soft_preferences=int(difficulty_cfg.get("min_soft_preferences", 1)),
+            min_soft_matches=int(difficulty_cfg.get("min_soft_matches", 1)),
+            initial_disclosure_policy=str(
+                difficulty_cfg.get("initial_disclosure_policy", "category_plus_one")
+            ),
+            min_turns_before_acceptance=int(
+                difficulty_cfg.get("min_turns_before_acceptance", 1)
+            ),
+            require_no_pending_question=bool(
+                difficulty_cfg.get("require_no_pending_question", False)
+            ),
+            scheduled_variants=bool(difficulty_cfg.get("scheduled_variants", False)),
+            sampling_strategy=str(
+                dataset_cfg.get("sampling_strategy", "shuffled")
+            ),
+            source_dataset=dataset_cfg.get("source_dataset"),
         )
 
     agent_cfg = config.get("agent", {})
