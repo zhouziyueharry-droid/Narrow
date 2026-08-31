@@ -146,12 +146,18 @@ def _js_divergence(left: Counter[str], right: Counter[str]) -> float:
 
 def build(
     *, source: Path, reference: Path, official_sessions: Path, output: Path, manifest: Path,
-    target_count: int, seed: int,
+    target_count: int, seed: int, additional_mandatory_sessions: tuple[Path, ...] = (),
+    exclude_official_targets: bool = False,
 ) -> dict[str, Any]:
     if output.exists() or manifest.exists():
         raise FileExistsError("output and manifest must not already exist")
     reference_rows = _load_jsonl(reference)
     official_rows = _load_jsonl(official_sessions)
+    additional_rows = [
+        row
+        for sessions_path in additional_mandatory_sessions
+        for row in _load_jsonl(sessions_path)
+    ]
     if target_count % len(reference_rows):
         raise ValueError("target_count must be an integer multiple of reference catalog rows")
     multiplier = target_count // len(reference_rows)
@@ -159,11 +165,14 @@ def build(
     reference_strata = Counter(_stratum(row, edges) for row in reference_rows)
     quotas = {key: value * multiplier for key, value in reference_strata.items()}
     official_targets = {str(row["ground_truth"]["parent_asin"]) for row in official_rows}
+    additional_targets = {str(row["ground_truth"]["parent_asin"]) for row in additional_rows}
+    mandatory_targets = additional_targets | (set() if exclude_official_targets else official_targets)
 
     reservoirs: dict[tuple[str, str, str], list[tuple[int, str]]] = defaultdict(list)
     seen_by_stratum: Counter[tuple[str, str, str]] = Counter()
     rngs = {key: _stable_rng(seed, key) for key in quotas}
     mandatory: dict[str, tuple[int, tuple[str, str, str]]] = {}
+    official_seen: set[str] = set()
     source_digest = hashlib.sha256()
     parsed, invalid, no_identifier, out_of_reference_stratum = 0, 0, 0, 0
     with source.open("rb") as handle:
@@ -183,8 +192,12 @@ def build(
             if not identifier:
                 no_identifier += 1
                 continue
-            key = _stratum(row, edges)
             if identifier in official_targets:
+                official_seen.add(identifier)
+                if exclude_official_targets:
+                    continue
+            key = _stratum(row, edges)
+            if identifier in mandatory_targets:
                 mandatory[identifier] = (offset, key)
             quota = quotas.get(key)
             if quota is None:
@@ -205,7 +218,8 @@ def build(
 
     selected_by_stratum = {key: list(reservoirs[key]) for key in quotas}
     selected_ids = {identifier for rows in selected_by_stratum.values() for _offset, identifier in rows}
-    added_mandatory, mandatory_fallback = 0, 0
+    inserted_mandatory: set[str] = set()
+    fallback_mandatory: set[str] = set()
     for identifier, (offset, key) in sorted(mandatory.items()):
         if identifier in selected_ids:
             continue
@@ -213,7 +227,7 @@ def build(
         if not candidates:
             key = max(selected_by_stratum, key=lambda value: len(selected_by_stratum[value]))
             candidates = selected_by_stratum[key]
-            mandatory_fallback += 1
+            fallback_mandatory.add(identifier)
         replacement_index = next(
             (index for index in range(len(candidates) - 1, -1, -1)
              if candidates[index][1] not in mandatory),
@@ -225,7 +239,7 @@ def build(
         selected_ids.remove(removed_id)
         candidates.append((offset, identifier))
         selected_ids.add(identifier)
-        added_mandatory += 1
+        inserted_mandatory.add(identifier)
     selected = [entry for rows in selected_by_stratum.values() for entry in rows]
     if len(selected) != target_count or len(selected_ids) != target_count:
         raise ValueError("selected product identifiers are not unique or do not match target_count")
@@ -274,9 +288,23 @@ def build(
                    "parsed_rows": parsed, "invalid_json_rows": invalid, "missing_parent_asin_rows": no_identifier,
                    "out_of_reference_stratum_rows": out_of_reference_stratum},
         "reference": {"path": str(reference), "sha256": _sha256(reference), "distribution": reference_distribution},
-        "official_public_targets": {"requested": len(official_targets), "found_in_raw_metadata": len(mandatory),
-                                     "inserted_into_catalog": added_mandatory, "fallback_stratum_insertions": mandatory_fallback,
-                                     "missing_from_raw_metadata": sorted(official_targets - set(mandatory))},
+        "official_public_targets": {
+            "policy": "excluded_from_training_catalog" if exclude_official_targets else "retained_for_compatibility",
+            "requested": len(official_targets),
+            "found_in_source": len(official_seen),
+            "retained_in_catalog": len(official_targets & selected_ids),
+            "inserted_into_catalog": len(official_targets & inserted_mandatory),
+            "fallback_stratum_insertions": len(official_targets & fallback_mandatory),
+            "missing_from_source": sorted(official_targets - official_seen),
+        },
+        "additional_mandatory_targets": {
+            "session_paths": [str(path) for path in additional_mandatory_sessions],
+            "requested_unique": len(additional_targets),
+            "found_in_source": len(additional_targets & set(mandatory)),
+            "inserted_into_catalog": len(additional_targets & inserted_mandatory),
+            "fallback_stratum_insertions": len(additional_targets & fallback_mandatory),
+            "missing_from_source": sorted(additional_targets - set(mandatory)),
+        },
         "output": {"path": str(output), "rows": len(selected_rows), "bytes": output.stat().st_size,
                    "sha256": output_digest.hexdigest(), "distribution": selected_distribution,
                    "js_divergence_vs_reference": divergence},
@@ -294,10 +322,24 @@ def main() -> None:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--target-count", type=int, default=500_000)
     parser.add_argument("--seed", type=int, default=20260831)
+    parser.add_argument(
+        "--additional-mandatory-sessions",
+        action="append",
+        type=Path,
+        default=[],
+        help="Additional session JSONL whose ground-truth targets must be retained.",
+    )
+    parser.add_argument(
+        "--exclude-official-targets",
+        action="store_true",
+        help="Exclude every official-session target from the derived training catalog.",
+    )
     args = parser.parse_args()
     result = build(source=args.source_metadata.resolve(), reference=args.reference_catalog.resolve(),
                    official_sessions=args.official_sessions.resolve(), output=args.output.resolve(),
-                   manifest=args.manifest.resolve(), target_count=args.target_count, seed=args.seed)
+                   manifest=args.manifest.resolve(), target_count=args.target_count, seed=args.seed,
+                   additional_mandatory_sessions=tuple(path.resolve() for path in args.additional_mandatory_sessions),
+                   exclude_official_targets=args.exclude_official_targets)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

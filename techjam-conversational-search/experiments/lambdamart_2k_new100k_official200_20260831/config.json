@@ -1,0 +1,43 @@
+{
+  "offline": true,
+  "llm_calls": 0,
+  "llm_tokens": 0,
+  "llm_cost": 0,
+  "agent_llm": "not_used",
+  "user_verbalizer_llm": "not_used",
+  "runtime": {
+    "python": "3.12.13 (main, Jun 23 2026, 15:23:43) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.2",
+    "scikit_learn": "1.9.0",
+    "dense_backend": "local"
+  },
+  "feature_names": [
+    "exact_matches",
+    "partial_matches",
+    "category_match",
+    "term_coverage",
+    "lexical_signal",
+    "rrf_raw",
+    "dense_raw",
+    "attribute_raw",
+    "profile_match",
+    "quality",
+    "contradictions",
+    "budget_penalty",
+    "novelty_penalty"
+  ],
+  "synthetic_path": "D:\\projects\\tiktok26\\rawmetadata500k-worktree\\techjam-conversational-search\\data\\metadata_derived\\raw_metadata_clothing_500k_sessions_2000.jsonl",
+  "synthetic_sha256": "a3563cb7f78d9b8ea7b4ac41d7219db77c637d3e72b5b8f47b7778cadfeaf35f",
+  "public_sha256": "571359a8a69014c43fc30d39c996c4a28e875dccc249dffc707358757beb16c0",
+  "training_catalog_path": "D:\\projects\\tiktok26\\rawmetadata500k-worktree\\techjam-conversational-search\\data\\metadata_derived\\raw_metadata_new100k_agent_catalog.jsonl",
+  "training_catalog_sha256": "51d12c525b5d90f22709d58d847db65d1f0290a96cc8af3a60329050cb1508e3",
+  "test_catalog_path": "D:\\projects\\tiktok26\\lambdamart-5k-worktree\\techjam-conversational-search\\data\\catalog.jsonl",
+  "feature_source_sha256": "72f4c0845f96dc5b09d8f7b242b3407fc5e7a88b5203bfbd1e11b7e7fd542d0a",
+  "script_sha256": "944a6dfe16fbf9980efe78b18d5a0f4f1dd5e02521fe5774b1e6b9341712ae86",
+  "selection_seed": 20260831,
+  "selection_metric": "validation NDCG@1 first, NDCG@10 second; no official-test model selection",
+  "label_policy": "Known simulator target=1, others=0; weak target labels, NOT graded semantic relevance.",
+  "baseline_collection_policy": "Current PreciseReranker trajectories, all candidate rows, no pre-override target supervision."
+}
