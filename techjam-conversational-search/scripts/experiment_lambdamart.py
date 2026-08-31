@@ -210,10 +210,13 @@ def paired_bootstrap(baseline, candidate, seed):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--synthetic", type=Path, default=ROOT.parent/"synthetic_scenarios_2000.jsonl")
+    parser.add_argument("--catalog", type=Path, default=ROOT/"data/catalog.jsonl",
+                        help="Catalog used by the agent for training, validation, and testing")
     parser.add_argument("--validation-fraction", type=float, default=.2)
     parser.add_argument("--seed", type=int, default=20260830)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    catalog_path = args.catalog.resolve()
     out = args.output
     out.mkdir(parents=True, exist_ok=False)
     synthetic = load_jsonl(args.synthetic)
@@ -233,20 +236,21 @@ def main():
     config = {"offline": True, "llm_calls": 0, "feature_names": list(FEATURE_NAMES),
               "synthetic_path": str(args.synthetic.resolve()), "synthetic_sha256": digest(args.synthetic),
               "public_sha256": digest(ROOT/"data/public_set.jsonl"),
-              "lightgbm": lgb.__version__, "catalog_sha256": digest(ROOT/"data/catalog.jsonl"),
+              "lightgbm": lgb.__version__, "catalog_path": str(catalog_path),
+              "catalog_sha256": digest(catalog_path),
               "feature_source_sha256": digest(ROOT/"src/shopping_agent/ranking/precise_features.py"),
               "script_sha256": digest(Path(__file__)), "selection_seed": args.seed,
               "label_policy": "Known simulator target=1, others=0; weak target labels, NOT graded semantic relevance.",
               "baseline_collection_policy": "Current PreciseReranker trajectories, all candidate rows, no pre-override target supervision."}
     dump(out/"config.json", config)
     print("Building catalog and frozen corpus IDF...", flush=True)
-    catalog = CatalogIndex(ROOT/"data/catalog.jsonl")
+    catalog = CatalogIndex(catalog_path)
     missing = {s["ground_truth"]["parent_asin"] for s in synthetic+public} - set(catalog.products)
     if missing:
         raise ValueError(f"Missing catalog targets: {sorted(missing)}")
     precise = PreciseReranker(catalog_products=catalog.products)
     recorder = Recorder(precise, precise.idf)
-    agent = ShoppingAgent(ROOT/"data/catalog.jsonl", reranker=recorder)
+    agent = ShoppingAgent(catalog_path, reranker=recorder, catalog_index=catalog)
     proxy = AuditedAgent(agent, recorder)
     collection = run_sessions(proxy, recorder, train, catalog.products, "collect training")
     dump(out/"training_collection_sessions.json", collection)

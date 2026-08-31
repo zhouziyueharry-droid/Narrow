@@ -30,11 +30,12 @@ def build_shopping_graph(
     managed_persistence: bool = False,
     semantic_retriever: SemanticRetriever | None = None,
     reranker: CandidateRanker | None = None,
+    catalog_index: CatalogIndex | None = None,
 ):
     """Assemble the real-user shopping graph from replaceable components."""
 
     del model
-    catalog = CatalogIndex(catalog_path)
+    catalog = catalog_index or CatalogIndex(catalog_path)
     attribute_index = AttributeIndex(catalog)
     if semantic_retriever is None:
         dense_backend = os.getenv("SHOPPING_DENSE_BACKEND", "local").strip().casefold()

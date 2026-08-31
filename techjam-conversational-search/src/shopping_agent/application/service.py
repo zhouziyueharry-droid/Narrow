@@ -11,6 +11,7 @@ from shopping_agent.domain.schemas import AgentTurn
 from shopping_agent.observability.tracing import reconstruct_turn_trace
 from shopping_agent.orchestration.graph import build_shopping_graph
 from shopping_agent.ranking.interfaces import CandidateRanker
+from shopping_agent.retrieval.lexical import CatalogIndex
 
 
 class ShoppingAgent:
@@ -23,11 +24,13 @@ class ShoppingAgent:
         model: str | BaseChatModel | None = None,
         graph: Any | None = None,
         reranker: CandidateRanker | None = None,
+        catalog_index: CatalogIndex | None = None,
     ) -> None:
         self.graph = graph or build_shopping_graph(
             model,
             catalog_path,
             reranker=reranker,
+            catalog_index=catalog_index,
         )
         self._profiles: dict[str, dict[str, Any]] = {}
         self._thread_ids: dict[str, str] = {}
