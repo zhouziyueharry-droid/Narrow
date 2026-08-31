@@ -58,9 +58,12 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from evaluator.local_evaluator import catalog_index, load_jsonl  # noqa: E402
 
 # Official scenario_type ratio, from data/public_set.jsonl (80/80/30/10 out of 200).
-OFFICIAL_SCENARIO_RATIO = (
-    ["buying"] * 40 + ["browsing"] * 40 + ["intent_override"] * 15 + ["boundary"] * 5
-)
+OFFICIAL_SCENARIO_WEIGHTS = {
+    "buying": 40,
+    "browsing": 40,
+    "intent_override": 15,
+    "boundary": 5,
+}
 
 
 def _price(product: dict) -> float | None:
@@ -103,6 +106,8 @@ def generate(
     min_rating_number: int,
     price_min: float,
     price_max: float,
+    exclude_official_targets: bool = True,
+    sample_prefix: str = "synth",
 ) -> list[dict]:
     _catalog_ids, _categories, products = catalog_index(catalog_path)
     official = load_jsonl(dataset_path)
@@ -115,18 +120,60 @@ def generate(
         price_min=price_min,
         price_max=price_max,
     )
+    official_targets = {
+        sample["ground_truth"]["parent_asin"]
+        for sample in official
+    }
+    if exclude_official_targets:
+        pool = [asin for asin in pool if asin not in official_targets]
     if not pool:
         raise SystemExit("no products satisfy the filter -- loosen --min-features/--min-rating-number/--price-*")
-    print(f"qualifying pool: {len(pool)} / {len(products)} catalog products", file=sys.stderr)
+    print(
+        f"eligible target pool: {len(pool)} / {len(products)} catalog products "
+        f"(official targets excluded={exclude_official_targets})",
+        file=sys.stderr,
+    )
 
     rng = random.Random(seed)
+    # Cover every eligible target once before repeating any target. This keeps
+    # larger datasets from collapsing onto a small random subset of products.
+    target_schedule = []
+    while len(target_schedule) < count:
+        cycle = list(pool)
+        rng.shuffle(cycle)
+        target_schedule.extend(cycle)
+    target_schedule = target_schedule[:count]
+
+    # Largest-remainder allocation preserves the official distribution for
+    # arbitrary counts and is exact whenever count is divisible by 100.
+    raw_counts = {
+        scenario: count * weight / 100
+        for scenario, weight in OFFICIAL_SCENARIO_WEIGHTS.items()
+    }
+    scenario_counts = {scenario: int(value) for scenario, value in raw_counts.items()}
+    remainder = count - sum(scenario_counts.values())
+    for scenario in sorted(
+        raw_counts,
+        key=lambda item: (-(raw_counts[item] - scenario_counts[item]), item),
+    )[:remainder]:
+        scenario_counts[scenario] += 1
+    scenario_schedule = [
+        scenario
+        for scenario, scenario_count in scenario_counts.items()
+        for _ in range(scenario_count)
+    ]
+    rng.shuffle(scenario_schedule)
+
     samples = []
-    for i in range(1, count + 1):
+    for i, (target, scenario_type) in enumerate(
+        zip(target_schedule, scenario_schedule, strict=True),
+        1,
+    ):
         samples.append({
-            "sample_id": f"synth_{i:04d}",
-            "scenario_type": rng.choice(OFFICIAL_SCENARIO_RATIO),
+            "sample_id": f"{sample_prefix}_{i:05d}",
+            "scenario_type": scenario_type,
             "user_profile": rng.choice(profile_pool),
-            "ground_truth": {"parent_asin": rng.choice(pool)},
+            "ground_truth": {"parent_asin": target},
             "category_bucket": "clothing",
             "difficulty_bucket": "synthetic",
         })
@@ -143,6 +190,12 @@ def main() -> None:
     parser.add_argument("--min-rating-number", type=int, default=1000)
     parser.add_argument("--price-min", type=float, default=5.0)
     parser.add_argument("--price-max", type=float, default=90.0)
+    parser.add_argument("--sample-prefix", default="synth")
+    parser.add_argument(
+        "--allow-official-targets",
+        action="store_true",
+        help="allow targets from the official public set (disabled by default to prevent leakage)",
+    )
     parser.add_argument("--output", default="data/synthetic_scenarios.jsonl")
     args = parser.parse_args()
 
@@ -150,6 +203,8 @@ def main() -> None:
         catalog_path=args.catalog, dataset_path=args.dataset, count=args.count, seed=args.seed,
         min_features=args.min_features, min_rating_number=args.min_rating_number,
         price_min=args.price_min, price_max=args.price_max,
+        exclude_official_targets=not args.allow_official_targets,
+        sample_prefix=args.sample_prefix,
     )
     with open(args.output, "w", encoding="utf-8") as handle:
         for sample in samples:

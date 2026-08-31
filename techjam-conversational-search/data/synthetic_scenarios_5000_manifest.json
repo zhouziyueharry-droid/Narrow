@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "dataset": "synthetic_scenarios_5000.jsonl",
+  "purpose": "LambdaMART reranker training with official public targets excluded",
+  "generated_at": "2026-08-31",
+  "seed": 20260831,
+  "sample_prefix": "synth5k",
+  "sample_count": 5000,
+  "unique_sample_ids": 5000,
+  "unique_target_products": 482,
+  "target_occurrence_min": 10,
+  "target_occurrence_max": 11,
+  "official_target_overlap_rows": 0,
+  "missing_catalog_target_rows": 0,
+  "scenario_distribution": {
+    "buying": 2000,
+    "browsing": 2000,
+    "intent_override": 750,
+    "boundary": 250
+  },
+  "target_filter": {
+    "min_features": 6,
+    "min_rating_number": 1000,
+    "price_min": 5.0,
+    "price_max": 90.0,
+    "official_public_targets_excluded": true,
+    "eligible_target_pool": 482,
+    "selection": "shuffle every eligible target once before starting another cycle"
+  },
+  "files": {
+    "catalog.jsonl": {
+      "rows": 50000,
+      "sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67"
+    },
+    "public_set.jsonl": {
+      "rows": 200,
+      "sha256": "571359a8a69014c43fc30d39c996c4a28e875dccc249dffc707358757beb16c0"
+    },
+    "synthetic_scenarios_5000.jsonl": {
+      "bytes": 2240248,
+      "sha256": "25d8d48411a08dee2f35295498a84e6b5edde1fef116db1e89bfe43a1dfd8973"
+    },
+    "scripts/generate_synthetic_scenarios.py": {
+      "sha256": "ad1a9bf217731cbe1a35bb75b8951fe01d23df3dcfb42522cb246fdaef64d2f5"
+    }
+  }
+}
