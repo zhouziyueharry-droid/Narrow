@@ -1,0 +1,14 @@
+{
+  "training": {
+    "groups": 4604,
+    "rows": 2929038,
+    "groups_with_target": 3213,
+    "sessions_with_groups": 1621
+  },
+  "validation": {
+    "groups": 1105,
+    "rows": 699147,
+    "groups_with_target": 812,
+    "sessions_with_groups": 379
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "exact_matches": 0.15711069396884017,
+  "partial_matches": -10.463821211026566,
+  "category_match": 1.8623655016774403,
+  "term_coverage": 5.258801070896938,
+  "lexical_signal": 1.8654362463356122,
+  "rrf_raw": 246.64107874155883,
+  "dense_raw": -5.092900311251028,
+  "attribute_raw": 0.00431330074387423,
+  "profile_match": 0.6013694531401972,
+  "quality": 19.626814981971766,
+  "contradictions": -1.734893119817084,
+  "budget_penalty": 0.0,
+  "novelty_penalty": -38.033771097698136
+}
