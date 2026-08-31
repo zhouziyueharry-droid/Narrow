@@ -1,3 +1,4 @@
 model.txt -text -diff
 idf.json -text -diff
 metadata.json text eol=lf
+same_data_linear_weights.json -text

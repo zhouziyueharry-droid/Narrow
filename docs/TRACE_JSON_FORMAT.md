@@ -1,6 +1,10 @@
 # 评测与前端共用的 Trace JSON v1
 
-从本次适配开始，`scripts/evaluate_with_traces.py` 与 `scripts/evaluate_parallel_with_traces.py` 在成功结束后，自动在运行目录生成 **`trace.json`**。main 与 yxh_3 worktree 均已接入；排序逻辑、官方评分和原始 JSONL 保持不变。
+[测试与产物入口](TESTING.md) · [前端启动](../demo-frontend/README.md)
+
+本文供修改导出器或查看器时参考。Native 的 `scripts/evaluate_with_traces.py` 与
+`scripts/evaluate_parallel_with_traces.py` 成功结束后，自动在运行目录生成 **`trace.json`**。
+模拟器由工作台接口读取已有结果生成 Trace，不额外写此文件。
 
 ## 后续评测的记录约定
 
@@ -10,13 +14,15 @@
 
 ## 使用
 
-1. 完成评测，在 `evaluation_runs/<输出目录>/<时间戳>/trace.json` 找到文件。
-2. 打开现有 Trace 前端，点击顶部 **选择 Trace JSON**。
+1. 在工作台运行历史打开该次运行的 Trace；或从[产物目录](TESTING.md)找到 Native 的 `trace.json`。
+2. 手动导入时打开 Trace 前端，点击顶部 **选择 Trace JSON**。
 3. 选择文件，即可查看评分、样本、对话、目标在各阶段的排名与节点更新摘要。
 
 文件只在浏览器本地读取，不会上传；无需复制到 `public`、启动模型或重新请求 LLM。前端兼容原有 `diagnostics.json`、BGE 快照诊断文件和 `?data=<public 内文件名>.json` 入口。文件损坏或格式不支持会显示提示，并保留当前已经打开的结果。
 
-现有一键脚本 `scripts/run_test_trace_frontend.ps1` 也会生成 `trace.json`，并复制为前端默认的 `public/diagnostics.json`。不再默认运行基于当前排序代码的离线重放。
+工作台深链使用 `?runId=...&session=...&turn=...` 从本机 API 读取已保存证据；它不重跑检索或排序。
+模拟器缺失官方逐轮门控时不推断精确流失原因。Realistic 使用已接受或最后推荐的商品作观察对象，
+`diagnosticMode=agent` 与 `successRate` 表示需求模式，不能解读为官方隐藏目标的技术分。
 
 ## 旧运行补导出
 

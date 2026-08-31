@@ -69,6 +69,8 @@ class CoarseRankRequest:
     constraints: tuple[Constraint, ...] = ()
     profile: dict[str, Any] = field(default_factory=dict)
     limit: int | None = None
+    route_weights: RouteWeights | None = None
+    fused_limit: int | None = None
 
 
 def infer_retrieval_intent(
@@ -200,7 +202,7 @@ class CoarseRanker:
             constraints=constraints,
             message=request.message,
         )
-        weights = self._weights(intent)
+        weights = request.route_weights or self._weights(intent)
         lexical_query = self._lexical_query(request)
         semantic_query = request.query.strip() or lexical_query
 
@@ -243,11 +245,12 @@ class CoarseRanker:
             constraints=constraints,
             message=request.message,
         )
-        weights = self._weights(intent)
+        weights = request.route_weights or self._weights(intent)
         fused = self._fuse(
             (("lexical", lexical, weights.lexical),
              ("dense", dense, weights.dense),
              ("attribute", attributes, weights.attribute)),
+            limit=request.fused_limit,
         )
         scored = self._apply_constraints_and_boosts(fused, constraints, intent)
         scored.sort(key=self._sort_key)
@@ -285,6 +288,8 @@ class CoarseRanker:
     def _fuse(
         self,
         routes: Iterable[tuple[str, list[dict[str, Any]], float]],
+        *,
+        limit: int | None = None,
     ) -> list[dict[str, Any]]:
         fused: dict[str, dict[str, Any]] = {}
         for route_name, candidates, weight in routes:
@@ -310,7 +315,7 @@ class CoarseRanker:
         return sorted(
             fused.values(),
             key=lambda item: (-float(item["rrf_score"]), -int(item["route_count"])),
-        )[:self.config.fused_limit]
+        )[:limit or self.config.fused_limit]
 
     def _apply_constraints_and_boosts(
         self,

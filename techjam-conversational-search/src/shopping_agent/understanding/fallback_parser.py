@@ -128,6 +128,15 @@ def _negative_phrases(message: str) -> list[str]:
     """Extract bounded exclusions and split compound alternatives."""
 
     cleaned = re.sub(r"\bdon't mind\b[^,.;]*", "", message, flags=re.IGNORECASE)
+    # Catalog care instructions such as "machine wash, no bleach, no dry
+    # clean" describe how to maintain the desired product. They are not user
+    # exclusions and must never become hard negative product constraints.
+    cleaned = re.sub(
+        r"(?:\bcare\s*:\s*)?[^.;]*(?:machine|hand)\s+(?:or\s+hand\s+)?wash[^.;]*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
     cleaned = re.sub(r"\bno closure closure\b", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(
         r"\b(?:those|these|the) options are not quite right\b[^,.;]*",
@@ -240,6 +249,16 @@ def semantic_fallback_patch(
         action = "replace"
         retire_soft = True
 
+    reset_scope = "none"
+    if any(marker in lowered for marker in (
+        "start over", "start from scratch", "forget everything",
+        "ignore everything", "ignore all previous", "clear all requirements",
+    )):
+        reset_scope = "all"
+        retire_soft = False
+    elif retire_soft:
+        reset_scope = "soft"
+
     return validate_state_patch(StatePatch(
         action=action,
         category=category,
@@ -247,6 +266,7 @@ def semantic_fallback_patch(
         remove_fields=rule_patch.remove_fields,
         no_preference=rule_patch.no_preference,
         retire_soft=retire_soft,
+        reset_scope=reset_scope,
         confidence=max(rule_patch.confidence, 0.78 if constraints or category else 0.4),
         parser="fallback",
         fallback_reasons=rule_patch.fallback_reasons,

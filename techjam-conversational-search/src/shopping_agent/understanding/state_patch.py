@@ -17,6 +17,7 @@ class StatePatch(BaseModel):
     remove_fields: list[Attribute] = Field(default_factory=list)
     no_preference: list[Attribute] = Field(default_factory=list)
     retire_soft: bool = False
+    reset_scope: Literal["none", "soft", "all"] = "none"
     semantic_query: str = Field(default="", max_length=500)
     intent_summary: str = Field(default="", max_length=1000)
     language: Literal["zh", "en", "other"] = "en"
@@ -74,7 +75,10 @@ def apply_state_patch(
     active = [Constraint.model_validate(value) for value in active_values]
     superseded: list[Constraint] = []
 
-    if patch.retire_soft:
+    if patch.reset_scope == "all":
+        superseded.extend(active)
+        active = []
+    elif patch.retire_soft or patch.reset_scope == "soft":
         superseded.extend(item for item in active if item.strength == "soft")
         active = [item for item in active if item.strength == "hard"]
 

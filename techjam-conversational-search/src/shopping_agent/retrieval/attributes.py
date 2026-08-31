@@ -25,6 +25,54 @@ STYLES = {
     "vintage": {"vintage", "retro", "classic"},
 }
 
+# Controlled, human-readable facets mined from otherwise unstructured catalog
+# text. They deliberately map to the competition's generic ``feature`` field:
+# the source catalog does not expose closure, pattern, occasion, fit and product
+# properties as stable first-class columns.
+FEATURES = {
+    "pull on": {"pull on", "pull-on"},
+    "zip": {"zip", "zipper", "zippered"},
+    "button": {"button", "buttoned"},
+    "lace up": {"lace up", "lace-up", "lacing"},
+    "buckle": {"buckle", "buckled"},
+    "hook and loop": {"hook and loop", "hook-and-loop", "velcro"},
+    "slip on": {"slip on", "slip-on"},
+    "floral": {"floral", "flower print"},
+    "striped": {"striped", "stripe"},
+    "plaid": {"plaid", "tartan"},
+    "graphic": {"graphic", "graphic print"},
+    "solid": {"solid", "solid color"},
+    "animal print": {"animal print", "leopard print", "zebra print"},
+    "waterproof": {"waterproof", "water resistant", "water-resistant"},
+    "breathable": {"breathable", "ventilated"},
+    "lightweight": {"lightweight", "light weight"},
+    "stretch": {"stretch", "stretchy", "elastic"},
+    "thermal": {"thermal", "insulated"},
+    "slim fit": {"slim fit", "fitted"},
+    "relaxed fit": {"relaxed fit", "loose fit", "oversized"},
+    "party": {"party", "cocktail"},
+    "wedding": {"wedding", "bridal"},
+    "holiday": {"christmas", "holiday", "halloween"},
+}
+
+SIZE_ALIASES = {
+    "small": {"small", " size s "},
+    "medium": {"medium", " size m "},
+    "large": {"large", " size l "},
+    "x-large": {"x-large", "x large", "xl"},
+    "plus size": {"plus size", "plus-size"},
+    "wide": {"wide width", "wide fit"},
+}
+
+
+def _phrase_values(corpus: str, vocabulary: dict[str, set[str]]) -> set[str]:
+    padded = f" {corpus} "
+    return {
+        normalized
+        for normalized, variants in vocabulary.items()
+        if any(f" {variant} " in padded for variant in variants)
+    }
+
 
 class AttributeIndex:
     """Structured apparel attribute index for retrieval and question entropy."""
@@ -63,6 +111,8 @@ class AttributeIndex:
             "color": {item for item in COLORS if item in words},
             "use_case": {name for name, vocabulary in USE_CASES.items() if words & vocabulary},
             "style": {name for name, vocabulary in STYLES.items() if words & vocabulary},
+            "feature": _phrase_values(corpus, FEATURES),
+            "size": _phrase_values(corpus, SIZE_ALIASES),
         }
         store = str(product.get("store") or "").strip().casefold()
         if store:
@@ -106,11 +156,11 @@ class AttributeIndex:
                     if normalized in value or value in normalized:
                         for parent_asin in parent_asins:
                             scores[parent_asin] += 2.0
-            elif constraint.field in {"style", "use_case", "brand"}:
+            elif constraint.field in {"style", "use_case", "brand", "size", "feature"}:
                 for normalized, parent_asins in self.postings[constraint.field].items():
                     if normalized in value or value in normalized:
                         for parent_asin in parent_asins:
-                            scores[parent_asin] += 1.5
+                            scores[parent_asin] += 1.8 if constraint.field == "feature" else 1.5
 
         best = heapq.nlargest(
             limit,

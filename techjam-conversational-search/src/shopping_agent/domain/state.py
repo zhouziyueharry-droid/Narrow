@@ -24,11 +24,14 @@ class ShoppingState(TypedDict, total=False):
     semantic_fallback_reasons: list[str]
     semantic_usage: dict[str, int]
     semantic_query: str
+    model_semantic_query: str
     intent_summary: str
     user_language: str
     lexical_query: str
     search_query: str
     retrieval_intent: str
+    retrieval_plan: dict[str, Any]
+    retrieval_diagnostics: dict[str, Any]
     lexical_candidates: list[dict[str, Any]]
     dense_candidates: list[dict[str, Any]]
     attribute_candidates: list[dict[str, Any]]

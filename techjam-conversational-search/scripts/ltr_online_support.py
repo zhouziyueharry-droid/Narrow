@@ -32,7 +32,10 @@ class OnlineAudit:
         self.tree = LambdaMARTReranker(self.model_dir)
         self.precise = PreciseReranker()
         self.precise.idf = self.tree.idf
-        weights = json.loads((self.model_dir.parent/"same_data_linear_weights.json").read_text(encoding="utf-8"))
+        self.linear_weights_path = self.model_dir/"same_data_linear_weights.json"
+        if not self.linear_weights_path.exists():
+            self.linear_weights_path = self.model_dir.parent/"same_data_linear_weights.json"
+        weights = json.loads(self.linear_weights_path.read_text(encoding="utf-8"))
         self.linear = PreciseReranker(weights=weights)
         self.linear.idf = self.tree.idf
         self.inner = {"precise": self.precise, "linear_same_data": self.linear, "lambdamart": self.tree}[mode]
@@ -43,7 +46,7 @@ class OnlineAudit:
                 "model_sha256": sha256(self.model_dir/"model.txt"),
                 "metadata_sha256": sha256(self.model_dir/"metadata.json"),
                 "idf_sha256": sha256(self.model_dir/"idf.json"),
-                "linear_weights_sha256": sha256(self.model_dir.parent/"same_data_linear_weights.json"),
+                "linear_weights_sha256": sha256(self.linear_weights_path),
                 "feature_names": list(FEATURE_NAMES), "candidate_capture": "full",
                 "llm_capture": "SDK request and response; authentication excluded",
                 "sdk_internal_retry_detail": "SDK-internal HTTP retries are not separate events",

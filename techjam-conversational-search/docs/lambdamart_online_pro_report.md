@@ -1,5 +1,7 @@
 # LambdaMART + DeepSeek Pro 在线评测
 
+[测试与产物入口](../../docs/TESTING.md) · [完整归档](../evaluation_runs/lambdamart_online_pro_200/lambdamart/20260830_211751_+0800/README.md)
+
 本次有效结果只包含新的 LambdaMART + deepseek-v4-pro，完整运行官方200条。原精排直接引用已有历史结果，没有把已取消的重复运行计入比较。
 
 | 指标 | 历史原精排 Pro | 本次 LambdaMART Pro |
@@ -35,8 +37,9 @@
 
 ## 文件位置
 
-完整运行目录：
-C:\Users\Harry\Desktop\tiktok_project_4-lambdamart\techjam-conversational-search\evaluation_runs\lambdamart_online_pro_200\lambdamart\20260830_211751_+0800
+完整运行目录（相对于 `techjam-conversational-search/`）：
+`evaluation_runs/lambdamart_online_pro_200/lambdamart/20260830_211751_+0800/`。
+下面三份大日志以 `.jsonl.gz` 无损压缩保存，表中的大小为解压后大小。
 
 | 文件 | 内容 | MiB |
 |---|---|---:|
@@ -48,19 +51,20 @@ C:\Users\Harry\Desktop\tiktok_project_4-lambdamart\techjam-conversational-search
 | trace.json | 现有trace查看器使用的便携摘要 | 4.35 |
 | trace_audit.json | 完整性核查结果 | 0.00 |
 
-trace.json用于查看，完整候选/LLM请求应以JSONL为准。报告同级的evaluation_runs/lambdamart_online_pro_200/result.json保存本次结果与历史参考出处。
+trace.json用于查看，完整候选/LLM请求应以JSONL为准。
+`evaluation_runs/lambdamart_online_pro_200/result.json` 保存本次结果与历史参考出处。
 
 ## 执行纠正记录
 
-执行过程中误启动了Flash，随后又重复启动了已有的原精排Pro。用户纠正后均已停止，现有trace保留并标记CANCELLED.json；它们不参与本次结果。线性对照没有启动。
+执行过程中误启动了Flash，随后又重复启动了已有的原精排Pro。用户纠正后均已停止，原工作区的 trace 当时标记为 CANCELLED；它们不参与本次结果，也不在 final 的保留归档内。线性对照没有启动。
 
 - 已取消Flash：53条完成会话，已返回日志记录324,440 tokens。
 - 已取消重复原精排Pro：121条完成会话，已返回日志记录838,286 tokens。
 - 在途请求取消时可能尚未返回用量，以上取消用量不是精确账单。
 - 多余的experiment_lambdamart_online.py入口已删除，后续直接使用原有并行脚本。
 
-历史参考目录：
-C:\Users\Harry\Desktop\tiktok_project_4\techjam-conversational-search\evaluation_runs\main_full_trace_pro_200\20260830_154054_+0800
+历史原精排参考的运行 ID 为 `main_full_trace_pro_200/20260830_154054_+0800`；
+这里只保留比较出处，不再将已清理的旧目录写作可用入口。
 
 
 ## 仓库归档

@@ -112,13 +112,24 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const requested = params.get('data');
     const filename = requested && /^[a-zA-Z0-9][\w.-]*\.json$/.test(requested) ? requested : 'diagnostics.json';
-    fetch(`/${filename}`, { cache: 'no-store', signal: controller.signal })
+    const runId = params.get('runId');
+    const endpoint = runId
+      ? `http://127.0.0.1:8000/api/evaluations/${encodeURIComponent(runId)}/diagnostics`
+      : `/${filename}`;
+    fetch(endpoint, { cache: 'no-store', signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`无法加载 ${filename}，可以直接选择本地 trace.json。`);
         return response.text();
       })
       .then((source) => {
-        if (id === requestId.current) installData(parseTrace(source), filename, params.get('sample'));
+        if (id === requestId.current) {
+          const payload = parseTrace(source);
+          const sample = params.get('session') ?? params.get('sample');
+          installData(payload, runId ?? filename, sample);
+          const selected = payload.sessions.find(item => item.sampleId === sample);
+          const requestedTurn = Number(params.get('turn'));
+          if (selected?.turns.some(item => item.turn === requestedTurn)) setTurnNumber(requestedTurn);
+        }
       })
       .catch((reason: Error) => {
         if (id === requestId.current && reason.name !== 'AbortError') setError(reason.message);
@@ -219,10 +230,11 @@ export default function Home() {
           <span className="brand-mark"><GitBranch /></span>
           <div>
             <p className="eyebrow">RANKING TRACE LAB</p>
-            <h1>标准答案流失诊断</h1>
+            <h1>{data.diagnosticMode === 'agent' ? 'Agent 路径诊断（保存的快照）' : '标准答案流失诊断'}</h1>
           </div>
         </div>
         <div className="run-meta">
+          <a href="http://127.0.0.1:5173/runs">返回 Shopping Copilot</a>
           <span>{data.run.model}</span>
           {data.run.reranker && <span>{data.run.reranker.mode}</span>}
           <span>{data.run.workers} workers</span>
@@ -230,9 +242,9 @@ export default function Home() {
         </div>
         <div className="metric-strip">
           <div><span>{data.run.partial ? '已完成 / 计划' : '样本'}</span><strong>{data.run.sampleCount}{data.run.partial && ` / ${data.run.expectedSampleCount}`}</strong></div>
-          <div><span>{data.run.partial ? '部分 Hit@10' : 'Hit@10'}</span><strong>{(data.run.hitRate * 100).toFixed(1)}%</strong></div>
+          <div><span>{data.diagnosticMode === 'agent' ? '成功率' : data.run.partial ? '部分 Hit@10' : 'Hit@10'}</span><strong>{(data.run.hitRate * 100).toFixed(1)}%</strong></div>
           <div><span>MRR</span><strong>{data.run.mrr.toFixed(3)}</strong></div>
-          <div><span>{data.run.partial ? '部分技术分' : '技术分'}</span><strong>{data.run.technicalScore.toFixed(3)}</strong></div>
+          <div><span>{data.run.partial ? '部分技术分' : '技术分'}</span><strong>{data.diagnosticMode === 'agent' ? '不适用' : data.run.technicalScore.toFixed(3)}</strong></div>
         </div>
       </header>
 

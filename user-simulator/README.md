@@ -1,210 +1,58 @@
-# Conversational Shopping User Simulator
+# 用户模拟器
 
-A reproducible shopping-user simulator for conversational shopping agents.
+日常评测使用工作台；[启动](../demo-frontend/README.md)和[测试与产物](../docs/TESTING.md)是统一操作入口。
+本页只说明模拟器职责及直接调用方式。
 
-The core design separates **behavior** from **language generation**:
+## 两种协议
 
-```text
-User goal + persona + policy -> structured dialogue act -> verbalizer -> natural user utterance
-```
+用户目标、画像和策略先产生结构化对话动作，再由模板或可选 LLM 转成自然语言。
+LLM 只负责用户措辞，不决定目标、状态切换、接受、意图覆盖或约束放宽。
 
-The LLM is used only as an optional verbalizer. It does not decide goals, state transitions, acceptance, overrides, or constraint relaxation.
+| 模式 | 场景来源 | 成功标准 |
+|---|---|---|
+| `techjam` | 官方场景与用户画像 | 指定 `parent_asin`，含意图覆盖门控；官方式 Hit@10、MRR、MTTC 和技术分 |
+| `realistic` | 从 catalog 确定性生成需求目标 | 硬约束及配置的软约束匹配，报告需求满足成功率 |
 
-## v0.3 features
+TechJam 固定使用模板措辞。Realistic 可选 DeepSeek 措辞，调用失败回退模板并计数；
+这与 Agent 在线理解失败不回退本地规则是两个不同边界。
+隐藏目标、需求卡和未披露约束始终留在模拟器；两种模式的指标分别报告，不混合计分。
 
-- `TargetProductGoal` and `NeedBasedGoal`
-- Persona templates
-- Deterministic user policy with seeded randomness
-- Structured dialogue acts
-- Template verbalizer for reproducible benchmarks
-- OpenAI-compatible verbalizer with template fallback
-- Python agent adapter compatible with the TechJam `reset/respond` contract
-- TechJam catalog/session adapter
-- Amazon Reviews 2023 metadata adapter
-- Amazon Shopping Queries / ESCI adapter
-- Exact-target and need-based acceptance checkers
-- Scheduled and persona-driven override
-- Constraint relaxation primitives
-- CLI and pytest test suite
-- One-command `techjam` and `realistic` presets
-- TechJam scenario/profile preservation and official-style scoring
-- Catalog-only realistic need-goal generation with no additional dataset required
-- Unified evaluation reports with `evaluation`, `turn_metrics`, `latency`,
-  `model_usage`, and `mode_specific_metrics` sections
+## 开发者直接调用
 
-Full specification: [`docs/TECHNICAL_SPEC_v0.1.md`](docs/TECHNICAL_SPEC_v0.1.md)
-
-## Shared uv environment
-
-The repository keeps the Agent environment as the single working environment.
-From the repository root, uv installs this simulator as an editable package into
-that environment. It therefore does not create a second `user-simulator/.venv`:
+复用 Agent 的环境，不另建 `user-simulator/.venv`。先按统一测试入口安装依赖，再从仓库根目录执行：
 
 ```powershell
-uv run --project techjam-conversational-search `
-  --with-editable user-simulator --group dev `
-  pytest user-simulator/tests -q
+uv run --project techjam-conversational-search --extra web --extra ltr --extra deepseek `
+  --with-editable user-simulator --group dev --cache-dir .uv-cache `
+  python -m user_simulator.cli run --preset techjam `
+  --catalog-path techjam-conversational-search/data/catalog.jsonl `
+  --sessions-path techjam-conversational-search/data/public_set.jsonl `
+  --agent-class shopping_agent.agent:ShoppingAgent --limit 10 `
+  --output integration_runs/manual-techjam/result.json `
+  --report-output integration_runs/manual-techjam/report.md
 ```
 
-uv also reuses its global package cache, so recreating an environment normally
-does not download unchanged packages again.
+换成 `--preset realistic` 使用需求模式；同样显式指定另一个输出目录。
+上述直接调用使用 Agent 默认精排，工作台选择的 LambdaMART 设置不会影响独立 CLI。
+工作台还会传入 `--session-output` 和 `--event-output` 保存流式记录，并用适配层选择精排。
+可编辑配置在 [`configs/techjam_benchmark.yaml`](configs/techjam_benchmark.yaml) 和 [`configs/realistic.yaml`](configs/realistic.yaml)。
 
-## Dual-mode operation
+独立 CLI 未传路径时默认寻找 `data/raw/techjam/`；这不是 final 的商品目录位置，所以示例显式传路径。
+不传 `--output` 时写 `runs/techjam.json` 或 `runs/realistic.json`，日常应使用上面的明确输出目录。
 
-The same Agent can be evaluated under two isolated protocols:
+## 报告结构
 
-| Preset | Sessions | User policy | Acceptance | Metrics |
-|---|---|---|---|---|
-| `techjam` | Official public/private session records | Buying, Browsing, Intent Override, Boundary | Exact `parent_asin`, with override gating | Hit Rate@10, MRR, MTTC, Efficiency, technical score, per-scenario metrics |
-| `realistic` | Deterministic goals generated from catalog metadata | Persona-driven disclosure, clarification, and override | All hard constraints plus configured soft matches | Need-based success, MRR, turns, hard/soft satisfaction |
+`result.json` 的顶层为 `schema_version`、`mode`、`evaluation`、`turn_metrics`、`latency`、
+`model_usage`、`mode_specific_metrics`、`sessions`。
+MTTC 未命中按第 11 轮计分，但 `turn_metrics` 单独记录实际执行轮数。
+未报告的调用数和未知价格保持 `null`，不会补造费用。`--report-output` 输出对应 Markdown 报告。
 
-Switch modes with one flag. Both presets use the same catalog by default, so
-realistic mode does not require an extra dataset:
+## 为什么还保留两份历史基线
 
-```bash
-user-simulator run --preset techjam
-user-simulator run --preset realistic
-```
+[`baseline-techjam-200.md`](docs/results/baseline-techjam-200.md) 和
+[`baseline-realistic-100.md`](docs/results/baseline-realistic-100.md) 是历史汇总参考，**不是最新运行，也不需要重新执行**。
+[`analyze_evaluation_results.py`](../scripts/analyze_evaluation_results.py) 会实际读取这两个文件并记录 SHA256，
+供高级集成审计比较，所以保留原文与原路径；不保留另一套完整历史日志。
 
-Without `--output`, results are kept separately as `runs/techjam.json` and
-`runs/realistic.json`.
-
-The built-in paths are `data/raw/techjam/catalog.jsonl` and
-`data/raw/techjam/public_set.jsonl`. They can be overridden without editing a
-configuration file:
-
-```bash
-user-simulator run \
-  --preset techjam \
-  --catalog-path /path/to/catalog.jsonl \
-  --sessions-path /path/to/public_set.jsonl \
-  --agent-class shopping_agent.agent:ShoppingAgent \
-  --output runs/techjam.json \
-  --report-output runs/techjam.md
-
-user-simulator run \
-  --preset realistic \
-  --catalog-path /path/to/catalog.jsonl \
-  --agent-class shopping_agent.agent:ShoppingAgent \
-  --output runs/realistic.json \
-  --report-output runs/realistic.md
-```
-
-Equivalent editable YAML configurations are provided in
-`configs/techjam_benchmark.yaml` and `configs/realistic.yaml`.
-
-### Optional DeepSeek verbalizer
-
-TechJam mode always keeps deterministic user wording. Realistic mode can use
-DeepSeek only for surface-language generation while the structured goal,
-dialogue act, state transition, and acceptance decision remain deterministic:
-
-```powershell
-$env:DEEPSEEK_API_KEY = "<set locally; do not commit>"
-$env:DEEPSEEK_BASE_URL = "https://api.deepseek.com"
-$env:DEEPSEEK_MODEL = "deepseek-v4-flash"
-
-user-simulator run --preset realistic --verbalizer deepseek --limit 1
-```
-
-The DeepSeek adapter uses `/chat/completions`, disables thinking for this short
-wording task, caps output at 120 tokens, records token usage and fallback counts,
-and falls back to the deterministic template on provider errors. The same values
-may be supplied through the generic `LLM_API_KEY`, `LLM_BASE_URL`, and
-`LLM_MODEL` aliases.
-
-TechJam hidden targets, intent cards, and undisclosed constraints remain inside
-the simulator. Only the allowed aggregate profile, visible user utterance, turn,
-and `top_k` are passed to the Agent. Results from the two protocols are labeled
-with their mode and are never aggregated together.
-
-## TechJam data setup
-
-Place the TechJam participant data locally:
-
-```text
-data/raw/techjam/catalog.jsonl
-data/raw/techjam/public_set.jsonl
-```
-
-The large/raw datasets are intentionally excluded from Git.
-
-If the shopping Agent package is importable as
-`shopping_agent.agent:ShoppingAgent`:
-
-```bash
-user-simulator validate --preset techjam
-user-simulator run --preset techjam --limit 10
-```
-
-## Library example
-
-```python
-from user_simulator import (
-    Constraint,
-    Product,
-    PythonAgentAdapter,
-    ScenarioSpec,
-    Simulator,
-    TargetProductGoal,
-)
-
-catalog = {
-    "A": Product("A", "Black Running Shoe", attributes={"color": ["black"]})
-}
-
-goal = TargetProductGoal(
-    goal_id="example",
-    target_product_id="A",
-    category="running shoes",
-    constraints=[Constraint("color", ["black"], "soft")],
-)
-
-scenario = ScenarioSpec(
-    scenario_id="example",
-    goal=goal,
-    persona_template="decisive_buyer",
-    seed=42,
-)
-
-simulator = Simulator(catalog, PythonAgentAdapter(my_agent))
-result = simulator.run_scenario(scenario)
-```
-
-## Data policy
-
-Adapters expect locally downloaded/prepared source files. Large Amazon/TechJam raw data is not committed to this repository. See the technical specification for dataset responsibilities and semantics.
-
-## Unified report schema
-
-Every aggregate JSON output uses the same top-level structure:
-
-```text
-schema_version
-mode
-evaluation
-turn_metrics
-latency
-model_usage
-mode_specific_metrics
-sessions
-```
-
-`evaluation` contains the applicable headline metrics. In TechJam mode these
-are the official Hit Rate@10, MRR, MTTC, Efficiency, and recommended technical
-score. `turn_metrics` separates actual executed turns from MTTC's official
-miss-at-turn-11 convention. `latency` reports Agent, user-generation, and
-session-wall distributions. `model_usage` records provider/model status,
-reported tokens, API-call availability, fallbacks/errors, and cost status.
-Unknown prices or unreported API calls remain explicit `null` values rather
-than estimates. Mode-only metrics live under `mode_specific_metrics`.
-
-Pass `--report-output` to create a Markdown report with the same five sections.
-
-## Current implementation status
-
-v0.3 implements the dual-mode runtime, deterministic TechJam compatibility
-policy, official-style TechJam metrics, catalog-only realistic scenario builder,
-mode-specific results, CLI presets, and regression tests. Richer realistic goal
-calibration, separate private/public trace files, and optional external-dataset
-preparation remain follow-up work.
+早期 `TECHNICAL_SPEC_v0.1.md` 草案已移除，当前行为以本页、代码及测试为准。
+原始 Amazon/TechJam 大数据不提交，数据责任见 [DATA_ATTRIBUTION.md](../techjam-conversational-search/DATA_ATTRIBUTION.md)。

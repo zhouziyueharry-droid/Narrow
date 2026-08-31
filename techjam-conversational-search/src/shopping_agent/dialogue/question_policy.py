@@ -5,7 +5,10 @@ from collections import Counter
 from typing import Iterable
 
 
-QUESTION_ATTRIBUTES = ("category", "material", "color", "style", "brand", "budget", "use_case")
+QUESTION_ATTRIBUTES = (
+    "category", "material", "color", "feature", "style", "size",
+    "brand", "budget", "use_case",
+)
 
 
 def _entropy(values: Iterable[str]) -> float:

@@ -54,7 +54,7 @@ coarse candidate rank against the exact target ASIN without invoking an LLM:
 
 ```bash
 uv run python scripts/evaluate_coarse_ranker.py \
-  --turns evaluation_runs/parallel_pro_200/20260829_192723_+0800/turns.jsonl \
+  --turns evaluation_runs/lambdamart_online_pro_200/lambdamart/20260830_211751_+0800/turns.jsonl \
   --backend local \
   --output evaluation_runs/coarse_local.json
 ```
@@ -63,7 +63,7 @@ For BGE + FAISS:
 
 ```bash
 uv run --extra retrieval python scripts/evaluate_coarse_ranker.py \
-  --turns evaluation_runs/parallel_pro_200/20260829_192723_+0800/turns.jsonl \
+  --turns evaluation_runs/lambdamart_online_pro_200/lambdamart/20260830_211751_+0800/turns.jsonl \
   --backend sentence-transformer \
   --output evaluation_runs/coarse_bge_small.json
 ```
@@ -74,6 +74,10 @@ Recall@50/100 is the primary coarse-ranking metric; official Hit@10 and MRR are
 still determined by the downstream precise ranker and final recommendations.
 
 ## Measured public-trace results
+
+The figures below describe historical traces retained in Git history at `0635afa`.
+The commands above now use the retained LambdaMART Pro trace and will not reproduce
+these historical scores.
 
 First-turn requests from the existing 200-session traced evaluator run were
 replayed without calling an LLM. Exact target ASIN rank was measured inside the
@@ -107,8 +111,9 @@ It executed 893 conversational turns with zero runtime errors.
 | Mean turn latency | 108 ms |
 | P95 turn latency | 305 ms |
 
-Artifacts are stored under
-`evaluation_runs/integrated_bge_200/20260829_223143_+0800/`. These numbers do
+The historical run was
+`evaluation_runs/integrated_bge_200/20260829_223143_+0800/`; its artifacts have
+been removed from final and can be consulted in Git history at `0635afa`. These numbers do
 not include LLM calls; they isolate the integrated retrieval/ranking/dialogue
 code path and should not be compared as a controlled before/after result to an
 LLM-enabled run.

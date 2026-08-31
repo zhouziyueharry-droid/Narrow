@@ -1,9 +1,34 @@
 import json
 import threading
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 
 import pytest
+
+
+@pytest.mark.parametrize("layout", ["bundle", "training_output"])
+def test_online_audit_loads_control_weights_without_old_evaluation_runs(tmp_path, layout):
+    pytest.importorskip("lightgbm")
+    from scripts.ltr_online_support import OnlineAudit, sha256
+
+    bundle = Path(__file__).resolve().parents[2]/"models/lambdamart_synthetic_2000"
+    model_dir = tmp_path/"model"
+    model_dir.mkdir()
+    for name in ("model.txt", "metadata.json", "idf.json"):
+        (model_dir/name).write_bytes((bundle/name).read_bytes())
+    weights_path = (model_dir if layout == "bundle" else tmp_path)/"same_data_linear_weights.json"
+    weights_path.write_bytes((bundle/"same_data_linear_weights.json").read_bytes())
+    audit = OnlineAudit(tmp_path, model_dir, "lambdamart")
+    try:
+        assert audit.config()["linear_weights_sha256"] == sha256(weights_path)
+        ranked = audit.rank([{"parent_asin": "A", "title": "black shoes", "rrf_score": .04}],
+                            query="black shoes", category="shoes", constraints=[])
+        assert [item["parent_asin"] for item in ranked] == ["A"]
+        record = json.loads((tmp_path/"rank_calls.jsonl").read_text(encoding="utf-8"))
+        assert set(record["counterfactual_scores"]) == {"precise", "linear_same_data", "lambdamart"}
+    finally:
+        audit.close()
 
 
 def capture(tmp_path):

@@ -5,6 +5,7 @@ from typing import Any
 
 from shopping_agent.dialogue.decision import decide_dialogue
 from shopping_agent.dialogue.response_builder import build_agent_response
+from shopping_agent.domain.product_text import _terms
 from shopping_agent.domain.schemas import Constraint
 from shopping_agent.domain.state import ShoppingState
 from shopping_agent.ranking.interfaces import CandidateRanker
@@ -12,8 +13,10 @@ from shopping_agent.retrieval.attributes import AttributeIndex
 from shopping_agent.retrieval.coarse import (
     CoarseRankRequest,
     CoarseRanker,
+    RouteWeights,
     infer_retrieval_intent,
 )
+from shopping_agent.retrieval.policy import plan_retrieval as build_retrieval_plan
 from shopping_agent.retrieval.interfaces import SemanticRetriever
 from shopping_agent.retrieval.lexical import CatalogIndex
 from shopping_agent.understanding.interpreter import (
@@ -38,6 +41,66 @@ def _constraint_text(constraint: Constraint) -> str:
 
 def _constraints(values: list[dict[str, Any]]) -> list[Constraint]:
     return [Constraint.model_validate(value) for value in values]
+
+
+def _canonical_semantic_query(
+    model_query: str,
+    category: str,
+    constraints: list[Constraint],
+) -> str:
+    """Preserve fluent model wording while guaranteeing complete active state."""
+
+    parts = [model_query.strip()]
+    current_terms = set(_terms(model_query.casefold()))
+    required = [category]
+    required.extend(
+        _constraint_text(item)
+        for item in constraints
+        if item.operator != "not_contains"
+    )
+    for value in required:
+        cleaned = str(value).strip()
+        value_terms = set(_terms(cleaned.casefold()))
+        if cleaned and (not value_terms or not value_terms.issubset(current_terms)):
+            parts.append(cleaned)
+            current_terms.update(value_terms)
+    return " ".join(dict.fromkeys(part for part in parts if part)).strip()[:500]
+
+
+def _retrieval_diagnostics(
+    lexical: list[dict[str, Any]],
+    dense: list[dict[str, Any]],
+    attributes: list[dict[str, Any]],
+    fused: list[dict[str, Any]],
+) -> dict[str, Any]:
+    route_sets = {
+        "lexical": {str(item["parent_asin"]) for item in lexical},
+        "dense": {str(item["parent_asin"]) for item in dense},
+        "attribute": {str(item["parent_asin"]) for item in attributes},
+    }
+    union = set().union(*route_sets.values())
+    membership: dict[str, int] = {}
+    for values in route_sets.values():
+        for parent_asin in values:
+            membership[parent_asin] = membership.get(parent_asin, 0) + 1
+    pairs: dict[str, float] = {}
+    names = list(route_sets)
+    for index, left in enumerate(names):
+        for right in names[index + 1:]:
+            combined = route_sets[left] | route_sets[right]
+            pairs[f"{left}:{right}"] = round(
+                len(route_sets[left] & route_sets[right]) / max(len(combined), 1), 4,
+            )
+    return {
+        "route_counts": {name: len(values) for name, values in route_sets.items()},
+        "route_union_count": len(union),
+        "multi_route_count": sum(count >= 2 for count in membership.values()),
+        "agreement_rate": round(
+            sum(count >= 2 for count in membership.values()) / max(len(union), 1), 4,
+        ),
+        "pairwise_jaccard": pairs,
+        "fused_count": len(fused),
+    }
 
 
 @dataclass
@@ -85,14 +148,22 @@ class ShoppingGraphNodes:
             patch,
         )
         no_preference = set(state.get("no_preference", []))
+        if patch.reset_scope == "all":
+            no_preference.clear()
         no_preference.update(patch.no_preference)
         newly_specified = {item.field for item in patch.constraints}
         if patch.category:
             newly_specified.add("category")
         no_preference.difference_update(newly_specified)
-        resolved_category = patch.category or state.get("category", "")
+        resolved_category = patch.category or (
+            "" if patch.reset_scope == "all" else state.get("category", "")
+        )
         if patch.parser == "deepseek":
-            semantic_query = patch.semantic_query
+            semantic_query = _canonical_semantic_query(
+                patch.semantic_query,
+                resolved_category,
+                active,
+            )
         else:
             fallback_parts = [resolved_category]
             fallback_parts.extend(
@@ -130,6 +201,7 @@ class ShoppingGraphNodes:
             "no_preference": sorted(no_preference),
             "intent_changed": patch.action == "replace",
             "semantic_query": semantic_query,
+            "model_semantic_query": patch.semantic_query,
             "intent_summary": patch.intent_summary
             or semantic_query
             or state.get("intent_summary", ""),
@@ -137,11 +209,11 @@ class ShoppingGraphNodes:
             "retrieval_attempt": 0,
             "constraints_relaxed": False,
             "pending_question": remaining_pending,
-            "question_history": [] if category_changed else question_history,
+            "question_history": [] if category_changed or patch.reset_scope == "all" else question_history,
         }
-        if patch.action == "replace":
+        if patch.action == "replace" or patch.reset_scope == "all":
             update["recommended_asins"] = []
-        if category_changed:
+        if category_changed or patch.reset_scope == "all":
             update["asked_attributes"] = []
         return update
 
@@ -170,33 +242,55 @@ class ShoppingGraphNodes:
             "retrieval_intent": retrieval_intent,
         }
 
+    def plan_retrieval(self, state: ShoppingState) -> dict[str, Any]:
+        plan = build_retrieval_plan(
+            intent=state.get("retrieval_intent", "unknown"),
+            category=state.get("category", ""),
+            constraints=_constraints(state.get("active_constraints", [])),
+            query=state.get("semantic_query", "") or state.get("search_query", ""),
+        )
+        return {"retrieval_plan": plan.to_dict()}
+
     def lexical_retrieve(self, state: ShoppingState) -> dict[str, Any]:
+        plan = state.get("retrieval_plan", {})
         return {
             "lexical_candidates": self.catalog.search(
                 state.get("lexical_query", ""),
                 constraints=[],
-                limit=self.coarse_ranker.config.lexical_limit,
+                limit=int(plan.get("lexical_limit", self.coarse_ranker.config.lexical_limit)),
             )
         }
 
     def dense_retrieve(self, state: ShoppingState) -> dict[str, Any]:
+        plan = state.get("retrieval_plan", {})
         return {
             "dense_candidates": self.semantic_retriever.search(
                 state.get("semantic_query", "") or state.get("search_query", ""),
-                limit=self.coarse_ranker.config.dense_limit,
+                limit=int(plan.get("dense_limit", self.coarse_ranker.config.dense_limit)),
             )
         }
 
     def attribute_retrieve(self, state: ShoppingState) -> dict[str, Any]:
+        plan = state.get("retrieval_plan", {})
         return {
             "attribute_candidates": self.attribute_index.search(
                 state.get("category", ""),
                 _constraints(state.get("active_constraints", [])),
-                limit=self.coarse_ranker.config.attribute_limit,
+                limit=int(plan.get("attribute_limit", self.coarse_ranker.config.attribute_limit)),
             )
         }
 
     def fuse_candidates(self, state: ShoppingState) -> dict[str, Any]:
+        plan = state.get("retrieval_plan", {})
+        raw_weights = plan.get("route_weights", {})
+        route_weights = RouteWeights(
+            lexical=float(raw_weights.get("lexical", 0.8)),
+            dense=float(raw_weights.get("dense", 0.75)),
+            attribute=float(raw_weights.get("attribute", 0.55)),
+        )
+        lexical = list(state.get("lexical_candidates", []))
+        dense = list(state.get("dense_candidates", []))
+        attributes = list(state.get("attribute_candidates", []))
         fused = self.coarse_ranker.rank_from_routes(
             CoarseRankRequest(
                 query=state.get("semantic_query", "") or state.get("search_query", ""),
@@ -205,13 +299,20 @@ class ShoppingGraphNodes:
                 intent=state.get("retrieval_intent", "unknown"),
                 constraints=tuple(_constraints(state.get("active_constraints", []))),
                 profile=state.get("user_profile", {}),
-                limit=self.coarse_ranker.config.fused_limit,
+                limit=int(plan.get("fused_limit", self.coarse_ranker.config.fused_limit)),
+                route_weights=route_weights,
+                fused_limit=int(plan.get("fused_limit", self.coarse_ranker.config.fused_limit)),
             ),
-            lexical=list(state.get("lexical_candidates", [])),
-            dense=list(state.get("dense_candidates", [])),
-            attributes=list(state.get("attribute_candidates", [])),
+            lexical=lexical,
+            dense=dense,
+            attributes=attributes,
         )
-        return {"fused_candidates": fused}
+        return {
+            "fused_candidates": fused,
+            "retrieval_diagnostics": _retrieval_diagnostics(
+                lexical, dense, attributes, fused,
+            ),
+        }
 
     def apply_constraints(self, state: ShoppingState) -> dict[str, Any]:
         # CoarseRanker already applies tri-state hard filtering and soft boosts.
@@ -272,6 +373,10 @@ class ShoppingGraphNodes:
             no_preference=set(state.get("no_preference", [])),
             known_attributes=known_attributes,
             language=state.get("user_language", "en"),
+            retrieval_context={
+                "plan": state.get("retrieval_plan", {}),
+                "diagnostics": state.get("retrieval_diagnostics", {}),
+            },
         )
         attribute = str(decision.ask_attribute) if decision.ask_attribute else None
         asked = list(state.get("asked_attributes", []))

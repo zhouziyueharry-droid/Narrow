@@ -16,6 +16,7 @@ from shopping_agent.retrieval.coarse import (
     evaluate_constraint,
 )
 from shopping_agent.retrieval.lexical import CatalogIndex
+from shopping_agent.retrieval.policy import plan_retrieval
 
 
 PRODUCTS = [
@@ -151,6 +152,32 @@ def test_route_weights_change_between_buying_and_browsing(catalog: CatalogIndex)
     assert browsing[0]["parent_asin"] != "OFFICE"
     assert buying[0]["route_ranks"]["lexical"] == 1
     assert browsing[0]["route_ranks"]["dense"] <= 2
+
+
+def test_attribute_index_exposes_searchable_feature_facets(catalog: CatalogIndex) -> None:
+    index = AttributeIndex(catalog)
+    assert "waterproof" in index.values["TRAIL"]["feature"]
+    results = index.search(
+        "boots",
+        [Constraint(field="feature", value="waterproof shell")],
+        limit=4,
+    )
+    assert results[0]["parent_asin"] == "TRAIL"
+
+
+def test_dynamic_policy_expands_targeted_structured_retrieval() -> None:
+    plan = plan_retrieval(
+        intent="buying",
+        category="boots",
+        query="black waterproof hiking boots",
+        constraints=[
+            Constraint(field="color", value="black", strength="hard"),
+            Constraint(field="feature", value="waterproof", strength="hard"),
+        ],
+    )
+    assert plan.fused_limit == 650
+    assert plan.route_weights.attribute > 0.75
+    assert "route:structured_evidence" in plan.reason_codes
 
 
 def test_browsing_diversification_exposes_another_leaf_category(catalog: CatalogIndex) -> None:

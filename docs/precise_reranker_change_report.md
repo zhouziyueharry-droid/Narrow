@@ -1,5 +1,8 @@
 # 精排（Fine-Ranking）改动报告
 
+> 历史权重研究参考，保留供源码和训练脚本追溯。文中的“当前”、分支与分数均指当时的实验，
+> 不代表 final 当前配置；日常使用见[项目首页](../README.md)，最新结果见[测试与产物](TESTING.md)。
+
 - **仓库**：`tiktok_project_4/techjam-conversational-search`
 - **分支**：`yxh_2`
 - **范围**：仅精排（`rerank_fallback` 节点背后的 `CandidateRanker` 实现）。召回三路（`lexical_retrieve` / `dense_retrieve_fallback` / `attribute_retrieve`）、`rrf_fusion` 融合、`constraint_filter` 硬约束过滤、`relax_and_backfill` 补召回、`ShoppingState` 结构、`CandidateRanker` 接口签名，本轮全部未改动。

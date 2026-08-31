@@ -74,6 +74,7 @@ def build_shopping_graph(
     builder.add_node("validate_patch", nodes.validate_patch)
     builder.add_node("update_state", nodes.update_state)
     builder.add_node("build_query", nodes.build_query)
+    builder.add_node("plan_retrieval", nodes.plan_retrieval)
     builder.add_node("lexical_retrieve", nodes.lexical_retrieve)
     builder.add_node("dense_retrieve_fallback", nodes.dense_retrieve)
     builder.add_node("attribute_retrieve", nodes.attribute_retrieve)
@@ -89,9 +90,10 @@ def build_shopping_graph(
     builder.add_edge("understand_user", "validate_patch")
     builder.add_edge("validate_patch", "update_state")
     builder.add_edge("update_state", "build_query")
-    builder.add_edge("build_query", "lexical_retrieve")
-    builder.add_edge("build_query", "dense_retrieve_fallback")
-    builder.add_edge("build_query", "attribute_retrieve")
+    builder.add_edge("build_query", "plan_retrieval")
+    builder.add_edge("plan_retrieval", "lexical_retrieve")
+    builder.add_edge("plan_retrieval", "dense_retrieve_fallback")
+    builder.add_edge("plan_retrieval", "attribute_retrieve")
     builder.add_edge(
         ["lexical_retrieve", "dense_retrieve_fallback", "attribute_retrieve"],
         "rrf_fusion",

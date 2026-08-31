@@ -41,6 +41,7 @@ def decide_dialogue(
     ranked_candidates: list[dict[str, Any]],
     known_attributes: set[str],
     language: str,
+    retrieval_context: dict[str, Any] | None = None,
 ) -> tuple[DialogueDecision, dict[str, float], list[dict[str, int | str]], dict[str, int]]:
     """Choose with the model online; use information gain only offline."""
 
@@ -70,6 +71,7 @@ def decide_dialogue(
             "asked_attributes": asked_attributes,
             "pending_question": pending_question,
             "question_history": question_history[-8:],
+            "retrieval_context": retrieval_context or {},
             "candidate_facets": {
                 attribute: {
                     "information_gain_score": round(score, 6),

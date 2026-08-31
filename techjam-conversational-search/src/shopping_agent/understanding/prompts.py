@@ -29,6 +29,7 @@ Schema:
   "remove_fields": [],
   "no_preference": [],
   "retire_soft": false,
+  "reset_scope": "none|soft|all",
   "semantic_query": "concise English semantic retrieval sentence",
   "intent_summary": "concise complete intent in the user's language",
   "language": "zh|en|other",
@@ -47,6 +48,12 @@ browsing for exploration, unknown when uncertain. You are the sole authority for
 structured intent; no local rules will fill missing constraints. Long-term profile preferences are
 never hard constraints. Do not infer a preference merely because candidate
 products have that attribute.
+
+Use reset_scope=all only for an explicit full restart such as "start over",
+"forget everything", or "ignore all previous requirements". Use
+reset_scope=soft (or retire_soft=true for backward compatibility) when the user
+only retracts earlier preferences. A same-field correction should normally use
+action=replace and preserve unrelated active requirements.
 
 When previous_question is present, interpret the latest user message as a
 possible answer to that question. The answer may be a free-text value outside

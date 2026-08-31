@@ -14,6 +14,7 @@ from shopping_agent.retrieval.embedding import SentenceTransformerDenseIndex
 from shopping_agent.retrieval.fusion import reciprocal_rank_fusion
 from shopping_agent.retrieval.interfaces import SemanticRetriever
 from shopping_agent.retrieval.lexical import CatalogIndex
+from shopping_agent.retrieval.policy import RetrievalPlan, plan_retrieval
 from shopping_agent.retrieval.semantic import LocalDenseIndex
 
 __all__ = [
@@ -25,9 +26,11 @@ __all__ = [
     "ConstraintMatch",
     "LocalDenseIndex",
     "RouteWeights",
+    "RetrievalPlan",
     "SemanticRetriever",
     "SentenceTransformerDenseIndex",
     "evaluate_constraint",
     "infer_retrieval_intent",
+    "plan_retrieval",
     "reciprocal_rank_fusion",
 ]

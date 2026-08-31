@@ -75,13 +75,15 @@ force_col_wise=true           n_jobs=4
 
 ## 产物和防错检查
 
-训练输出目录为 `evaluation_runs/lambdamart_synthetic_2000_official_200/`。其大体积训练矩阵和会话缓存留在本地；可部署的冻结包已提交到 `models/lambdamart_synthetic_2000/`：
+原训练输出目录为 `evaluation_runs/lambdamart_synthetic_2000_official_200/`，已从 final 清理，不是当前可用入口。
+无需恢复旧训练目录即可加载已提交的冻结包 `models/lambdamart_synthetic_2000/`：
 
 | 文件 | 用途 |
 |---|---|
 | `model.txt` | LightGBM booster。 |
 | `idf.json` | 训练时的全目录 IDF。 |
 | `metadata.json` | 特征 schema、参数、数据摘要、输入文件哈希和最佳迭代数。 |
+| `same_data_linear_weights.json` | 同数据线性对照权重，供详细审计使用，不是默认精排。 |
 
 运行时会拒绝 schema version、特征顺序、IDF 或预测形状不匹配的模型。模型输出是相对排序 margin，不是概率。若分数相同，则以较小的 lexical rank 打破平局。
 

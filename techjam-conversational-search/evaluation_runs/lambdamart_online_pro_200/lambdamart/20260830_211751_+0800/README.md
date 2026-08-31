@@ -27,6 +27,6 @@ for archive in Path('.').glob('*.jsonl.gz'):
         shutil.copyfileobj(source, output)
 ```
 
-The existing audit script expects decompressed JSONL files. It never calls LLM APIs. For a fresh checkout, the online instrumentation expects the frozen model bundle from `models/lambdamart_synthetic_2000` copied into `evaluation_runs/lambdamart_synthetic_2000_official_200/model`; the companion summary and same-data linear weights are included at that evaluation path. This is setup documentation, not an instruction to rerun the paid evaluation.
+The audit script expects decompressed JSONL files and never calls LLM APIs. It now uses `models/lambdamart_synthetic_2000` directly and checks its model hash against this run's recorded configuration; `--model-dir` can select another matching bundle. The same-data linear control weights are retained inside the model bundle for online instrumentation. No old evaluation directory or summary is required. Running the audit rewrites `report.md` and `trace_audit.json`, so use a copy of this archive to preserve the published manifest hashes. This is setup documentation, not an instruction to rerun the paid evaluation.
 
 To inspect the run, load `trace.json` in the existing trace visualizer, or copy it to `trace-visualizer/public/trace-lambdamart-pro-20260830-211751.json` and open `/?data=trace-lambdamart-pro-20260830-211751.json`.

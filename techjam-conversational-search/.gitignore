@@ -5,6 +5,7 @@ __pycache__/
 .hf-cache/
 .cache/
 .pytest_cache/
+.cache/
 .pytest_tmp/
 .pytest-run-*/
 .DS_Store

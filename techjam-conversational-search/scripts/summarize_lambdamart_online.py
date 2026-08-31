@@ -116,15 +116,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run",type=Path,required=True)
     parser.add_argument("--model",default="deepseek-v4-pro")
+    parser.add_argument("--model-dir", type=Path, default=ROOT/"models/lambdamart_synthetic_2000")
     args = parser.parse_args()
-    expected = {s["sample_id"] for s in iter_rows(ROOT/"data/public_set.jsonl")}
-    summary, sessions, turns, report = audit(args.run,expected,args.model)
-    model_dir = ROOT/"evaluation_runs/lambdamart_synthetic_2000_official_200/model"
-    original = json.loads((model_dir.parent/"summary.json").read_text(encoding="utf-8"))["model_sha256"]
-    assert hashlib.sha256((model_dir/"model.txt").read_bytes()).hexdigest() == original
     config = json.loads((args.run/"run_config.json").read_text(encoding="utf-8"))
     assert config["reranker"]["mode"] == "lambdamart"
-    assert config["reranker"]["model_sha256"] == original
+    original = config["reranker"]["model_sha256"]
+    assert hashlib.sha256((args.model_dir/"model.txt").read_bytes()).hexdigest() == original
+    expected = {s["sample_id"] for s in iter_rows(ROOT/"data/public_set.jsonl")}
+    summary, sessions, turns, report = audit(args.run,expected,args.model)
     report["frozen_model_sha256"] = original
     dump(args.run/"trace_audit.json",report)
     path = args.run/"report.md"

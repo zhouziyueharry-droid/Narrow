@@ -96,13 +96,13 @@ def _should_implicitly_replace(
     return concise_reply or any(marker in lowered for marker in CORRECTION_MARKERS)
 
 
-def _question_answer_constraint(
+def _question_answer_constraints(
     message: str,
     turn: int,
     previous_ask_attribute: str | None,
     previous_question_options: list[dict[str, Any]],
     patch: StatePatch,
-) -> Constraint | None:
+) -> list[Constraint]:
     """Interpret a concise free-text reply in the context of our last question."""
 
     if (
@@ -110,10 +110,32 @@ def _question_answer_constraint(
         or previous_ask_attribute in patch.no_preference
         or any(item.field == previous_ask_attribute for item in patch.constraints)
     ):
-        return None
+        return []
     lowered = message.casefold().strip()
     if not lowered or any(marker in lowered for marker in QUESTION_REQUEST_MARKERS):
-        return None
+        return []
+
+    protocol = re.search(
+        r"^(?:for that,?\s*)?(?:what matters is|my preference is)\s*:\s*(.+?)\s*[.!?]?$",
+        message.strip(),
+        re.IGNORECASE,
+    )
+    if protocol:
+        values = [
+            value.strip(" .,!?")
+            for value in re.split(r"\s*;\s*", protocol.group(1))
+            if value.strip(" .,!?")
+        ][:2]
+        return [
+            Constraint(
+                field=previous_ask_attribute,  # type: ignore[arg-type]
+                value=value[:120],
+                strength="soft",
+                confidence=0.92,
+                source_turn=turn,
+            )
+            for value in values
+        ]
 
     value = ""
     for option in previous_question_options:
@@ -138,14 +160,14 @@ def _question_answer_constraint(
             flags=re.IGNORECASE,
         ).strip(" .,!?")
     if not value:
-        return None
-    return Constraint(
+        return []
+    return [Constraint(
         field=previous_ask_attribute,  # type: ignore[arg-type]
         value=value,
         strength="soft",
         confidence=0.88,
         source_turn=turn,
-    )
+    )]
 
 
 def _local_result(
@@ -165,15 +187,15 @@ def _local_result(
         rule_patch,
         current_category=current_category,
     )
-    contextual = _question_answer_constraint(
+    contextual = _question_answer_constraints(
         message,
         turn,
         previous_ask_attribute,
         previous_question_options or [],
         fallback,
     )
-    if contextual is not None:
-        fallback.constraints.append(contextual)
+    if contextual:
+        fallback.constraints.extend(contextual)
         fallback.fallback_reasons = [
             reason for reason in fallback.fallback_reasons if reason != "no_structured_signal"
         ]

@@ -17,6 +17,7 @@ export type Session = {
   turns: Turn[];
 };
 export type Diagnostics = {
+  diagnosticMode?: 'target' | 'agent';
   schema?: 'shopping-agent.trace'; schemaVersion?: 1;
   run: {
     id: string; model: string; workers: number; sampleCount: number;

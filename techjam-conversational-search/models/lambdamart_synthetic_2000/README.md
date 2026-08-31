@@ -1,6 +1,7 @@
 # Trained LambdaMART model
 
 This opt-in bundle contains model.txt, metadata.json, and idf.json. Keep all three together.
+`same_data_linear_weights.json` contains the frozen linear control used by online audit logging; keep it with the bundle when running traced evaluations. These are model weights, not an old evaluation result.
 It is the 167-tree model evaluated on all 200 official samples, with 1291 synthetic training and 291 validation sessions.
 The default application ranker remains PreciseReranker. Install the ltr extra before loading this bundle.
 
@@ -11,4 +12,4 @@ SHA256 model.txt: d4243775f26f8fc5b651becd0100d6a69d232401b73b7371f1c9e0bc4f72b7
 
 SHA256 idf.json: 0dc41598feb7af5f6021ccda450ced0aa059a6c75f60daae6de8939f54830935
 
-See ../../docs/lambdamart_experiment_report.md and ../../../LOCAL_EXPERIMENT.md for evaluation and usage.
+See the [latest evaluation report](../../docs/lambdamart_online_pro_report.md), [training details](../../docs/lambdamart_training.md), and [project README](../../../README.md) for evaluation and usage.

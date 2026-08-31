@@ -139,6 +139,54 @@ def test_intent_override_retires_soft_preference_but_keeps_hard_constraint() -> 
     assert any("black" in str(item.value) for item in active)
 
 
+def test_explicit_full_restart_clears_hard_and_soft_constraints() -> None:
+    active = [
+        Constraint(field="material", value="leather", strength="hard"),
+        Constraint(field="color", value="brown", strength="soft"),
+    ]
+    patch = StatePatch(
+        action="replace",
+        reset_scope="all",
+        constraints=[Constraint(field="feature", value="waterproof", strength="hard")],
+    )
+
+    updated, superseded = apply_state_patch(
+        [item.model_dump() for item in active], patch,
+    )
+
+    assert [(item.field, item.value) for item in updated] == [("feature", "waterproof")]
+    assert {(item.field, item.value) for item in superseded} == {
+        ("material", "leather"), ("color", "brown"),
+    }
+
+
+def test_long_protocol_answer_is_bound_to_the_pending_feature(monkeypatch) -> None:
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "false")
+    patch, _ = resolve_semantic_patch(
+        "For that, what matters is: Pull On closure for quick dressing; holiday pattern.",
+        turn=2,
+        previous_ask_attribute="feature",
+        previous_question_options=[],
+    )
+
+    assert [item.field for item in patch.constraints] == ["feature", "feature"]
+    assert [item.value for item in patch.constraints] == [
+        "Pull On closure for quick dressing", "holiday pattern",
+    ]
+
+
+def test_care_instructions_do_not_become_product_exclusions(monkeypatch) -> None:
+    monkeypatch.setenv("SHOPPING_AGENT_ENABLE_LLM", "false")
+    patch, _ = resolve_semantic_patch(
+        "For that, what matters is: Care: Machine or hand wash in cold water, "
+        "no bleach, no dry clean, hang dry.",
+        turn=3,
+        previous_ask_attribute="feature",
+    )
+
+    assert not any(item.operator == "not_contains" for item in patch.constraints)
+
+
 def test_mvp_graph_accumulates_turn_constraints_and_returns_catalog_ids(tmp_path: Path) -> None:
     catalog_path = tmp_path / "catalog.jsonl"
     _write_catalog(catalog_path)
@@ -171,6 +219,8 @@ def test_agent_exposes_compact_node_trace(tmp_path: Path) -> None:
     assert len(retrieval["updates"]["lexical_candidates"]["top"]) == 1
     query = next(item for item in trace if item["nodes"] == ["build_query"])
     assert query["updates"]["retrieval_intent"] == "unknown"
+    policy = next(item for item in trace if item["nodes"] == ["plan_retrieval"])
+    assert policy["updates"]["retrieval_plan"]["dense_limit"] == 300
     fusion = next(item for item in trace if item["nodes"] == ["rrf_fusion"])
     fused_top = fusion["updates"]["fused_candidates"]["top"][0]
     assert fused_top["retrieval_intent"] == "unknown"
@@ -180,6 +230,7 @@ def test_agent_exposes_compact_node_trace(tmp_path: Path) -> None:
         "attribute": 0.55,
     }
     assert "constraint_evidence" in fused_top
+    assert fusion["updates"]["retrieval_diagnostics"]["route_union_count"] >= 1
     agent.release_session("trace-session")
 
 
