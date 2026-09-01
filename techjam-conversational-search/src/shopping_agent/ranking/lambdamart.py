@@ -11,8 +11,12 @@ FEATURE_NAMES = (
     "exact_matches", "partial_matches", "category_match", "term_coverage",
     "lexical_signal", "rrf_raw", "dense_raw", "attribute_raw", "profile_match",
     "quality", "contradictions", "budget_penalty", "novelty_penalty",
+    "title_phrase_match", "title_term_coverage", "category_hierarchy_match",
+    "constraint_satisfaction", "hard_constraint_satisfied",
+    "hard_constraint_violations", "constraint_unknown", "budget_satisfied",
+    "budget_unknown", "material_match", "color_match", "size_match", "brand_match",
 )
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def feature_matrix(candidates, *, query, category, constraints, profile=None,

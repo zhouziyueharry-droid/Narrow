@@ -70,6 +70,21 @@ DEFAULT_WEIGHTS: dict[str, float] = {
     "contradictions": -3.4994937475756673,
     "budget_penalty": 0.0,
     "novelty_penalty": -2.3446468806044254,
+    # Schema-v2 diagnostics are trained by LambdaMART. Keep the legacy linear
+    # baseline behavior unchanged until it is explicitly refitted on v2 rows.
+    "title_phrase_match": 0.0,
+    "title_term_coverage": 0.0,
+    "category_hierarchy_match": 0.0,
+    "constraint_satisfaction": 0.0,
+    "hard_constraint_satisfied": 0.0,
+    "hard_constraint_violations": 0.0,
+    "constraint_unknown": 0.0,
+    "budget_satisfied": 0.0,
+    "budget_unknown": 0.0,
+    "material_match": 0.0,
+    "color_match": 0.0,
+    "size_match": 0.0,
+    "brand_match": 0.0,
 }
 
 
@@ -140,6 +155,19 @@ class PreciseReranker:
                 + w["contradictions"] * feat.contradictions
                 + w["budget_penalty"] * feat.budget_penalty
                 + w["novelty_penalty"] * feat.novelty_penalty
+                + w["title_phrase_match"] * feat.title_phrase_match
+                + w["title_term_coverage"] * feat.title_term_coverage
+                + w["category_hierarchy_match"] * feat.category_hierarchy_match
+                + w["constraint_satisfaction"] * feat.constraint_satisfaction
+                + w["hard_constraint_satisfied"] * feat.hard_constraint_satisfied
+                + w["hard_constraint_violations"] * feat.hard_constraint_violations
+                + w["constraint_unknown"] * feat.constraint_unknown
+                + w["budget_satisfied"] * feat.budget_satisfied
+                + w["budget_unknown"] * feat.budget_unknown
+                + w["material_match"] * feat.material_match
+                + w["color_match"] * feat.color_match
+                + w["size_match"] * feat.size_match
+                + w["brand_match"] * feat.brand_match
             )
             ranked.append({
                 **candidate,

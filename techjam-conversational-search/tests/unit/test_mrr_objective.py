@@ -79,7 +79,8 @@ def test_cached_features_reject_out_of_split_sessions_and_wrong_targets(tmp_path
         monkeypatch.setenv(key, "false")
     monkeypatch.setenv("SHOPPING_DENSE_BACKEND", "local")
     from scripts.experiment_lambdamart import load_groups
-    np.savez(tmp_path / "training.npz", X=np.zeros((2, 13)), y=[1, 0], group=[2])
+    from shopping_agent.ranking.lambdamart import FEATURE_NAMES
+    np.savez(tmp_path / "training.npz", X=np.zeros((2, len(FEATURE_NAMES))), y=[1, 0], group=[2])
     path = tmp_path / "training_groups.json"
     item = {"sample_id": "synthetic_a", "target": "A", "candidate_ids": ["A", "B"]}
     path.write_text(json.dumps([item]), encoding="utf-8")

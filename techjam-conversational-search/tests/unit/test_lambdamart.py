@@ -21,6 +21,56 @@ def test_feature_order_and_repeat_history_are_preserved():
     assert matrix[0, FEATURE_NAMES.index("term_coverage")] > matrix[1, FEATURE_NAMES.index("term_coverage")]
 
 
+def test_constraint_features_distinguish_satisfied_violated_and_unknown():
+    candidates = [
+        {"parent_asin": "A", "title": "black cotton running shoes", "categories": ["Shoes"],
+         "price": 80, "rrf_score": .04},
+        {"parent_asin": "B", "title": "red leather running shoes", "categories": ["Shoes"],
+         "price": 130, "rrf_score": .03},
+    ]
+    constraints = [
+        Constraint(field="color", value="black", strength="hard", confidence=.8),
+        Constraint(field="material", value="cotton", confidence=1),
+        Constraint(field="budget", operator="lte", value=100, strength="hard", confidence=1),
+        Constraint(field="size", value="size 12", confidence=.5),
+    ]
+    matrix, features = feature_matrix(
+        candidates, query="black cotton", category="Shoes", constraints=constraints,
+        idf={"black": 2, "cotton": 2},
+    )
+    good, bad = features
+    assert good.title_phrase_match == 1
+    assert good.category_hierarchy_match == 1
+    assert good.constraint_satisfaction == pytest.approx(2.8)
+    assert good.hard_constraint_satisfied == pytest.approx(1.8)
+    assert good.budget_satisfied == 1
+    assert good.color_match == pytest.approx(.8)
+    assert good.material_match == 1
+    assert good.constraint_unknown == pytest.approx(.5)
+    assert bad.hard_constraint_violations == pytest.approx(1.8)
+    assert bad.budget_penalty == pytest.approx(.3)
+    assert matrix.shape[1] == len(FEATURE_NAMES)
+
+
+def test_hard_negative_mining_keeps_target_and_baseline_top20_deterministically():
+    pytest.importorskip("lightgbm")
+    from scripts.experiment_lambdamart import mine_hard_negatives
+    X = np.zeros((30, len(FEATURE_NAMES)))
+    X[:, FEATURE_NAMES.index("rrf_raw")] = np.arange(30)
+    y = np.zeros(30, dtype=np.int32)
+    y[5] = 1
+    group = {"X": X, "y": y, "sample_id": "s1", "turn": 2,
+             "candidate_ids": [str(i) for i in range(30)],
+             "lexical_ranks": list(range(1, 31))}
+    first = mine_hard_negatives(group, hard_negative_k=20, random_negative_k=3, seed=42)
+    second = mine_hard_negatives(group, hard_negative_k=20, random_negative_k=3, seed=42)
+    assert first["candidate_ids"] == second["candidate_ids"]
+    assert "5" in first["candidate_ids"]
+    assert set(map(str, range(10, 30))) <= set(first["candidate_ids"])
+    assert first["mining"] == {"source_rows": 30, "kept_rows": 24,
+                                "hard_negatives": 20, "random_negatives": 3}
+
+
 def test_schema_mismatch_fails_before_model_load(tmp_path):
     (tmp_path / "metadata.json").write_text(json.dumps(
         {"schema_version": SCHEMA_VERSION, "feature_names": list(reversed(FEATURE_NAMES))}

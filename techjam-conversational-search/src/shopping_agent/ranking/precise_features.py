@@ -28,6 +28,19 @@ def _product_corpus(product: dict[str, Any]) -> str:
     ).casefold()
 
 
+def _field_corpus(product: dict[str, Any], field_name: str) -> str:
+    """Return the narrowest trustworthy catalog text for a constraint field."""
+    if field_name == "brand":
+        values = (product.get("store"), product.get("brand"), product.get("title"))
+    elif field_name == "category":
+        values = (product.get("categories"),)
+    elif field_name in {"material", "color", "size", "style", "feature", "use_case"}:
+        values = (product.get("title"), product.get("features"), product.get("details"))
+    else:
+        values = (product.get("title"), product.get("features"), product.get("details"))
+    return _normalized_phrase(" ".join(_text(value) for value in values))
+
+
 def _explicit_values(field_name: str, candidate_terms: set[str]) -> set[str]:
     """Explicit attribute value(s) the catalog text asserts for this candidate."""
     if field_name in FLAT_VOCAB:
@@ -52,6 +65,19 @@ class CandidateFeatures:
     rrf_raw: float = 0.0              # raw fusion score, NOT batch-normalized
     dense_raw: float = 0.0            # raw dense-retrieval score, NOT batch-normalized
     attribute_raw: float = 0.0        # raw attribute-index score, NOT batch-normalized
+    title_phrase_match: float = 0.0
+    title_term_coverage: float = 0.0
+    category_hierarchy_match: float = 0.0
+    constraint_satisfaction: float = 0.0  # confidence-weighted satisfied constraints
+    hard_constraint_satisfied: float = 0.0
+    hard_constraint_violations: float = 0.0
+    constraint_unknown: float = 0.0
+    budget_satisfied: float = 0.0
+    budget_unknown: float = 0.0
+    material_match: float = 0.0
+    color_match: float = 0.0
+    size_match: float = 0.0
+    brand_match: float = 0.0
     explanations: list[str] = field(default_factory=list)
 
 
@@ -122,6 +148,10 @@ def extract_batch_features(
         corpus = _product_corpus(candidate)
         normalized_corpus = _normalized_phrase(corpus)
         candidate_terms = set(_terms(corpus))
+        title = _normalized_phrase(_text(candidate.get("title")))
+        title_terms = set(_terms(title))
+        category_corpus = _normalized_phrase(_text(candidate.get("categories")))
+        query_phrase = _normalized_phrase(query)
 
         feat = CandidateFeatures(
             category_match=1.0 if category_phrase and category_phrase in normalized_corpus else 0.0,
@@ -133,53 +163,71 @@ def extract_batch_features(
             rrf_raw=float(candidate.get("rrf_score") or 0.0),
             dense_raw=float(candidate.get("dense_score") or 0.0),
             attribute_raw=float(candidate.get("attribute_score") or 0.0),
+            title_phrase_match=1.0 if query_phrase and query_phrase in title else 0.0,
+            title_term_coverage=_coverage(query_terms, title_terms, idf),
+            category_hierarchy_match=(
+                1.0 if category_phrase and category_phrase in category_corpus else 0.0
+            ),
         )
 
         for constraint in constraints:
+            confidence = float(constraint.confidence)
+            status = "unknown"
             if constraint.field == "budget":
                 price = _number(candidate.get("price")) if candidate.get("price") is not None else None
                 target = _number(constraint.value)
                 if price is None or target is None or target <= 0:
-                    continue
-                if constraint.operator == "lte":
-                    if price <= target:
-                        feat.exact_matches += 1.0
-                    else:
-                        overshoot = (price - target) / target
-                        feat.budget_penalty += max(0.0, min(1.0, overshoot))
+                    feat.budget_unknown += confidence
+                elif constraint.operator == "lte":
+                    status = "satisfied" if price <= target else "violated"
+                    if status == "violated":
+                        feat.budget_penalty += max(0.0, min(1.0, (price - target) / target))
                         feat.explanations.append("over_budget")
                 elif constraint.operator == "gte":
-                    if price >= target:
-                        feat.exact_matches += 1.0
-                    else:
-                        shortfall = (target - price) / target
-                        feat.budget_penalty += max(0.0, min(1.0, shortfall))
+                    status = "satisfied" if price >= target else "violated"
+                    if status == "violated":
+                        feat.budget_penalty += max(0.0, min(1.0, (target - price) / target))
                         feat.explanations.append("under_budget")
-                continue
-
-            if constraint.field in FLAT_VOCAB or constraint.field in GROUPED_VOCAB:
-                explicit_values = _explicit_values(constraint.field, candidate_terms)
-                target_phrase = _normalized_phrase(str(constraint.value))
-                if explicit_values:
-                    if target_phrase in explicit_values or any(
-                        target_phrase in v or v in target_phrase for v in explicit_values
-                    ):
-                        feat.exact_matches += 1.0
-                        feat.explanations.append(f"exact:{constraint.field}")
-                    else:
-                        # Catalog explicitly asserts a value that conflicts with the
-                        # stated preference -- rank this below "unknown", not level with it.
-                        feat.contradictions += 1.0
-                        feat.explanations.append(f"conflict:{constraint.field}")
-                    continue
-
-            phrase = _normalized_phrase(str(constraint.value))
-            if phrase and phrase in normalized_corpus:
-                feat.exact_matches += 1.0
-                feat.explanations.append(f"exact:{constraint.field}")
+                elif constraint.operator == "eq":
+                    status = "satisfied" if math.isclose(price, target, rel_tol=0.0, abs_tol=0.01) else "violated"
+                    if status == "violated":
+                        feat.budget_penalty += min(1.0, abs(price - target) / target)
+                if status == "satisfied":
+                    feat.budget_satisfied += confidence
             else:
+                phrase = _normalized_phrase(str(constraint.value))
+                field_corpus = _field_corpus(candidate, constraint.field)
+                mentioned = bool(phrase and phrase in field_corpus)
+                explicit_values = _explicit_values(constraint.field, candidate_terms)
+                if explicit_values:
+                    mentioned = phrase in explicit_values or any(
+                        phrase in value or value in phrase for value in explicit_values
+                    )
+                    status = "satisfied" if mentioned else "violated"
+                elif mentioned:
+                    status = "satisfied"
+                if constraint.operator == "not_contains" and status != "unknown":
+                    status = "violated" if status == "satisfied" else "satisfied"
+
+            if status == "satisfied":
+                feat.exact_matches += 1.0
+                feat.constraint_satisfaction += confidence
+                if constraint.strength == "hard":
+                    feat.hard_constraint_satisfied += confidence
+                field_match = f"{constraint.field}_match"
+                if hasattr(feat, field_match):
+                    setattr(feat, field_match, getattr(feat, field_match) + confidence)
+                feat.explanations.append(f"satisfied:{constraint.field}")
+            elif status == "violated":
+                feat.contradictions += confidence
+                if constraint.strength == "hard":
+                    feat.hard_constraint_violations += confidence
+                feat.explanations.append(f"conflict:{constraint.field}")
+            else:
+                feat.constraint_unknown += confidence
                 words = set(_terms(str(constraint.value)))
                 feat.partial_matches += len(words & candidate_terms) / max(len(words), 1)
+                feat.explanations.append(f"unknown:{constraint.field}")
 
         results.append(feat)
     return results
