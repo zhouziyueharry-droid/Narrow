@@ -146,9 +146,50 @@ def run_sessions(proxy, recorder, samples, products, stage):
             "wall_seconds": time.perf_counter()-started, "sessions": sessions}
 
 
-def pack(groups):
+def mine_hard_negatives(group, *, hard_negative_k, random_negative_k, seed):
+    """Keep the target, the baseline's hardest negatives, and a small random tail.
+
+    The baseline score uses only observable runtime features. Sampling is stable
+    across processes and Python versions, and never manufactures a missing target.
+    """
+    positives = np.flatnonzero(group["y"])
+    if len(positives) != 1:
+        return None
+    negatives = np.flatnonzero(group["y"] == 0)
+    baseline_weights = np.array([DEFAULT_WEIGHTS[name] for name in FEATURE_NAMES])
+    baseline_scores = group["X"] @ baseline_weights
+    hard = sorted(
+        negatives,
+        key=lambda i: (-float(baseline_scores[i]), group["lexical_ranks"][i], int(i)),
+    )[:hard_negative_k]
+    hard_set = set(map(int, hard))
+    remaining = [int(i) for i in negatives if int(i) not in hard_set]
+    material = f"{seed}:{group['sample_id']}:{group['turn']}".encode("utf-8")
+    stable_seed = int.from_bytes(hashlib.sha256(material).digest()[:8], "big")
+    rng = random.Random(stable_seed)
+    random_tail = rng.sample(remaining, min(random_negative_k, len(remaining)))
+    keep = sorted({int(positives[0]), *hard_set, *random_tail})
+    mined = dict(group)
+    mined["X"] = group["X"][keep]
+    mined["y"] = group["y"][keep]
+    mined["candidate_ids"] = [group["candidate_ids"][i] for i in keep]
+    mined["lexical_ranks"] = [group["lexical_ranks"][i] for i in keep]
+    mined["mining"] = {
+        "source_rows": len(group["y"]), "kept_rows": len(keep),
+        "hard_negatives": len(hard), "random_negatives": len(random_tail),
+    }
+    return mined
+
+
+def pack(groups, *, hard_negative_k=None, random_negative_k=0, seed=0):
     # All-negative queries have no ranking pairs; never inject missing targets.
     active = [g for g in groups if int(g["y"].sum()) > 0 and len(g["y"]) > 1]
+    if hard_negative_k is not None:
+        active = [mine_hard_negatives(
+            g, hard_negative_k=hard_negative_k,
+            random_negative_k=random_negative_k, seed=seed,
+        ) for g in active]
+        active = [g for g in active if g is not None and len(g["y"]) > 1]
     if not active:
         raise ValueError("No usable ranking groups")
     counts = Counter(g["sample_id"] for g in active)
@@ -233,7 +274,7 @@ def main():
     parser.add_argument("--synthetic", type=Path, default=ROOT.parent/"synthetic_scenarios_2000.jsonl")
     parser.add_argument("--catalog", type=Path, default=ROOT/"data/catalog.jsonl")
     parser.add_argument("--test-catalog", type=Path, default=ROOT/"data/catalog.jsonl")
-    parser.add_argument("--ranking-objective", choices=["ndcg", "mrr"], default="ndcg")
+    parser.add_argument("--ranking-objective", choices=["ndcg", "mrr"], default="mrr")
     parser.add_argument("--mrr-top1-bonus", type=float, default=0.0,
                         help="Loss-only first-place utility added to RR@10; validation remains plain MRR")
     parser.add_argument("--train-only", action="store_true",
@@ -241,6 +282,10 @@ def main():
     parser.add_argument("--feature-cache", type=Path,
                         help="Existing audited training/validation groups; verifies data, features and split")
     parser.add_argument("--validation-fraction", type=float, default=.2)
+    parser.add_argument("--hard-negatives", type=int, default=20,
+                        help="Highest-scoring baseline negatives retained per training group")
+    parser.add_argument("--random-negatives", type=int, default=10,
+                        help="Deterministic random negatives retained in addition to hard negatives")
     parser.add_argument("--seed", type=int, default=20260830)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -248,6 +293,8 @@ def main():
         parser.error("--mrr-top1-bonus must be finite and non-negative")
     if args.ranking_objective != "mrr" and args.mrr_top1_bonus:
         parser.error("--mrr-top1-bonus requires --ranking-objective mrr")
+    if args.hard_negatives < 1 or args.random_negatives < 0:
+        parser.error("--hard-negatives must be positive and --random-negatives non-negative")
     out = args.output
     out.mkdir(parents=True, exist_ok=False)
     synthetic = load_jsonl(args.synthetic)
@@ -273,7 +320,10 @@ def main():
               "ranking_objective": args.ranking_objective,
               "loss_settings": {"rr_cutoff": 10, "top1_bonus": args.mrr_top1_bonus},
               "objective_source_sha256": digest(ROOT/"scripts/mrr_objective.py") if args.ranking_objective == "mrr" else None,
-              "selection_metric": "session-weighted frozen-turn MRR@10" if args.ranking_objective == "mrr" else "NDCG@10",
+              "selection_metric": "session-weighted frozen-turn MRR@10",
+              "negative_mining": {"hard_top_k": args.hard_negatives,
+                                  "random_tail": args.random_negatives,
+                                  "scorer": "PreciseReranker DEFAULT_WEIGHTS"},
               "feature_source_sha256": digest(ROOT/"src/shopping_agent/ranking/precise_features.py"),
               "script_sha256": digest(Path(__file__)), "selection_seed": args.seed,
               "label_policy": "Known simulator target=1, others=0; weak target labels, NOT graded semantic relevance.",
@@ -319,9 +369,18 @@ def main():
         validation = recorder.groups
         recorder.groups = []
         save_groups(out, "validation", validation)
-    X, y, group, sample_weight, train_active = pack(training)
-    VX, vy, vgroup, _, valid_active = pack(validation)
-    data_summary = {"training": summarize_groups(training), "validation": summarize_groups(validation)}
+    X, y, group, sample_weight, train_active = pack(
+        training, hard_negative_k=args.hard_negatives,
+        random_negative_k=args.random_negatives, seed=args.seed,
+    )
+    # Validation stays untouched: model selection must see the full candidate
+    # distribution, including groups where the target is absent (RR=0).
+    VX = np.concatenate([g["X"] for g in validation])
+    vy = np.concatenate([g["y"] for g in validation])
+    vgroup = np.array([len(g["y"]) for g in validation], dtype=np.int32)
+    data_summary = {"training_before_mining": summarize_groups(training),
+                    "training_after_mining": summarize_groups(train_active),
+                    "validation": summarize_groups(validation)}
     dump(out/"data_summary.json", data_summary)
     print("Training LambdaRank on grouped candidate lists: "+json.dumps(data_summary), flush=True)
     model = lgb.LGBMRanker(
@@ -330,15 +389,15 @@ def main():
         random_state=args.seed, n_jobs=4, verbosity=-1,
         deterministic=True, force_col_wise=True, lambdarank_truncation_level=13,
     )
-    fit_options = {}
+    from scripts.mrr_objective import make_mrr_metric
+    fit_options = {"eval_metric": make_mrr_metric(validation)}
     if args.ranking_objective == "mrr":
-        from scripts.mrr_objective import make_mrr_metric, make_mrr_objective
+        from scripts.mrr_objective import make_mrr_objective
         model.set_params(objective=make_mrr_objective(args.mrr_top1_bonus), metric="None")
-        # Include no-target validation groups as zero RR; never invent positives.
-        VX = np.concatenate([g["X"] for g in validation])
-        vy = np.concatenate([g["y"] for g in validation])
-        vgroup = np.array([len(g["y"]) for g in validation], dtype=np.int32)
-        fit_options["eval_metric"] = make_mrr_metric(validation)
+    else:
+        # Train with LambdaRank, but choose the tree count by MRR@10 rather
+        # than LightGBM's NDCG. The first custom metric drives early stopping.
+        model.set_params(metric="None")
     model.fit(X, y, group=group, sample_weight=sample_weight,
               eval_set=[(VX, vy)], eval_group=[vgroup], eval_at=[10],
               feature_name=list(FEATURE_NAMES),

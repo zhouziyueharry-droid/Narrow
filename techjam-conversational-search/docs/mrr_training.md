@@ -1,8 +1,20 @@
 # MRR-oriented LambdaMART experiment
 
-The model architecture and runtime feature schema are unchanged.
-`scripts/experiment_lambdamart.py` now accepts
-`--ranking-objective mrr`; the default remains the previous NDCG objective.
+The experiment now defaults to `--ranking-objective mrr`, and early stopping
+always selects the tree count by session-weighted frozen-turn MRR@10 on the
+synthetic target-disjoint validation split. `--ranking-objective ndcg` remains
+available as a control, but it uses the same MRR@10 model-selection metric.
+
+Training groups use deterministic hard-negative mining: keep the known target,
+the 20 negatives scored highest by the current PreciseReranker weights, and 10
+seeded random negatives for coverage. Override with `--hard-negatives` and
+`--random-negatives`. Validation candidates are never mined or truncated.
+
+Runtime feature schema v2 adds title/category signals plus confidence-weighted
+constraint satisfaction, hard-constraint violations, unknown evidence, budget
+status, and material/color/size/brand match features. Because the feature order
+changed, v1 bundles and feature caches are intentionally rejected; collect v2
+features and retrain before deployment.
 
 The new objective is a pairwise logistic surrogate with pair weights
 `abs(U(rank_positive) - U(rank_negative))`, where
@@ -56,7 +68,7 @@ From `techjam-conversational-search`, using the existing Python environment:
 .venv\Scripts\python.exe scripts\experiment_lambdamart.py `
   --synthetic data/synthetic_scenarios_2000.jsonl `
   --catalog data/catalog.jsonl `
-  --ranking-objective mrr --train-only `
+  --ranking-objective mrr --hard-negatives 20 --random-negatives 10 --train-only `
   --output evaluation_runs/lambdamart_mrr_synthetic2000
 ```
 
