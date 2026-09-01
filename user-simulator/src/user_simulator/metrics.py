@@ -324,6 +324,31 @@ def aggregate_realistic(
     persona_distribution = Counter(
         str(item.get("persona", "unknown")) for item in sessions
     )
+    difficulty_distribution = Counter(
+        str(item.get("scenario_type", "realistic")) for item in sessions
+    )
+    category_distribution = Counter(
+        str(item.get("coverage", {}).get("category", "unknown"))
+        for item in sessions
+    )
+    price_band_distribution = Counter(
+        str(item.get("coverage", {}).get("price_band", "unknown"))
+        for item in sessions
+    )
+    soft_signature_distribution = Counter(
+        str(item.get("coverage", {}).get("soft_signature", "unknown"))
+        for item in sessions
+    )
+    blocked_candidate_events = sum(
+        int(item.get("acceptance_gate", {}).get("blocked_candidate_events", 0))
+        for item in sessions
+    )
+    accepted_while_agent_asks = sum(
+        bool(item.get("success"))
+        and bool(item.get("conversation"))
+        and bool(item["conversation"][-1].get("ask_attribute"))
+        for item in sessions
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         "mode": "realistic",
@@ -355,6 +380,17 @@ def aggregate_realistic(
                 else None
             ),
             "persona_distribution": dict(sorted(persona_distribution.items())),
+            "difficulty_distribution": dict(sorted(difficulty_distribution.items())),
+            "coverage": {
+                "unique_categories": len(category_distribution),
+                "category_distribution": dict(sorted(category_distribution.items())),
+                "price_band_distribution": dict(sorted(price_band_distribution.items())),
+                "soft_signature_distribution": dict(
+                    sorted(soft_signature_distribution.items())
+                ),
+            },
+            "blocked_candidate_events": blocked_candidate_events,
+            "accepted_while_agent_asks": accepted_while_agent_asks,
             "override_events": sum(
                 int(item.get("override_count", 0)) for item in sessions
             ),
