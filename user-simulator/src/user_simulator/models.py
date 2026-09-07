@@ -166,6 +166,8 @@ class ConversationTurn:
     agent_usage_reported: bool = False
     agent_layer_trace: list[dict[str, Any]] = field(default_factory=list)
     agent_trace_error: str | None = None
+    acceptance_candidate: bool = False
+    acceptance_block_reason: str | None = None
 
 
 @dataclass(slots=True)
@@ -183,6 +185,9 @@ class ScenarioSpec:
     scenario_type: str = "realistic"
     user_profile: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
+    min_turns_before_acceptance: int = 1
+    require_no_pending_question: bool = False
+    difficulty_profile: str = "standard"
 
 
 @dataclass(slots=True)

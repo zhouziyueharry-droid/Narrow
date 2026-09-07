@@ -1,0 +1,50 @@
+version: "0.5"
+language: en
+mode: realistic
+seed: 20260829
+max_turns: 8
+top_k: 5
+
+dataset:
+  name: amazon_reviews_2023_metadata
+  catalog_path: data/derived/amazon_reviews_2023/scale_200k_catalog.jsonl
+  scenario_count: 160
+  sampling_strategy: broad_coverage
+  source_dataset: amazon_reviews_2023_clothing_scale_200k_v1
+
+persona:
+  templates:
+    - decisive_buyer
+    - casual_browser
+    - bargain_hunter
+    - brand_loyalist
+    - picky_shopper
+    - novice_shopper
+    - expert_shopper
+    - indecisive_shopper
+
+override:
+  persona_driven_enabled: false
+
+difficulty:
+  profile: scale_200k_v1
+  budget_multiplier: 1.02
+  min_soft_preferences: 3
+  min_soft_matches: 2
+  initial_disclosure_policy: category_only
+  min_turns_before_acceptance: 2
+  require_no_pending_question: true
+  scheduled_variants: true
+
+verbalizer:
+  type: openai_compatible
+  provider: deepseek
+  temperature: 0.35
+  max_tokens: 120
+  timeout: 30
+
+agent:
+  adapter: python
+  class_path: shopping_agent.agent:ShoppingAgent
+  provider: deepseek
+

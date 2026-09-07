@@ -1,0 +1,147 @@
+{
+  "schema_version": "1.0",
+  "mode": "realistic",
+  "evaluation": {
+    "benchmark": "catalog_generated_realistic",
+    "official_metric_contract": false,
+    "sample_count": 24,
+    "successful_sessions": 19,
+    "success_rate": 0.791667,
+    "mrr": 0.716667
+  },
+  "turn_metrics": {
+    "max_turns": 8,
+    "session_count": 24,
+    "total_executed_turns": 151,
+    "mean_executed_turns": 6.291667,
+    "median_executed_turns": 6.5,
+    "successful_session_mean_turns": 5.842105,
+    "unsuccessful_session_mean_turns": 8.0,
+    "executed_turn_distribution": {
+      "1": 0,
+      "2": 0,
+      "3": 2,
+      "4": 1,
+      "5": 3,
+      "6": 6,
+      "7": 6,
+      "8": 6
+    },
+    "first_hit_turn_distribution": {
+      "1": 0,
+      "2": 0,
+      "3": 2,
+      "4": 1,
+      "5": 3,
+      "6": 6,
+      "7": 6,
+      "8": 1
+    }
+  },
+  "latency": {
+    "available": true,
+    "unit": "milliseconds",
+    "clock": "time.perf_counter",
+    "agent": {
+      "available": true,
+      "call_count": 151,
+      "total_ms": 194689.034,
+      "mean_ms": 1289.331,
+      "p50_ms": 1231.681,
+      "p95_ms": 1747.102,
+      "p99_ms": 2027.416,
+      "max_ms": 2747.639
+    },
+    "user_generation": {
+      "available": true,
+      "call_count": 151,
+      "total_ms": 103099.125,
+      "mean_ms": 682.776,
+      "p50_ms": 665.291,
+      "p95_ms": 1003.173,
+      "p99_ms": 1119.054,
+      "max_ms": 1756.419
+    },
+    "session_wall": {
+      "available": true,
+      "session_count": 24,
+      "total_ms": 372296.97,
+      "mean_ms": 15512.374,
+      "p50_ms": 16048.315,
+      "p95_ms": 23765.493,
+      "p99_ms": 24377.842,
+      "max_ms": 24419.045
+    }
+  },
+  "model_usage": {
+    "agent": {
+      "class_path": "shopping_agent.agent:ShoppingAgent",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "llm_enabled": true,
+      "respond_calls": 151,
+      "api_calls": null,
+      "api_call_count_status": "not_reported_by_agent",
+      "usage_reported_calls": 151,
+      "error_count": 0,
+      "reported_token_usage": {
+        "prompt_tokens": 108318,
+        "completion_tokens": 20265,
+        "total_tokens": 128583
+      },
+      "estimated_cost_usd": null,
+      "cost_status": "not_calculated_no_pricing"
+    },
+    "user_verbalizer": {
+      "providers": [
+        "deepseek"
+      ],
+      "models": [
+        "deepseek-v4-flash"
+      ],
+      "calls": 151,
+      "api_calls": 151,
+      "fallbacks": 0,
+      "prompt_tokens": 31872,
+      "completion_tokens": 1951,
+      "total_tokens": 33823,
+      "estimated_cost_usd": null,
+      "cost_status": "not_calculated_no_pricing"
+    },
+    "combined": {
+      "api_calls": null,
+      "reported_token_usage": {
+        "prompt_tokens": 140190,
+        "completion_tokens": 22216,
+        "total_tokens": 162406
+      },
+      "estimated_cost_usd": null,
+      "cost_status": "not_calculated_no_pricing"
+    }
+  },
+  "mode_specific_metrics": {
+    "acceptance": "need_based",
+    "hard_constraint_satisfaction_at_acceptance": 1.0,
+    "mean_soft_matches_at_acceptance": 2.421053,
+    "persona_distribution": {
+      "bargain_hunter": 3,
+      "brand_loyalist": 3,
+      "casual_browser": 3,
+      "decisive_buyer": 3,
+      "expert_shopper": 3,
+      "indecisive_shopper": 3,
+      "novice_shopper": 3,
+      "picky_shopper": 3
+    },
+    "difficulty_distribution": {
+      "realistic_hard:budget_relaxation": 6,
+      "realistic_hard:hidden_preferences": 6,
+      "realistic_hard:override_and_relaxation": 6,
+      "realistic_hard:preference_override": 6
+    },
+    "blocked_candidate_events": 74,
+    "accepted_while_agent_asks": 0,
+    "override_events": 12,
+    "relaxation_events": 12
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "valid": true,
+  "report": "integration_runs\\realistic_hard_deepseek_full_20260829\\realistic.json",
+  "sessions": 24,
+  "turns": 151,
+  "successes": 19,
+  "scenario_types": {
+    "realistic_hard:budget_relaxation": 6,
+    "realistic_hard:hidden_preferences": 6,
+    "realistic_hard:override_and_relaxation": 6,
+    "realistic_hard:preference_override": 6
+  },
+  "personas": {
+    "bargain_hunter": 3,
+    "brand_loyalist": 3,
+    "casual_browser": 3,
+    "decisive_buyer": 3,
+    "expert_shopper": 3,
+    "indecisive_shopper": 3,
+    "novice_shopper": 3,
+    "picky_shopper": 3
+  },
+  "blocked_candidate_events": 74,
+  "accepted_while_agent_asks": 0,
+  "agent_nodes": [
+    "attribute_retrieve",
+    "build_query",
+    "build_response",
+    "constraint_filter",
+    "dense_retrieve_fallback",
+    "information_gain_question",
+    "lexical_retrieve",
+    "rerank_fallback",
+    "rrf_fusion",
+    "understand_user",
+    "update_state",
+    "validate_patch",
+    "validate_response"
+  ],
+  "agent_total_tokens": 128583,
+  "verbalizer_total_tokens": 33823,
+  "verbalizer_api_calls": 151
+}
+
