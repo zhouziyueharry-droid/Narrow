@@ -1,14 +1,16 @@
+<div align="center">
+
 # Narrow
 
-[中文说明](README.zh-CN.md) · [Judge's file guide](docs/JUDGE_GUIDE.md)
+**Conversational shopping search that narrows with every turn.**
 
-> [!IMPORTANT]
-> An **LLM-driven agent is a core part of this submission** — please connect an
-> API key to experience the full multi-turn behavior. The agent targets an
-> **OpenAI-compatible** chat-completions endpoint (any compatible provider via
-> `DEEPSEEK_BASE_URL`); we recommend **DeepSeek V4 Flash**. If you need a key,
-> contact [tianshuo001@e.ntu.edu.sg](mailto:tianshuo001@e.ntu.edu.sg) or
-> [ziyue007@e.ntu.edu.sg](mailto:ziyue007@e.ntu.edu.sg).
+LangGraph · Hybrid retrieval · LambdaMART · Vue workbench · React trace viewer
+
+[Architecture](#architecture) · [Quickstart](#quickstart) · [Workbench](#workbench-and-trace-viewer) · [中文简介](#中文简介) · [中文文档](README.zh-CN.md)
+
+</div>
+
+Built for **TikTok TechJam 2026**. The hackathon project is complete; this repository preserves the implementation, pretrained model, and evaluation workflow.
 
 Conversational product search across multiple turns. DeepSeek interprets user
 requirements and decides when to ask follow-up questions. Lexical, semantic,
@@ -20,38 +22,23 @@ and a trace viewer.
   <img src="demo-frontend/public/hero-shopping-wide-v2.png" alt="Narrow shopping workbench interface" width="760" />
 </p>
 
-## Submission at a glance
+## Project at a glance
 
-| Item | Current submission |
+| Item | Implementation |
 |---|---|
-| Judge entry | `techjam-conversational-search/submission_agent.py` exports `Agent` |
+| Agent entry | `techjam-conversational-search/submission_agent.py` exports `Agent` |
 | One-command evaluation | `run_evaluation.ps1` |
 | Primary runtime | DeepSeek V4 Flash for understanding/dialogue and a frozen LambdaMART reranker |
 | Required local data | Organizer catalog plus a compatible JSONL scenario set |
 | Public 200 development result | Hit@10 **98.5%**, MRR **0.543222**, MTTC **2.075**, technical score **0.833967** |
 | Network requirement | The primary path requires a configured DeepSeek API key; online failures are not replaced with offline output |
-| Estimated model cost | Priced on DeepSeek V4 Flash off-peak rates; see the cost note below |
 
 The public 200 was used for bounded model selection, so these figures are
 development evidence rather than an estimate of private-set performance. The
 selected model, its feature schema, hashes, and limitations are included in
 the repository.
 
-### Estimated model cost
-
-The primary path calls DeepSeek V4 Flash for intent understanding and dialogue.
-At the official off-peak rates effective 2026-08-16 — input (cache miss) ¥1.5
-per 1M tokens and output ¥4.5 per 1M tokens; peak hours double these figures —
-a run's cost is:
-
-```text
-cost_CNY = (prompt_tokens / 1e6) * 1.5 + (completion_tokens / 1e6) * 4.5
-```
-
-`prompt_tokens` and `completion_tokens` are the `reported_token_usage` values
-written to `summary.json` after each run. Fill in the values from the latest
-run: ~___ prompt + ~___ completion tokens ≈ ¥___ per 200-scenario public run.
-Prices may change; confirm the official DeepSeek pricing page before budgeting.
+Model token usage is recorded in each run's `summary.json`. The primary online path requires your own API key; cost depends on the configured provider and model.
 
 | Path | Purpose | Required for CLI scoring? |
 |---|---|---|
@@ -60,6 +47,30 @@ Prices may change; confirm the official DeepSeek pricing page before budgeting.
 | `trace-visualizer/` | Optional local inspection of a generated `trace.json` | No |
 | `user-simulator/` | Optional alternative simulation protocols | No |
 | `docs/` | Judge map, testing, and trace format | Reference |
+
+## Engineering highlights
+
+| Challenge | Implementation |
+| --- | --- |
+| Preferences change across turns | Validated intent patches maintain constraints, negation, and explicit preference replacement. |
+| Different queries need different search signals | A retrieval plan drives lexical, semantic, and attribute routes before weighted reciprocal-rank fusion. |
+| Good candidates still need useful ordering | A frozen LambdaMART model reranks fused candidates; its feature schema and training provenance are included. |
+| Follow-up questions need evidence | Candidate attribute coverage, entropy, and representative values inform the online dialogue decision. |
+| Aggregate scores hide failure causes | A separate trace viewer follows target ranks through retrieval, filtering, ranking, and response generation. |
+
+## Architecture
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/architecture/system.visual-check.2048x1320.dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/architecture/system.visual-check.2048x1320.light.png">
+  <img alt="Narrow architecture: workbench and API, DeepSeek intent understanding, parallel retrieval, fusion and LambdaMART ranking, dialogue, and offline trace visualization." src="docs/architecture/system.visual-check.2048x1320.light.png" width="100%">
+</picture>
+
+[Architecture walkthrough and runtime node map](docs/architecture/README.md) · [Interactive Archify diagram](docs/architecture/system.html) · [Editable source](docs/architecture/system.architecture.json)
+
+Download `system.html` and open it in a browser for zoom, search, themes, and export. GitHub displays the image preview above and shows the HTML as a source file.
+
+The diagram illustrates the **DeepSeek + LambdaMART** configuration used by the main evaluation entry. The workbench must be configured to select it; the graph's uninjected default ranker remains Precise. Online model errors are explicit failures, while offline parsing and dialogue are a separately selected mode. Trace collection spans the graph; its dashed capture arrow is representative.
 
 ## Quickstart
 
@@ -246,3 +257,9 @@ Current bundle provenance is recorded in
 [`models/lambdamart_synthetic_2000/README.md`](techjam-conversational-search/models/lambdamart_synthetic_2000/README.md).
 Generated evaluation runs are intentionally excluded from Git because they can
 contain scenario content and large raw traces.
+
+## 中文简介
+
+Narrow 是 TikTok TechJam 2026 期间完成的多轮对话商品搜索项目。DeepSeek 负责意图理解与对话决策，词法、语义、属性三路召回与 LambdaMART 精排共同生成目录内推荐。仓库包含购物工作台、用户模拟器和逐节点 Trace 查看器，方便从界面体验一路追踪到具体代码与评测证据。
+
+比赛已结束，本仓库作为项目展示和实验记录保留。公开集指标是参与模型选择的开发结果，不代表私有集成绩。完整中文运行说明见 [README.zh-CN.md](README.zh-CN.md)。

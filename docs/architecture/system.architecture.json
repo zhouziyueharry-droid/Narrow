@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {"title": "Narrow · Conversational Search", "locale": "en", "quality_profile": "showcase", "viewBox": [1390, 670]},
+  "components": [
+    {"id":"client","type":"external","label":"Workbench & API","sublabel":"Vue 3 · Python API","pos":[40,280],"size":[210,76]},
+    {"id":"intent","type":"backend","label":"Intent & State","sublabel":"StatePatch · LangGraph","pos":[390,280],"size":[230,76]},
+    {"id":"provider","type":"external","label":"DeepSeek","sublabel":"Online intent understanding","pos":[390,50],"size":[230,76]},
+    {"id":"retrieval","type":"database","label":"Parallel Retrieval","sublabel":"BM25 · Semantic · Attributes","pos":[750,280],"size":[230,76]},
+    {"id":"ranking","type":"backend","label":"Fusion & Ranking","sublabel":"RRF · LambdaMART","pos":[1120,280],"size":[240,76]},
+    {"id":"response","type":"backend","label":"Clarify & Recommend","sublabel":"LLM dialogue · Validation","pos":[1120,550],"size":[240,76]},
+    {"id":"trace","type":"database","label":"Evaluation Traces","sublabel":"JSONL → trace.json","pos":[750,550],"size":[230,76]},
+    {"id":"viewer","type":"frontend","label":"Trace Visualizer","sublabel":"React · Per-turn diagnostics","pos":[390,550],"size":[230,76]}
+  ],
+  "connections": [
+    {"from":"client","to":"intent","label":"Message"},
+    {"from":"intent","to":"provider","label":"Online intent","variant":"dashed"},
+    {"from":"intent","to":"retrieval","label":"Query + constraints"},
+    {"from":"retrieval","to":"ranking","label":"Candidates"},
+    {"from":"ranking","to":"response","label":"Ranked products","labelDy":110},
+    {"from":"retrieval","to":"trace","label":"Capture in evaluation","labelDy":110,"variant":"dashed"},
+    {"from":"trace","to":"viewer","label":"Import JSON"}
+  ],
+  "cards": [
+    {"dot":"emerald","title":"Online mode","items":["DeepSeek handles intent and dialogue decisions","Online failures are explicit; no silent fallback"]},
+    {"dot":"cyan","title":"Retrieval","items":["Local hashed vectors by default; BGE is optional","Recommendations must belong to the catalog"]},
+    {"dot":"violet","title":"Observability","items":["Evaluation captures nodes across the entire graph","Import trace.json locally; no model call or upload"]}
+  ]
+}

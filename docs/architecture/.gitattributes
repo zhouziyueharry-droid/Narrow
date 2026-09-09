@@ -1,0 +1,2 @@
+# Preserve generated artifact bytes and their SHA-256 delivery receipts.
+system.* -text whitespace=cr-at-eol
